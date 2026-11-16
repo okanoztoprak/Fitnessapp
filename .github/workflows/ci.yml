@@ -29,13 +29,6 @@ jobs:
           xcodegen generate
       - name: Build for the simulator
         run: |
-          set -o pipefail
-          xcodebuild build \
-            -project PowerUp.xcodeproj \
-            -scheme PowerUp \
-            -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
-            | grep -E "error|warning: unre|BUILD|\*\*" || true
           xcodebuild build \
             -project PowerUp.xcodeproj \
             -scheme PowerUp \

@@ -86,3 +86,15 @@ enum WorkoutFactory {
         set.workoutExercise = item
     }
 }
+
+extension ModelContext {
+    /// Slaat direct op in plaats van te wachten op autosave, zodat afronden en weggooien
+    /// ook blijven staan als de app meteen daarna wordt afgesloten.
+    func saveOrLog() {
+        do {
+            try save()
+        } catch {
+            print("POWERUP save failed: \(error)")
+        }
+    }
+}

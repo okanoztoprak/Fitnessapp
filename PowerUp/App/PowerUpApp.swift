@@ -26,6 +26,8 @@ struct PowerUpApp: App {
 @Observable
 final class AppRouter {
     var presentedWorkout: Workout?
+    /// Training die net is weggegooid en zo wordt verwijderd; telt nergens meer mee.
+    var discardedWorkoutID: PersistentIdentifier?
     let restTimer = RestTimer()
 }
 

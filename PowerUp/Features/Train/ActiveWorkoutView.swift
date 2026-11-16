@@ -101,6 +101,7 @@ struct ActiveWorkoutView: View {
     }
 
     private func complete(_ set: SetEntry, in item: WorkoutExercise) {
+        hideKeyboard()
         set.isDone.toggle()
         guard set.isDone else {
             set.completedAt = nil
@@ -150,18 +151,30 @@ struct ActiveWorkoutView: View {
                 for set in item.sets ?? [] where !set.isDone { context.delete(set) }
                 if (item.sets ?? []).allSatisfy({ !$0.isDone }) { context.delete(item) }
             }
+            context.saveOrLog()
         }
     }
 
     private func discard() {
         router.restTimer.stop()
         let discarded = workout
-        // Markeer als afgerond zodat de training direct uit "Bezig" verdwijnt; verwijder na het sluiten.
-        discarded.endedAt = Date()
+        // Verberg de training direct in de lijsten; verwijder pas na het sluiten van het scherm.
+        context.saveOrLog() // Na opslaan is de identifier definitief.
+        router.discardedWorkoutID = discarded.persistentModelID
         router.presentedWorkout = nil
+        // Records en record-XP uit deze training vervallen mee.
+        let since = discarded.startedAt
+        for record in (try? context.fetch(FetchDescriptor<PersonalRecord>())) ?? [] where record.date >= since {
+            context.delete(record)
+        }
+        for event in (try? context.fetch(FetchDescriptor<XPEvent>())) ?? []
+        where event.source == .personalRecord && event.date >= since {
+            context.delete(event)
+        }
         Task {
             try? await Task.sleep(for: .milliseconds(700))
             context.delete(discarded)
+            context.saveOrLog()
         }
     }
 }
@@ -175,6 +188,19 @@ private struct ExerciseSection: View {
     @Environment(\.modelContext) private var context
 
     private var isCardio: Bool { item.exercise?.isCardio ?? false }
+    private var openSets: [SetEntry] { item.sortedSets.filter { !$0.isDone && $0.kind != .warmup } }
+
+    private func isApplied(_ suggestion: ProgressionSuggestion) -> Bool {
+        openSets.allSatisfy { abs($0.weightKg - suggestion.weight) < 0.01 && $0.reps == suggestion.reps }
+    }
+
+    private func apply(_ suggestion: ProgressionSuggestion) {
+        for set in openSets {
+            set.weightKg = suggestion.weight
+            set.reps = suggestion.reps
+        }
+        Haptics.tap()
+    }
 
     var body: some View {
         Section {
@@ -187,6 +213,9 @@ private struct ExerciseSection: View {
                     Text("Vorige keer: \(summary)")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
+                }
+                if let target = Coach.target(for: exercise, before: workout, units: profile.units) {
+                    TargetRow(target: target, isApplied: isApplied(target.suggestion)) { apply(target.suggestion) }
                 }
             }
             ForEach(item.sortedSets) { set in
@@ -225,6 +254,38 @@ private struct ExerciseSection: View {
                 .foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+private struct TargetRow: View {
+    let target: Coach.Target
+    let isApplied: Bool
+    let onApply: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "scope")
+                .foregroundStyle(Theme.accent)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Doel vandaag: \(target.text)")
+                    .font(.subheadline.weight(.bold))
+                Text(target.reason)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            if isApplied {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel("Doel ingevuld")
+            } else {
+                Button("Vul in", action: onApply)
+                    .buttonStyle(.bordered)
+                    .font(.caption.weight(.bold))
+            }
+        }
+        .listRowBackground(Theme.accent.opacity(0.1))
     }
 }
 
@@ -279,7 +340,8 @@ private struct SetRow: View {
         } label: {
             Text(set.kind.badge.isEmpty ? "\(set.order + 1)" : set.kind.badge)
                 .font(.subheadline.weight(.heavy))
-                .frame(width: 30, height: 30)
+                .padding(4)
+                .frame(minWidth: 30, minHeight: 30)
                 .background(set.kind == .normal ? Color(.tertiarySystemFill) : Theme.accent.opacity(0.3),
                             in: Circle())
         }

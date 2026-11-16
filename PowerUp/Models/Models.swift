@@ -24,6 +24,8 @@ final class UserProfile {
     var celebratePRs: Bool = true
     var e1rmFormulaRaw: String = OneRepMax.Formula.epley.rawValue
     var restSeconds: Int = 120
+    /// Zelf gekozen schema; `nil` volgt het aantal trainingsdagen.
+    var preferredPlanRaw: String?
 
     init() {}
 
@@ -54,6 +56,10 @@ final class UserProfile {
     var e1rmFormula: OneRepMax.Formula {
         get { OneRepMax.Formula(rawValue: e1rmFormulaRaw) ?? .epley }
         set { e1rmFormulaRaw = newValue.rawValue }
+    }
+    var preferredPlan: StarterPlan? {
+        get { preferredPlanRaw.flatMap(StarterPlan.init(rawValue:)) }
+        set { preferredPlanRaw = newValue?.rawValue }
     }
     var age: Int {
         Calendar.current.dateComponents([.year], from: birthDate, to: Date()).year ?? 30

@@ -54,6 +54,7 @@ enum StarterTemplates {
     }
 
     static func days(for profile: UserProfile) -> [TemplateDay] {
-        days(plan: .recommend(daysPerWeek: profile.trainingDaysPerWeek), equipment: profile.equipment)
+        days(plan: profile.preferredPlan ?? .recommend(daysPerWeek: profile.trainingDaysPerWeek),
+             equipment: profile.equipment)
     }
 }

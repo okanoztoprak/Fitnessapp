@@ -31,7 +31,7 @@ swift test --package-path Packages/PowerCore
 
 ## Fases
 
-1. **MVP** (deze stand): onboarding, trainingen loggen, oefenbibliotheek, rusttimer, gewicht met trend, TDEE-calculator, dashboard, power level en XP
+1. **MVP** (deze stand): onboarding, trainingen loggen, oefenbibliotheek, rusttimer, gewicht met trend, TDEE-calculator, dashboard, power level en XP, plus een eerste versie van de aanbevelingen uit fase 3 (trainen of rusten met uitleg, schemakeuze, herstel per spiergroep met focus-training, doel per oefening via dubbele progressie)
 2. Voeding: Apple Health/MyFitnessPal-sync, macrodoelen, adaptieve TDEE, wekelijkse check-in
 3. Coach: programma's, progressive overload, deload, volume per spiergroep, herstelscore
 4. Gamification++: transformaties, quests, boss fights, mentor, animaties

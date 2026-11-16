@@ -18,6 +18,10 @@ struct SettingsView: View {
             Section("Training") {
                 Stepper("\(profile.trainingDaysPerWeek) dagen per week",
                         value: $profile.trainingDaysPerWeek, in: 2...6)
+                Picker("Schema", selection: $profile.preferredPlan) {
+                    Text("Automatisch").tag(StarterPlan?.none)
+                    ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag(StarterPlan?.some($0)) }
+                }
                 Picker("Apparatuur", selection: $profile.equipment) {
                     ForEach(Equipment.allCases, id: \.self) { Text($0.title).tag($0) }
                 }

@@ -334,3 +334,102 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
         #expect(StarterPlan.recommend(daysPerWeek: 6) == .pushPullLegs)
     }
 }
+
+@Suite struct ProgressionTests {
+    private func sets(_ weight: Double, _ reps: [Int]) -> [SetPerformance] {
+        reps.map { SetPerformance(weight: weight, reps: $0) }
+    }
+
+    @Test func noHistoryGivesNoSuggestion() {
+        #expect(ProgressionAdvisor.suggest(lastSets: [], increment: 2.5) == nil)
+    }
+
+    @Test func addsWeightWhenAllSetsHitTheTop() {
+        let suggestion = ProgressionAdvisor.suggest(lastSets: sets(60, [12, 12, 12]), increment: 2.5)
+        #expect(suggestion == ProgressionSuggestion(weight: 62.5, reps: 8, reason: .addWeight))
+    }
+
+    @Test func addsARepInsideTheRange() {
+        let suggestion = ProgressionAdvisor.suggest(lastSets: sets(60, [10, 9, 9]), increment: 2.5)
+        #expect(suggestion == ProgressionSuggestion(weight: 60, reps: 10, reason: .addReps))
+    }
+
+    @Test func consolidatesBelowTheRange() {
+        let suggestion = ProgressionAdvisor.suggest(lastSets: sets(100, [6, 5, 4]), increment: 2.5)
+        #expect(suggestion == ProgressionSuggestion(weight: 100, reps: 8, reason: .consolidate))
+    }
+
+    @Test func lighterSetsDoNotCountAsWorkingSets() {
+        let history = sets(40, [15]) + sets(60, [12, 12])
+        #expect(ProgressionAdvisor.suggest(lastSets: history, increment: 2.5)?.reason == .addWeight)
+    }
+
+    @Test func bodyweightOnlyAddsReps() {
+        let suggestion = ProgressionAdvisor.suggest(lastSets: sets(0, [12, 10, 9]), increment: 2.5)
+        #expect(suggestion == ProgressionSuggestion(weight: 0, reps: 10, reason: .addReps))
+    }
+}
+
+@Suite struct SessionAdvisorTests {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .iso8601)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+    /// Maandag 13 november 2023, 12:00 UTC.
+    private let monday = Date(timeIntervalSince1970: 1_699_876_800)
+    private func date(_ offset: Int) -> Date { monday.addingTimeInterval(Double(offset) * day) }
+
+    @Test func firstSession() {
+        let advice = SessionAdvisor.advise(workoutDays: [], plannedPerWeek: 3, today: monday, calendar: calendar)
+        #expect(advice.kind == .train)
+        #expect(advice.reason == .firstSession)
+    }
+
+    @Test func restAfterTrainingToday() {
+        let advice = SessionAdvisor.advise(workoutDays: [monday], plannedPerWeek: 3, today: monday, calendar: calendar)
+        #expect(advice == SessionAdvice(kind: .rest, reason: .trainedToday, sessionsThisWeek: 1))
+    }
+
+    @Test func restWhenWeeklyGoalIsReached() {
+        let advice = SessionAdvisor.advise(workoutDays: [date(0), date(1), date(3)], plannedPerWeek: 3,
+                                           today: date(4), calendar: calendar)
+        #expect(advice.reason == .weeklyGoalReached)
+    }
+
+    @Test func restAfterTwoDaysInARow() {
+        let advice = SessionAdvisor.advise(workoutDays: [date(0), date(1)], plannedPerWeek: 4,
+                                           today: date(2), calendar: calendar)
+        #expect(advice.reason == .consecutiveDays)
+    }
+
+    @Test func sixDaySchemesMayTrainThreeDaysInARow() {
+        let advice = SessionAdvisor.advise(workoutDays: [date(0), date(1)], plannedPerWeek: 6,
+                                           today: date(2), calendar: calendar)
+        #expect(advice.kind == .train)
+    }
+
+    @Test func behindScheduleLateInTheWeek() {
+        // Zaterdag, 1 van 3 gedaan: nog twee dagen voor twee sessies.
+        let advice = SessionAdvisor.advise(workoutDays: [date(0)], plannedPerWeek: 3, today: date(5), calendar: calendar)
+        #expect(advice == SessionAdvice(kind: .train, reason: .behindSchedule, sessionsThisWeek: 1))
+    }
+
+    @Test func onTrackEarlyInTheWeek() {
+        let advice = SessionAdvisor.advise(workoutDays: [date(-3)], plannedPerWeek: 3, today: date(1), calendar: calendar)
+        #expect(advice == SessionAdvice(kind: .train, reason: .onTrack, sessionsThisWeek: 0))
+    }
+
+    @Test func nextDayPrefersNeverDoneThenOldest() {
+        #expect(SessionAdvisor.nextDayIndex(lastPerformed: []) == nil)
+        #expect(SessionAdvisor.nextDayIndex(lastPerformed: [date(0), nil, nil]) == 1)
+        #expect(SessionAdvisor.nextDayIndex(lastPerformed: [date(2), date(0), date(1)]) == 1)
+    }
+
+    @Test func recoveryStatus() {
+        #expect(RecoveryStatus.status(hoursSinceTrained: nil) == .untrained)
+        #expect(RecoveryStatus.status(hoursSinceTrained: 20) == .recovering)
+        #expect(RecoveryStatus.status(hoursSinceTrained: 72) == .ready)
+        #expect(RecoveryStatus.status(hoursSinceTrained: 200) == .overdue)
+    }
+}

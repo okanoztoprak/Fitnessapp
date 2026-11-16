@@ -11,6 +11,16 @@
         }
       }
     },
+    "%lld dagen geleden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days ago"
+          }
+        }
+      }
+    },
     "%lld dagen per week": {
       "localizations": {
         "en": {
@@ -21,12 +31,22 @@
         }
       }
     },
-    "%lld oefeningen": {
+    "%lld oefeningen · %@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld exercises"
+            "value": "%1$lld exercises · %2$@"
+          }
+        }
+      }
+    },
+    "%lld van %lld trainingen deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld workouts this week"
           }
         }
       }
@@ -37,6 +57,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "1RM formula"
+          }
+        }
+      }
+    },
+    "Aan de beurt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up next"
+          }
+        }
+      }
+    },
+    "Aanbevolen voor vandaag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recommended for today"
           }
         }
       }
@@ -91,6 +131,16 @@
         }
       }
     },
+    "Alle sets haalden %lld reps. Tijd voor meer gewicht.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every set hit %lld reps. Time to add weight."
+          }
+        }
+      }
+    },
     "Alleen de stang": {
       "localizations": {
         "en": {
@@ -127,6 +177,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Equipment"
+          }
+        }
+      }
+    },
+    "Automatisch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
           }
         }
       }
@@ -177,6 +237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Started at %@"
+          }
+        }
+      }
+    },
+    "Bij %lld dagen per week past %@ het best. Je kunt altijd wisselen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At %1$lld days per week, %2$@ fits best. You can always switch."
           }
         }
       }
@@ -347,6 +417,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Goal"
+          }
+        }
+      }
+    },
+    "Doel ingevuld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target filled in"
+          }
+        }
+      }
+    },
+    "Doel vandaag: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's target: %@"
           }
         }
       }
@@ -641,6 +731,16 @@
         }
       }
     },
+    "Gisteren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yesterday"
+          }
+        }
+      }
+    },
     "Goed om te weten": {
       "localizations": {
         "en": {
@@ -691,12 +791,32 @@
         }
       }
     },
-    "Herstel hoort bij het plan. Tot de volgende sessie.": {
+    "Herstel per spiergroep": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recovery is part of the plan. See you next session."
+            "value": "Recovery by muscle group"
+          }
+        }
+      }
+    },
+    "Hersteld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recovered"
+          }
+        }
+      }
+    },
+    "Herstelt nog": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still recovering"
           }
         }
       }
@@ -781,12 +901,52 @@
         }
       }
     },
+    "Je eerste sessie legt je basislijn vast. Kies een gewicht waarmee je nog 2 à 3 reps overhoudt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your first session sets your baseline. Pick a weight that leaves 2 to 3 reps in the tank."
+          }
+        }
+      }
+    },
+    "Je hebt twee dagen achter elkaar getraind. Een rustdag houdt je volgende sessie scherp.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You trained two days in a row. A rest day keeps your next session sharp."
+          }
+        }
+      }
+    },
+    "Je hebt vandaag al getraind. Herstel hoort bij het plan.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You already trained today. Recovery is part of the plan."
+          }
+        }
+      }
+    },
     "Je kunt dit later aanpassen in de instellingen.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "You can change this later in settings."
+          }
+        }
+      }
+    },
+    "Je ligt op schema: %lld van %lld trainingen deze week. Deze dag is het langst geleden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are on track: %1$lld of %2$lld workouts this week. This day is the longest ago."
           }
         }
       }
@@ -917,6 +1077,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Calves"
+          }
+        }
+      }
+    },
+    "Lang geleden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long ago"
           }
         }
       }
@@ -1071,6 +1241,16 @@
         }
       }
     },
+    "Nog %lld te gaan deze week en de dagen raken op. Vandaag is een goed moment.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld to go this week and the days are running out. Today is a good moment."
+          }
+        }
+      }
+    },
     "Nog %lld tot %@": {
       "localizations": {
         "en": {
@@ -1107,6 +1287,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "No weigh-ins yet."
+          }
+        }
+      }
+    },
+    "Nog niet gedaan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not done yet"
+          }
+        }
+      }
+    },
+    "Nog niet getraind": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not trained yet"
           }
         }
       }
@@ -1291,6 +1491,16 @@
         }
       }
     },
+    "Quadriceps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quads"
+          }
+        }
+      }
+    },
     "Recente XP": {
       "localizations": {
         "en": {
@@ -1331,6 +1541,16 @@
         }
       }
     },
+    "Reps in reserve": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reps in reserve"
+          }
+        }
+      }
+    },
     "Rug": {
       "localizations": {
         "en": {
@@ -1347,6 +1567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest is part of the plan. Stick to it."
+          }
+        }
+      }
+    },
+    "Rustdag aanbevolen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest day recommended"
           }
         }
       }
@@ -1397,6 +1627,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resting expenditure (BMR)"
+          }
+        }
+      }
+    },
+    "Schema": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Program"
           }
         }
       }
@@ -1551,6 +1791,26 @@
         }
       }
     },
+    "Start focus-training": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start focus workout"
+          }
+        }
+      }
+    },
+    "Start training · %lld oefeningen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start workout · %lld exercises"
+          }
+        }
+      }
+    },
     "Streak: %lld dagen": {
       "localizations": {
         "en": {
@@ -1591,6 +1851,26 @@
         }
       }
     },
+    "Tik op een spiergroep voor een focus-training met vier oefeningen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a muscle group for a focus workout with four exercises."
+          }
+        }
+      }
+    },
+    "Toch trainen: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Train anyway: %@"
+          }
+        }
+      }
+    },
     "Toon": {
       "localizations": {
         "en": {
@@ -1627,16 +1907,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workout"
-          }
-        }
-      }
-    },
-    "Training afgerond": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Workout complete"
           }
         }
       }
@@ -1841,6 +2111,16 @@
         }
       }
     },
+    "Vorige keer zwaar. Haal eerst %lld reps op dit gewicht.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last time was heavy. Hit %lld reps at this weight first."
+          }
+        }
+      }
+    },
     "Vorige keer: %@": {
       "localizations": {
         "en": {
@@ -1871,6 +2151,16 @@
         }
       }
     },
+    "Vul in": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill in"
+          }
+        }
+      }
+    },
     "Waar train je?": {
       "localizations": {
         "en": {
@@ -1897,6 +2187,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Weigh in"
+          }
+        }
+      }
+    },
+    "Weekdoel gehaald: %lld van %lld. Extra trainen levert geen extra XP op; herstel wel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly goal reached: %1$lld of %2$lld. Extra training earns no extra XP; recovery does."
           }
         }
       }
@@ -1967,6 +2267,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Very active"
+          }
+        }
+      }
+    },
+    "Zelfde gewicht, één rep erbij.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Same weight, one more rep."
           }
         }
       }

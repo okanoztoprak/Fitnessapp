@@ -23,6 +23,12 @@ struct NumberField: View {
             .onChange(of: value) { _, new in
                 if !focused { text = Self.format(new) }
             }
+            // Selecteer alles bij focus, zodat typen de oude waarde direct vervangt.
+            .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { note in
+                guard let field = note.object as? UITextField,
+                      field.keyboardType == .decimalPad || field.keyboardType == .numberPad else { return }
+                Task { @MainActor in field.selectAll(nil) }
+            }
     }
 
     static func parse(_ string: String) -> Double {

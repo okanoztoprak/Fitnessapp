@@ -9,18 +9,24 @@ struct TodayView: View {
     @Environment(AppRouter.self) private var router
     @Query(sort: \PowerLevelSnapshot.date, order: .reverse) private var snapshots: [PowerLevelSnapshot]
     @Query(sort: \BodyWeightEntry.date) private var weights: [BodyWeightEntry]
-    @Query(sort: \Workout.startedAt, order: .reverse) private var workouts: [Workout]
+    @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
     @Query private var xpEvents: [XPEvent]
     @State private var showWeightSheet = false
 
     private var finished: [Workout] { workouts.filter { $0.endedAt != nil } }
+    private var workouts: [Workout] {
+        allWorkouts.filter { $0.persistentModelID != router.discardedWorkoutID }
+    }
     private var active: Workout? { workouts.first { $0.endedAt == nil } }
     private var trainedToday: Bool {
         finished.contains { Calendar.current.isDateInToday($0.startedAt) }
     }
-    private var nextDay: TemplateDay? {
-        let days = StarterTemplates.days(for: profile)
-        return days.isEmpty ? nil : days[finished.count % days.count]
+    private var recommendation: Coach.Recommendation {
+        Coach.recommendation(profile: profile, finished: finished)
+    }
+    private var mentorMoment: Mentor.Moment {
+        if trainedToday { return .workoutDone }
+        return recommendation.isRest ? .restDay : .greeting
     }
     private var streak: Int {
         StreakCalculator.current(activeDays: xpEvents.map(\.date), today: Date(), calendar: .current)
@@ -55,7 +61,7 @@ struct TodayView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(Mentor.name).font(.caption).foregroundStyle(.secondary)
-                Text(Mentor.line(trainedToday ? .workoutDone : .greeting, tone: profile.mentorTone))
+                Text(Mentor.line(mentorMoment, tone: profile.mentorTone))
                     .font(.callout.weight(.semibold))
             }
         }
@@ -65,32 +71,23 @@ struct TodayView: View {
 
     @ViewBuilder
     private var workoutCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Training van vandaag")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-            if let active {
+        if let active {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Training van vandaag")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
                 Text(active.name).font(Theme.display(.title2))
                 Text("Bezig sinds \(active.startedAt.formatted(date: .omitted, time: .shortened))")
                     .font(.footnote).foregroundStyle(.secondary)
                 Button("Ga verder") { router.presentedWorkout = active }
                     .buttonStyle(ComicButtonStyle())
-            } else if trainedToday {
-                Label("Training afgerond", systemImage: "checkmark.seal.fill")
-                    .font(Theme.display(.title3))
-                Text("Herstel hoort bij het plan. Tot de volgende sessie.")
-                    .font(.footnote).foregroundStyle(.secondary)
-            } else if let nextDay {
-                Text(nextDay.name).font(Theme.display(.title2))
-                Text("\(nextDay.slugs.count) oefeningen")
-                    .font(.footnote).foregroundStyle(.secondary)
-                Button("Start training") {
-                    router.presentedWorkout = WorkoutFactory.start(name: nextDay.name, slugs: nextDay.slugs, in: context)
-                }
-                .buttonStyle(ComicButtonStyle())
+            }
+            .comicCard(tint: Theme.accent)
+        } else {
+            CoachCard(recommendation: recommendation) { day in
+                router.presentedWorkout = WorkoutFactory.start(name: day.name, slugs: day.slugs, in: context)
             }
         }
-        .comicCard(tint: Theme.accent)
     }
 
     private var caloriesCard: some View {

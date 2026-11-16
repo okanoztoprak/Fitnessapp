@@ -3,13 +3,24 @@ import SwiftData
 import SwiftUI
 
 struct TrainView: View {
-    let profile: UserProfile
+    @Bindable var profile: UserProfile
     @Environment(\.modelContext) private var context
     @Environment(AppRouter.self) private var router
-    @Query(sort: \Workout.startedAt, order: .reverse) private var workouts: [Workout]
+    @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
+    @State private var focus: FocusProposal?
 
+    struct FocusProposal: Identifiable {
+        let muscle: MuscleGroup
+        let exercises: [Exercise]
+        var id: String { muscle.rawValue }
+    }
+
+    private var workouts: [Workout] {
+        allWorkouts.filter { $0.persistentModelID != router.discardedWorkoutID }
+    }
     private var active: Workout? { workouts.first { $0.endedAt == nil } }
     private var finished: [Workout] { workouts.filter { $0.endedAt != nil } }
+    private var plan: StarterPlan { Coach.plan(for: profile) }
 
     var body: some View {
         NavigationStack {
@@ -23,25 +34,7 @@ struct TrainView: View {
                         }
                     }
                 } else {
-                    Section("Start") {
-                        ForEach(StarterTemplates.days(for: profile)) { day in
-                            Button {
-                                router.presentedWorkout = WorkoutFactory.start(name: day.name, slugs: day.slugs, in: context)
-                            } label: {
-                                LabeledContent {
-                                    Text("\(day.slugs.count) oefeningen")
-                                } label: {
-                                    Label(day.name, systemImage: "bolt.fill")
-                                }
-                            }
-                        }
-                        Button {
-                            router.presentedWorkout = WorkoutFactory.start(
-                                name: String(localized: "Vrije training"), in: context)
-                        } label: {
-                            Label("Lege training", systemImage: "plus")
-                        }
-                    }
+                    startSections
                 }
                 Section {
                     NavigationLink {
@@ -73,7 +66,97 @@ struct TrainView: View {
                 }
             }
             .navigationTitle("Train")
+            .confirmationDialog(focus.map { String(localized: "Focus: \($0.muscle.title)") } ?? "",
+                                isPresented: Binding(get: { focus != nil }, set: { if !$0 { focus = nil } }),
+                                titleVisibility: .visible, presenting: focus) { proposal in
+                Button("Start focus-training") {
+                    start(name: String(localized: "Focus: \(proposal.muscle.title)"),
+                          slugs: proposal.exercises.map(\.slug))
+                }
+            } message: { proposal in
+                Text(proposal.exercises.map(\.name).joined(separator: "\n"))
+            }
         }
+    }
+
+    @ViewBuilder
+    private var startSections: some View {
+        let recommendation = Coach.recommendation(profile: profile, finished: finished)
+        Section {
+            CoachCard(recommendation: recommendation) { start(name: $0.name, slugs: $0.slugs) }
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+        }
+        Section {
+            Picker("Schema", selection: Binding(get: { plan }, set: { profile.preferredPlan = $0 })) {
+                ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            ForEach(Coach.dayStatuses(plan: plan, profile: profile, finished: finished)) { status in
+                Button {
+                    start(name: status.day.name, slugs: status.day.slugs)
+                } label: {
+                    HStack {
+                        Image(systemName: "bolt.fill")
+                            .foregroundStyle(Theme.accent)
+                            .frame(width: 28)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(status.day.name).font(.headline)
+                            Text("\(status.day.slugs.count) oefeningen · \(Coach.relativeDay(status.lastPerformed))")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                        Spacer(minLength: 4)
+                        if status.day == recommendation.day {
+                            Text("Aan de beurt")
+                                .font(.caption2.weight(.heavy))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Theme.energy, in: Capsule())
+                                .foregroundStyle(.black)
+                        }
+                    }
+                }
+                .foregroundStyle(.primary)
+            }
+            Button {
+                start(name: String(localized: "Vrije training"), slugs: [])
+            } label: {
+                Label("Lege training", systemImage: "plus")
+            }
+        } header: {
+            Text("Schema")
+        } footer: {
+            let suggested = StarterPlan.recommend(daysPerWeek: profile.trainingDaysPerWeek)
+            Text("Bij \(profile.trainingDaysPerWeek) dagen per week past \(suggested.title) het best. Je kunt altijd wisselen.")
+        }
+        Section {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(Coach.muscleStatuses(finished: finished)) { status in
+                        Button {
+                            focus = FocusProposal(muscle: status.muscle, exercises: Coach.focusExercises(
+                                for: status.muscle, equipment: profile.equipment, in: context))
+                        } label: {
+                            MuscleChip(status: status)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+        } header: {
+            Text("Herstel per spiergroep")
+        } footer: {
+            Text("Tik op een spiergroep voor een focus-training met vier oefeningen.")
+        }
+    }
+
+    private func start(name: String, slugs: [String]) {
+        router.presentedWorkout = WorkoutFactory.start(name: name, slugs: slugs, in: context)
     }
 }
 

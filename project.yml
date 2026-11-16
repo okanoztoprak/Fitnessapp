@@ -1,0 +1,40 @@
+name: PowerUp
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: nl
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  PowerCore:
+    path: Packages/PowerCore
+targets:
+  PowerUp:
+    type: application
+    platform: iOS
+    sources:
+      - PowerUp
+    dependencies:
+      - package: PowerCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.powerup
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: POWER UP
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.healthcare-fitness
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_EMIT_LOC_STRINGS: YES
+schemes:
+  PowerUp:
+    build:
+      targets:
+        PowerUp: all
+    run:
+      config: Debug

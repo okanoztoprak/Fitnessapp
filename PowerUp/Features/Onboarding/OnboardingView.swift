@@ -97,19 +97,20 @@ struct OnboardingView: View {
             .toolbar {
                 if model.step > 0 {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("Terug") { withAnimation { model.step -= 1 } }
+                        Button("Terug") { model.step -= 1 }
                     }
                 }
             }
             .safeAreaInset(edge: .bottom) {
                 VStack(spacing: 10) {
                     EnergyBar(fraction: Double(model.step + 1) / Double(OnboardingModel.lastStep + 1))
+                        .animation(.snappy, value: model.step)
                     Button {
                         hideKeyboard()
                         if model.step == OnboardingModel.lastStep {
                             model.finish(in: context)
                         } else {
-                            withAnimation { model.step += 1 }
+                            model.step += 1
                         }
                     } label: {
                         if model.step == OnboardingModel.lastStep {

@@ -46,7 +46,11 @@ struct AuraView: View {
                 .scaleEffect(pulsing ? 1.08 : 0.94)
                 .blur(radius: 14)
         }
-        .clipped()
+        // Zachte uitloop naar de randen; een harde clip geeft een zichtbare rechthoek.
+        .mask {
+            EllipticalGradient(stops: [.init(color: .black, location: 0.55), .init(color: .clear, location: 1)],
+                               center: .center, startRadiusFraction: 0, endRadiusFraction: 0.5)
+        }
         .accessibilityHidden(true)
         .onAppear {
             guard !reduceMotion else { return }

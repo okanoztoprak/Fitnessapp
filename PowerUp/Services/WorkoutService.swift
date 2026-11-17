@@ -56,28 +56,51 @@ struct E1RMPoint: Identifiable {
 
 @MainActor
 enum WorkoutFactory {
-    /// Start een training. Sets worden vooringevuld met de vorige prestatie.
-    static func start(name: String, slugs: [String] = [], in context: ModelContext) -> Workout {
+    /// Start een training. Sets worden vooringevuld met de vorige prestatie; in een programma bepaalt
+    /// de week het aantal sets, en in een deload gaat het gewicht naar 90%.
+    static func start(name: String, slugs: [String] = [], in context: ModelContext,
+                      training: TrainingContext = .free, units: UnitFormatter = UnitFormatter(metric: true)) -> Workout {
         let workout = Workout(name: name)
+        workout.programID = training.programID
+        workout.programWeek = training.programID == nil ? nil : training.plan?.week
         context.insert(workout)
         let all = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
         let bySlug = Dictionary(all.map { ($0.slug, $0) }, uniquingKeysWith: { first, _ in first })
         for slug in slugs {
             guard let exercise = bySlug[slug] else { continue }
-            add(exercise, to: workout, in: context)
+            let item = WorkoutExercise(order: (workout.exercises ?? []).count, exercise: exercise)
+            context.insert(item)
+            item.workout = workout
+            fillSets(of: item, exercise: exercise, workout: workout, in: context, training: training, units: units)
         }
         return workout
     }
 
-    static func add(_ exercise: Exercise, to workout: Workout, in context: ModelContext) {
+    static func add(_ exercise: Exercise, to workout: Workout, in context: ModelContext,
+                    training: TrainingContext = .free) {
         let item = WorkoutExercise(order: (workout.exercises ?? []).count, exercise: exercise)
         context.insert(item)
         item.workout = workout
+        fillSets(of: item, exercise: exercise, workout: workout, in: context, training: training)
+    }
+
+    /// Vult een oefening met sets op basis van de vorige keer en de regels van de week.
+    static func fillSets(of item: WorkoutExercise, exercise: Exercise, workout: Workout, in context: ModelContext,
+                         training: TrainingContext, units: UnitFormatter = UnitFormatter(metric: true)) {
         let previous = History.lastSets(for: exercise, before: workout)
-        let count = exercise.isCardio ? 1 : max(previous.count, 3)
+        let count: Int = if exercise.isCardio {
+            1
+        } else if let plan = training.plan {
+            Mesocycle.sets(plan: plan)
+        } else {
+            max(previous.count, 3)
+        }
+        let increment = Coach.increment(for: exercise, units: units)
         for index in 0..<count {
             let source = index < previous.count ? previous[index] : previous.last
-            let set = SetEntry(order: index, weightKg: source?.weightKg ?? 0, reps: source?.reps ?? 0)
+            var weight = source?.weightKg ?? 0
+            if training.isDeload { weight = DeloadAdvisor.deloadWeight(weight, increment: increment) }
+            let set = SetEntry(order: index, weightKg: weight, reps: source?.reps ?? 0)
             context.insert(set)
             set.workoutExercise = item
         }

@@ -12,6 +12,12 @@ struct ActiveWorkoutView: View {
     @State private var showSummary = false
     @State private var plateTarget: PlateTarget?
     @State private var toast: ToastInfo?
+    @State private var swapItem: WorkoutExercise?
+    @Query private var programs: [TrainingProgram]
+
+    private var training: TrainingContext {
+        ProgramCoach.context(for: workout, programs: programs, profile: profile)
+    }
 
     struct PlateTarget: Identifiable {
         let id = UUID()
@@ -40,11 +46,22 @@ struct ActiveWorkoutView: View {
                     LiveStats(workout: workout, units: profile.units)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                    if let plan = training.plan {
+                        Label(training.programID == nil ? String(localized: "Deloadweek") : ProgramCoach.weekLine(plan),
+                              systemImage: plan.isDeload ? "moon.fill" : "calendar")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(plan.isDeload ? Theme.cool : Theme.accentText)
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 0, trailing: 4))
+                    }
                 }
                 ForEach(workout.sortedExercises) { item in
-                    ExerciseSection(item: item, workout: workout, profile: profile,
+                    ExerciseSection(item: item, workout: workout, profile: profile, training: training,
                                     onComplete: { complete($0, in: item) },
-                                    onPlates: { plateTarget = PlateTarget(kg: $0) })
+                                    onPlates: { plateTarget = PlateTarget(kg: $0) },
+                                    onSwap: { swapItem = item })
                 }
                 Section {
                     Button {
@@ -90,7 +107,12 @@ struct ActiveWorkoutView: View {
             }
             .sheet(isPresented: $showPicker) {
                 ExercisePickerSheet(profile: profile) { exercise in
-                    WorkoutFactory.add(exercise, to: workout, in: context)
+                    WorkoutFactory.add(exercise, to: workout, in: context, training: training)
+                }
+            }
+            .sheet(item: $swapItem) { item in
+                SwapExerciseSheet(item: item, profile: profile) { replacement in
+                    swap(item, to: replacement)
                 }
             }
             .sheet(item: $plateTarget) { target in
@@ -185,6 +207,15 @@ struct ActiveWorkoutView: View {
         }
     }
 
+    /// Vervangt een oefening waarvan nog niets is afgevinkt; de sets komen van de vorige keer met de nieuwe.
+    private func swap(_ item: WorkoutExercise, to replacement: Exercise) {
+        for set in item.sets ?? [] { context.delete(set) }
+        item.exercise = replacement
+        WorkoutFactory.fillSets(of: item, exercise: replacement, workout: workout, in: context,
+                                training: training, units: profile.units)
+        Haptics.tap()
+    }
+
     private func finish() {
         hideKeyboard()
         router.restTimer.stop()
@@ -272,8 +303,10 @@ private struct ExerciseSection: View {
     @Bindable var item: WorkoutExercise
     let workout: Workout
     let profile: UserProfile
+    let training: TrainingContext
     let onComplete: (SetEntry) -> Void
     let onPlates: (Double) -> Void
+    let onSwap: () -> Void
     @Environment(\.modelContext) private var context
 
     private var isCardio: Bool { item.exercise?.isCardio ?? false }
@@ -295,7 +328,7 @@ private struct ExerciseSection: View {
         let previous = item.exercise.map { History.lastSets(for: $0, before: workout) } ?? []
         Section {
             if let exercise = item.exercise,
-               let target = Coach.target(for: exercise, before: workout, units: profile.units) {
+               let target = Coach.target(for: exercise, before: workout, units: profile.units, training: training) {
                 TargetRow(target: target, isApplied: isApplied(target.suggestion)) { apply(target.suggestion) }
             }
             ColumnHeader(isCardio: isCardio, unit: profile.units.weightUnit)
@@ -337,6 +370,9 @@ private struct ExerciseSection: View {
                         Button("Schijvencalculator", systemImage: "circle.circle") {
                             onPlates(item.sortedSets.first { !$0.isDone }?.weightKg ?? item.sortedSets.last?.weightKg ?? 0)
                         }
+                    }
+                    if !(item.sets ?? []).contains(where: \.isDone) {
+                        Button("Vervang oefening", systemImage: "arrow.triangle.2.circlepath", action: onSwap)
                     }
                     Button("Verwijder oefening", systemImage: "trash", role: .destructive) {
                         context.delete(item)
@@ -388,9 +424,17 @@ private struct TargetRow: View {
             Image(systemName: "scope")
                 .foregroundStyle(Theme.accentText)
                 .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("Doel vandaag: \(target.text)")
                     .font(.subheadline.weight(.bold))
+                if let rir = target.rir {
+                    Text("RIR \(rir)")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Theme.raised, in: Capsule())
+                        .accessibilityLabel("Nog \(rir) herhalingen in de tank")
+                }
                 Text(target.reason)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -603,5 +647,57 @@ struct PlateCalculatorSheet: View {
             }
         }
         .presentationDetents([.medium])
+    }
+}
+
+/// Andere oefeningen voor dezelfde spiergroep, bijvoorbeeld als een apparaat bezet is.
+struct SwapExerciseSheet: View {
+    let item: WorkoutExercise
+    let profile: UserProfile
+    let onPick: (Exercise) -> Void
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        let alternatives = item.exercise.map { ProgramCoach.alternatives(for: $0, equipment: profile.equipment, in: context) } ?? []
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(alternatives) { exercise in
+                        Button {
+                            onPick(exercise)
+                            dismiss()
+                        } label: {
+                            HStack {
+                                ExerciseRowLabel(exercise: exercise)
+                                Spacer()
+                                if let last = History.lastSets(for: exercise, before: nil).first {
+                                    Text(SetText.describe(last, isCardio: false, units: profile.units))
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .foregroundStyle(.primary)
+                        .listRowBackground(Theme.card)
+                    }
+                    if alternatives.isEmpty {
+                        Text("Geen andere oefeningen voor deze spiergroep met je materiaal.")
+                            .foregroundStyle(.secondary)
+                            .listRowBackground(Theme.card)
+                    }
+                } header: {
+                    Text("Zelfde spiergroep: \(item.exercise?.primaryMuscle.title ?? "")")
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
+            .navigationTitle("Vervang \(item.exercise?.name ?? "")")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Annuleer") { dismiss() } }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }

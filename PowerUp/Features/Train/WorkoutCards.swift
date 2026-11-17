@@ -21,6 +21,13 @@ struct NextWorkoutCard: View {
             }
             Text(Coach.headline(recommendation))
                 .font(.title.weight(.bold))
+            if let plan = recommendation.training.plan, !rest {
+                Label(recommendation.training.programID == nil ? String(localized: "Deloadweek")
+                      : ProgramCoach.weekLine(plan),
+                      systemImage: plan.isDeload ? "moon.fill" : "calendar")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(plan.isDeload ? Theme.cool : Theme.accentText)
+            }
             Text(Coach.explanation(recommendation))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -52,7 +59,10 @@ struct NextWorkoutCard: View {
     }
 
     private func open(_ day: TemplateDay) {
-        router.proposal = Coach.proposal(for: day, caption: Coach.explanation(recommendation), in: context)
+        let caption = recommendation.training.plan.map {
+            ProgramCoach.weekExplanation($0, goal: recommendation.training.goal ?? .hypertrophy)
+        } ?? Coach.explanation(recommendation)
+        router.proposal = Coach.proposal(for: day, caption: caption, in: context, training: recommendation.training)
     }
 
     private func uniqueMuscles(_ exercises: [Exercise]) -> [MuscleGroup] {
@@ -168,7 +178,8 @@ struct WorkoutPreviewSheet: View {
                                         .font(.footnote).foregroundStyle(.secondary)
                                 }
                                 Spacer(minLength: 8)
-                                if let target = Coach.target(for: exercise, before: nil, units: profile.units) {
+                                if let target = Coach.target(for: exercise, before: nil, units: profile.units,
+                                                             training: proposal.training) {
                                     VStack(alignment: .trailing, spacing: 2) {
                                         Text(target.text)
                                             .font(.footnote.weight(.bold))

@@ -38,6 +38,8 @@ final class UserProfile {
     /// Slaap van de laatste nacht uit Apple Health, met de dag waarop die gemeten is.
     var lastSleepHours: Double?
     var lastSleepDate: Date?
+    /// Losse deloadweek buiten een programma, tot deze datum.
+    var deloadUntil: Date?
 
     init() {}
 
@@ -74,6 +76,8 @@ final class UserProfile {
     }
 
     /// Slaap van afgelopen nacht, alleen als die vandaag is opgehaald.
+    var isDeloading: Bool { (deloadUntil ?? .distantPast) > Date() }
+
     var sleepHoursToday: Double? {
         guard let date = lastSleepDate, Calendar.current.isDateInToday(date) else { return nil }
         return lastSleepHours
@@ -143,6 +147,9 @@ final class Workout {
     var startedAt: Date = Date()
     var endedAt: Date?
     var notes: String = ""
+    /// Gezet als de training bij een programma hoort.
+    var programID: String?
+    var programWeek: Int?
     @Relationship(deleteRule: .cascade, inverse: \WorkoutExercise.workout)
     var exercises: [WorkoutExercise]?
 
@@ -272,6 +279,32 @@ final class NutritionEntry {
     var isManual: Bool { sourceRaw == NutritionEntry.manual }
 }
 
+/// Een blok van een paar weken met een vast schema, oplopende inspanning en een deload aan het eind.
+@Model
+final class TrainingProgram {
+    var programID: String = UUID().uuidString
+    var goalRaw: String = ProgramGoal.hypertrophy.rawValue
+    var planRaw: String = StarterPlan.fullBody.rawValue
+    var equipmentRaw: String = Equipment.gym.rawValue
+    var daysPerWeek: Int = 3
+    var totalWeeks: Int = 5
+    var startedAt: Date = Date()
+    var endedAt: Date?
+
+    init(goal: ProgramGoal, plan: StarterPlan, equipment: Equipment, daysPerWeek: Int, totalWeeks: Int) {
+        self.goalRaw = goal.rawValue
+        self.planRaw = plan.rawValue
+        self.equipmentRaw = equipment.rawValue
+        self.daysPerWeek = daysPerWeek
+        self.totalWeeks = totalWeeks
+    }
+
+    var goal: ProgramGoal { ProgramGoal(rawValue: goalRaw) ?? .hypertrophy }
+    var plan: StarterPlan { StarterPlan(rawValue: planRaw) ?? .fullBody }
+    var equipment: Equipment { Equipment(rawValue: equipmentRaw) ?? .gym }
+    var isActive: Bool { endedAt == nil }
+}
+
 /// Resultaat van een wekelijkse check-in.
 @Model
 final class CheckIn {
@@ -301,6 +334,6 @@ final class CheckIn {
 enum AppSchema {
     static var models: [any PersistentModel.Type] { [
         UserProfile.self, Exercise.self, Workout.self, WorkoutExercise.self, SetEntry.self,
-        BodyWeightEntry.self, PersonalRecord.self, NutritionEntry.self, CheckIn.self,
+        BodyWeightEntry.self, PersonalRecord.self, NutritionEntry.self, CheckIn.self, TrainingProgram.self,
     ] }
 }

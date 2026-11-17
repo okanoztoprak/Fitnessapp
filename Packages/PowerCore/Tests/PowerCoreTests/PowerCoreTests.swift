@@ -584,3 +584,89 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
     }
 }
 
+
+@Suite struct MesocycleTests {
+    @Test func fiveWeekHypertrophyBlock() {
+        let weeks = (1...5).map { Mesocycle.plan(week: $0, totalWeeks: 5, goal: .hypertrophy) }
+        #expect(weeks.map(\.targetRIR) == [3, 2, 2, 1, 4])
+        #expect(weeks.map { Mesocycle.sets(plan: $0) } == [3, 4, 4, 5, 2])
+        #expect(weeks.map(\.isDeload) == [false, false, false, false, true])
+        #expect(weeks.last?.loadFactor == 0.9)
+    }
+
+    @Test func strengthKeepsTheSetsFlat() {
+        let weeks = (1...4).map { Mesocycle.plan(week: $0, totalWeeks: 4, goal: .strength) }
+        #expect(weeks.map { Mesocycle.sets(plan: $0) } == [3, 3, 3, 2])
+        #expect(weeks.map(\.targetRIR) == [3, 2, 1, 4])
+    }
+
+    @Test func weeksAreClamped() {
+        #expect(Mesocycle.plan(week: 0, totalWeeks: 4, goal: .strength).week == 1)
+        #expect(Mesocycle.plan(week: 9, totalWeeks: 4, goal: .strength).isDeload)
+    }
+
+    @Test func repRanges() {
+        #expect(Mesocycle.repRange(goal: .strength, compound: true) == 3...6)
+        #expect(Mesocycle.repRange(goal: .hypertrophy, compound: false) == 10...15)
+    }
+
+    @Test func positionFollowsCompletedSessions() {
+        let start = Mesocycle.position(completedSessions: 0, daysPerWeek: 3, rotationLength: 2, totalWeeks: 5)
+        #expect(start == ProgramPosition(week: 1, sessionInWeek: 0, dayIndex: 0, isFinished: false))
+        // Na vier trainingen: week 2, tweede training van de week, A/B-rotatie weer bij A.
+        let later = Mesocycle.position(completedSessions: 4, daysPerWeek: 3, rotationLength: 2, totalWeeks: 5)
+        #expect(later == ProgramPosition(week: 2, sessionInWeek: 1, dayIndex: 0, isFinished: false))
+        let done = Mesocycle.position(completedSessions: 15, daysPerWeek: 3, rotationLength: 2, totalWeeks: 5)
+        #expect(done.isFinished)
+        #expect(done.week == 5)
+    }
+}
+
+@Suite struct VolumeGuideTests {
+    @Test func targetWithoutProgramIsTheProductiveRange() {
+        #expect(VolumeGuide.target(VolumeGuide.landmarks(size: .large), plan: nil) == 12...18)
+    }
+
+    @Test func targetGrowsThroughTheBlock() {
+        let large = VolumeGuide.landmarks(size: .large)
+        let first = VolumeGuide.target(large, plan: Mesocycle.plan(week: 1, totalWeeks: 5, goal: .hypertrophy))
+        let last = VolumeGuide.target(large, plan: Mesocycle.plan(week: 4, totalWeeks: 5, goal: .hypertrophy))
+        let deload = VolumeGuide.target(large, plan: Mesocycle.plan(week: 5, totalWeeks: 5, goal: .hypertrophy))
+        #expect(first == 8...12)
+        #expect(last == 12...18)
+        #expect(deload == 4...8)
+    }
+
+    @Test func status() {
+        let small = VolumeGuide.landmarks(size: .small)
+        #expect(VolumeGuide.status(sets: 3, landmarks: small) == .low)
+        #expect(VolumeGuide.status(sets: 10, landmarks: small) == .productive)
+        #expect(VolumeGuide.status(sets: 20, landmarks: small) == .high)
+    }
+}
+
+@Suite struct PlateauAndDeloadTests {
+    @Test func plateauNeedsEnoughSessions() {
+        #expect(!PlateauDetector.isPlateau([100, 100, 100]))
+    }
+
+    @Test func noProgressForThreeSessionsIsAPlateau() {
+        #expect(PlateauDetector.isPlateau([95, 100, 99, 100, 100.3]))
+        #expect(!PlateauDetector.isPlateau([95, 100, 99, 100, 102]))
+    }
+
+    @Test func deloadReasons() {
+        #expect(DeloadAdvisor.advise(weeksInARow: 2, stalledLifts: 0, trackedLifts: 3, loadRatio: 1.6)?.reason == .highLoad)
+        #expect(DeloadAdvisor.advise(weeksInARow: 2, stalledLifts: 2, trackedLifts: 4, loadRatio: 1)?.reason == .stalled)
+        #expect(DeloadAdvisor.advise(weeksInARow: 8, stalledLifts: 0, trackedLifts: 4, loadRatio: 1)?.reason == .longBlock)
+        #expect(DeloadAdvisor.advise(weeksInARow: 3, stalledLifts: 1, trackedLifts: 4, loadRatio: 1.1) == nil)
+        // Eén oefening die stilstaat is nog geen reden.
+        #expect(DeloadAdvisor.advise(weeksInARow: 3, stalledLifts: 1, trackedLifts: 1, loadRatio: nil) == nil)
+    }
+
+    @Test func deloadWeightRoundsToTheIncrement() {
+        #expect(DeloadAdvisor.deloadWeight(100, increment: 2.5) == 90)
+        #expect(DeloadAdvisor.deloadWeight(62.5, increment: 2.5) == 57.5)
+        #expect(DeloadAdvisor.deloadWeight(0, increment: 2.5) == 0)
+    }
+}

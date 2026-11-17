@@ -204,6 +204,12 @@ struct ExerciseDetailView: View {
                     if let best = series.map(\.value).max() {
                         LabeledContent("Beste e1RM", value: profile.units.weightText(best))
                     }
+                    if PlateauDetector.isPlateau(series.map(\.value)) {
+                        Label("Drie trainingen zonder vooruitgang. Probeer een ander rep-bereik, vervang de oefening tijdelijk of neem een deload.",
+                              systemImage: "chart.line.flattrend.xyaxis")
+                            .font(.footnote)
+                            .foregroundStyle(Theme.warn)
+                    }
                 }
             }
             if !records.isEmpty {

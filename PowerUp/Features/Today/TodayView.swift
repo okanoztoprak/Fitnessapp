@@ -10,6 +10,7 @@ struct TodayView: View {
     @Query(sort: \BodyWeightEntry.date) private var weights: [BodyWeightEntry]
     @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
     @Query(sort: \NutritionEntry.date) private var nutrition: [NutritionEntry]
+    @Query private var programs: [TrainingProgram]
     @State private var showWeightSheet = false
     @State private var showReadiness = false
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -29,7 +30,9 @@ struct TodayView: View {
                     if let active {
                         ActiveWorkoutCard(workout: active)
                     } else {
-                        NextWorkoutCard(recommendation: Coach.recommendation(profile: profile, finished: finished),
+                        let status = ProgramStatus.active(programs).map { ProgramStatus(program: $0, finished: finished) }
+                        NextWorkoutCard(recommendation: Coach.recommendation(profile: profile, finished: finished,
+                                                                             program: status),
                                         profile: profile)
                         quickActions
                     }
@@ -166,10 +169,13 @@ struct TodayView: View {
     private var quickActions: some View {
         HStack(spacing: 10) {
             QuickAction(title: String(localized: "Slimme training"), symbol: "sparkles") {
-                router.proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+                var proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+                proposal.training = ProgramCoach.freeContext(profile: profile)
+                router.proposal = proposal
             }
             QuickAction(title: String(localized: "Lege training"), symbol: "plus") {
-                router.presentedWorkout = WorkoutFactory.start(name: String(localized: "Vrije training"), in: context)
+                router.presentedWorkout = WorkoutFactory.start(name: String(localized: "Vrije training"), in: context,
+                                                               training: ProgramCoach.freeContext(profile: profile))
             }
             QuickAction(title: String(localized: "Weeg in"), symbol: "scalemass.fill") {
                 showWeightSheet = true

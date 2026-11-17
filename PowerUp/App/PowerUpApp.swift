@@ -117,6 +117,6 @@ struct MainTabView: View {
         guard let proposal = router.pendingStart else { return }
         router.pendingStart = nil
         router.presentedWorkout = WorkoutFactory.start(name: proposal.title, slugs: proposal.exercises.map(\.slug),
-                                                       in: context)
+                                                       in: context, training: proposal.training, units: profile.units)
     }
 }

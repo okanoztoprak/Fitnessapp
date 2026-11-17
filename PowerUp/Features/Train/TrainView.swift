@@ -7,6 +7,7 @@ struct TrainView: View {
     @Environment(\.modelContext) private var context
     @Environment(AppRouter.self) private var router
     @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
+    @Query private var programs: [TrainingProgram]
 
     private var workouts: [Workout] {
         allWorkouts.filter { $0.persistentModelID != router.discardedWorkoutID }
@@ -20,13 +21,28 @@ struct TrainView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    let recommendation = Coach.recommendation(profile: profile, finished: finished)
+                    let status = ProgramStatus.active(programs).map { ProgramStatus(program: $0, finished: finished) }
+                    let recommendation = Coach.recommendation(profile: profile, finished: finished, program: status)
                     if let active {
                         ActiveWorkoutCard(workout: active)
                     } else {
                         NextWorkoutCard(recommendation: recommendation, profile: profile)
                     }
-                    programSection(recommended: recommendation.day)
+                    if let status {
+                        ProgramCard(status: status)
+                        quickStartButtons
+                    } else {
+                        StartProgramCard(profile: profile)
+                        programSection(recommended: recommendation.day)
+                    }
+                    let plateau = ProgramCoach.plateaus(finished: finished, formula: profile.e1rmFormula)
+                    CoachNotesCard(profile: profile,
+                                   advice: ProgramCoach.deloadAdvice(finished: finished, profile: profile,
+                                                                     hasProgram: status != nil),
+                                   stalled: plateau.stalled)
+                    WeeklyVolumeCard(volumes: ProgramCoach.weeklyVolume(finished: finished, plan: status?.weekPlan)) { muscle in
+                        openFocus(muscle)
+                    }
                     recoverySection
                     librarySection
                     historySection
@@ -55,7 +71,8 @@ struct TrainView: View {
                 ForEach(Coach.dayStatuses(plan: plan, profile: profile, finished: finished)) { status in
                     Button {
                         router.proposal = Coach.proposal(
-                            for: status.day, caption: Coach.relativeDay(status.lastPerformed), in: context)
+                            for: status.day, caption: Coach.relativeDay(status.lastPerformed), in: context,
+                            training: ProgramCoach.freeContext(profile: profile))
                     } label: {
                         DayCard(status: status, isNext: status.day == recommended)
                     }
@@ -64,15 +81,22 @@ struct TrainView: View {
             }
         }
         .scrollClipDisabled()
+        quickStartButtons
+    }
+
+    private var quickStartButtons: some View {
         HStack(spacing: 10) {
             Button {
-                router.proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+                var proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+                proposal.training = ProgramCoach.freeContext(profile: profile)
+                router.proposal = proposal
             } label: {
                 Label("Slimme training", systemImage: "sparkles")
             }
             .buttonStyle(SoftButtonStyle())
             Button {
-                router.presentedWorkout = WorkoutFactory.start(name: String(localized: "Vrije training"), in: context)
+                router.presentedWorkout = WorkoutFactory.start(name: String(localized: "Vrije training"), in: context,
+                                                               training: ProgramCoach.freeContext(profile: profile))
             } label: {
                 Label("Lege training", systemImage: "plus")
             }
@@ -80,6 +104,12 @@ struct TrainView: View {
         }
         .disabled(active != nil)
         .opacity(active != nil ? 0.4 : 1)
+    }
+
+    private func openFocus(_ muscle: MuscleGroup) {
+        var proposal = Coach.focusProposal(for: muscle, equipment: profile.equipment, in: context)
+        proposal.training = ProgramCoach.freeContext(profile: profile)
+        router.proposal = proposal
     }
 
     // MARK: Herstel
@@ -91,7 +121,7 @@ struct TrainView: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: tileWidth), spacing: 10)], spacing: 10) {
             ForEach(Coach.muscleStatuses(finished: finished)) { status in
                 Button {
-                    router.proposal = Coach.focusProposal(for: status.muscle, equipment: profile.equipment, in: context)
+                    openFocus(status.muscle)
                 } label: {
                     MuscleTile(status: status)
                 }

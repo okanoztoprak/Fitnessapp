@@ -9,6 +9,7 @@ struct WorkoutProposal: Identifiable {
     let title: String
     let caption: String
     let exercises: [Exercise]
+    var training: TrainingContext = .free
 }
 
 /// Trainingsaanbevelingen. De regels staan in PowerCore; dit verzamelt de data en maakt de teksten.
@@ -24,6 +25,7 @@ enum Coach {
         let advice: SessionAdvice
         let day: TemplateDay?
         let plannedPerWeek: Int
+        var training: TrainingContext = .free
 
         var isRest: Bool { advice.kind == .rest }
     }
@@ -48,13 +50,17 @@ enum Coach {
         }
     }
 
-    static func recommendation(profile: UserProfile, finished: [Workout], now: Date = Date()) -> Recommendation {
-        let advice = SessionAdvisor.advise(workoutDays: finished.map(\.startedAt),
-                                           plannedPerWeek: profile.trainingDaysPerWeek, today: now)
+    static func recommendation(profile: UserProfile, finished: [Workout], program: ProgramStatus? = nil,
+                               now: Date = Date()) -> Recommendation {
+        let perWeek = program?.program.daysPerWeek ?? profile.trainingDaysPerWeek
+        let advice = SessionAdvisor.advise(workoutDays: finished.map(\.startedAt), plannedPerWeek: perWeek, today: now)
+        if let program, !program.position.isFinished {
+            return Recommendation(advice: advice, day: program.nextDay, plannedPerWeek: perWeek, training: program.context)
+        }
         let statuses = dayStatuses(plan: plan(for: profile), profile: profile, finished: finished)
         let index = SessionAdvisor.nextDayIndex(lastPerformed: statuses.map(\.lastPerformed))
-        return Recommendation(advice: advice, day: index.map { statuses[$0].day },
-                              plannedPerWeek: profile.trainingDaysPerWeek)
+        return Recommendation(advice: advice, day: index.map { statuses[$0].day }, plannedPerWeek: perWeek,
+                              training: ProgramCoach.freeContext(profile: profile))
     }
 
     static func headline(_ recommendation: Recommendation) -> String {
@@ -194,8 +200,10 @@ enum Coach {
         return slugs.compactMap { bySlug[$0] }
     }
 
-    static func proposal(for day: TemplateDay, caption: String, in context: ModelContext) -> WorkoutProposal {
-        WorkoutProposal(title: day.name, caption: caption, exercises: exercises(slugs: day.slugs, in: context))
+    static func proposal(for day: TemplateDay, caption: String, in context: ModelContext,
+                         training: TrainingContext = .free) -> WorkoutProposal {
+        WorkoutProposal(title: day.name, caption: caption, exercises: exercises(slugs: day.slugs, in: context),
+                        training: training)
     }
 
     static func focusProposal(for muscle: MuscleGroup, equipment: Equipment, in context: ModelContext) -> WorkoutProposal {
@@ -272,26 +280,46 @@ enum Coach {
         let suggestion: ProgressionSuggestion
         let text: String
         let reason: String
+        /// Herhalingen in de tank volgens het programma.
+        var rir: Int?
     }
 
-    static func target(for exercise: Exercise, before workout: Workout?, units: UnitFormatter) -> Target? {
+    static func repRange(for exercise: Exercise, goal: ProgramGoal?) -> ClosedRange<Int> {
+        if let goal { return Mesocycle.repRange(goal: goal, compound: ProgramCoach.isCompound(exercise)) }
+        return exercise.mainLift != nil ? 5...8 : (exercise.gearRaw == "bodyweight" ? 8...15 : 8...12)
+    }
+
+    static func target(for exercise: Exercise, before workout: Workout?, units: UnitFormatter,
+                       training: TrainingContext = .free) -> Target? {
         guard !exercise.isCardio else { return nil }
         let last = History.lastSets(for: exercise, before: workout)
             .map { SetPerformance(weight: $0.weightKg, reps: $0.reps) }
-        let range: ClosedRange<Int> = exercise.mainLift != nil ? 5...8
-            : (exercise.gearRaw == "bodyweight" ? 8...15 : 8...12)
-        guard let suggestion = ProgressionAdvisor.suggest(lastSets: last, repRange: range,
-                                                          increment: increment(for: exercise, units: units))
+        let range = repRange(for: exercise, goal: training.goal)
+        let step = increment(for: exercise, units: units)
+        if let plan = training.plan, plan.isDeload {
+            // Deload: lichter, onderkant van het bereik, ruim in de tank.
+            guard let top = last.map(\.weight).max() else { return nil }
+            let suggestion = ProgressionSuggestion(weight: DeloadAdvisor.deloadWeight(top, increment: step),
+                                                   reps: range.lowerBound, reason: .consolidate)
+            return Target(suggestion: suggestion, text: text(suggestion, units: units),
+                          reason: String(localized: "Deload: 90% van je gewicht en minder sets, zodat je herstelt."),
+                          rir: plan.targetRIR)
+        }
+        guard let suggestion = ProgressionAdvisor.suggest(lastSets: last, repRange: range, increment: step)
         else { return nil }
-        let text = suggestion.weight > 0
-            ? "\(units.weightText(suggestion.weight, digits: 2)) × \(suggestion.reps)"
-            : String(localized: "\(suggestion.reps) reps")
         let reason: String = switch suggestion.reason {
         case .addWeight: String(localized: "Alle sets haalden \(range.upperBound) reps. Tijd voor meer gewicht.")
         case .addReps: String(localized: "Zelfde gewicht, één rep erbij.")
         case .consolidate: String(localized: "Vorige keer zwaar. Haal eerst \(range.lowerBound) reps op dit gewicht.")
         }
-        return Target(suggestion: suggestion, text: text, reason: reason)
+        return Target(suggestion: suggestion, text: text(suggestion, units: units), reason: reason,
+                      rir: training.plan?.targetRIR)
+    }
+
+    private static func text(_ suggestion: ProgressionSuggestion, units: UnitFormatter) -> String {
+        suggestion.weight > 0
+            ? "\(units.weightText(suggestion.weight, digits: 2)) × \(suggestion.reps)"
+            : String(localized: "\(suggestion.reps) reps")
     }
 
     /// Kleinste zinvolle stap in kg, afgestemd op materiaal en eenheden.

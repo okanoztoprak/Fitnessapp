@@ -127,11 +127,11 @@ enum Coach {
         fraction >= 0.8 ? Theme.good : (fraction >= 0.4 ? Theme.warn : Theme.bad)
     }
 
-    static func readiness(finished: [Workout], now: Date = Date()) -> Readiness {
-        guard !finished.isEmpty else { return Readiness(score: 100) }
-        return ReadinessCalculator.readiness(
-            muscleRecovery: muscleStatuses(finished: finished, now: now).map(\.recovery),
-            loadRatio: Insights.loadRatio(finished: finished, now: now))
+    static func readiness(finished: [Workout], sleepHours: Double? = nil, now: Date = Date()) -> Readiness {
+        ReadinessCalculator.readiness(
+            muscleRecovery: finished.isEmpty ? [] : muscleStatuses(finished: finished, now: now).map(\.recovery),
+            loadRatio: Insights.loadRatio(finished: finished, now: now),
+            sleepHours: sleepHours)
     }
 
     static func color(for band: Readiness.Band) -> Color {

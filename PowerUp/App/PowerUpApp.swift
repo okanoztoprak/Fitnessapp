@@ -72,6 +72,7 @@ struct MainTabView: View {
     let profile: UserProfile
     @Environment(\.modelContext) private var context
     @Environment(AppRouter.self) private var router
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         @Bindable var router = router
@@ -98,6 +99,17 @@ struct MainTabView: View {
         .fullScreenCover(item: $router.presentedWorkout) { workout in
             ActiveWorkoutView(workout: workout, profile: profile)
         }
+        .task(id: scenePhase) {
+            guard scenePhase == .active else { return }
+            await syncHealthIfStale()
+        }
+    }
+
+    /// Haalt Apple Health op bij het openen van de app, hooguit eens per kwartier.
+    private func syncHealthIfStale() async {
+        guard profile.healthSyncEnabled else { return }
+        if let last = profile.lastHealthSync, Date().timeIntervalSince(last) < 15 * 60 { return }
+        _ = try? await HealthSync.run(profile: profile, context: context)
     }
 
     /// Start pas als de sheet weg is; twee presentaties tegelijk botsen.

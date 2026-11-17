@@ -53,15 +53,25 @@ public struct Readiness: Sendable, Equatable {
 
 public enum ReadinessCalculator {
     /// Eén dagscore uit het gemiddelde spierherstel, met aftrek als de belasting deze week
-    /// duidelijk boven het eigen gemiddelde ligt. Zonder data is de score 100.
-    public static func readiness(muscleRecovery: [Double], loadRatio: Double?) -> Readiness {
-        guard !muscleRecovery.isEmpty else { return Readiness(score: 100) }
-        let mean = muscleRecovery.reduce(0, +) / Double(muscleRecovery.count)
-        var score = mean * 100
+    /// duidelijk boven het eigen gemiddelde ligt en bij minder dan 7 uur slaap.
+    /// Zonder trainingsdata telt alleen de slaap.
+    public static func readiness(muscleRecovery: [Double], loadRatio: Double?,
+                                 sleepHours: Double? = nil) -> Readiness {
+        var score = 100.0
+        if !muscleRecovery.isEmpty {
+            score = muscleRecovery.reduce(0, +) / Double(muscleRecovery.count) * 100
+        }
         if let loadRatio, loadRatio > 1.3 {
             score -= min(25, (loadRatio - 1.3) * 50)
         }
+        score -= sleepPenalty(hours: sleepHours)
         return Readiness(score: Int(score.rounded()))
+    }
+
+    /// 6 punten aftrek per uur onder de 7 uur, hooguit 20.
+    public static func sleepPenalty(hours: Double?) -> Double {
+        guard let hours, hours > 0, hours < 7 else { return 0 }
+        return min(20, (7 - hours) * 6)
     }
 }
 

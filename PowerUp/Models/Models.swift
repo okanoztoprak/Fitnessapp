@@ -26,6 +26,18 @@ final class UserProfile {
     var preferredPlanRaw: String?
     /// Weergave: system, light of dark.
     var appearanceRaw: String = Appearance.dark.rawValue
+    /// Caloriedoel uit de laatste check-in; `nil` volgt de formule.
+    var calorieTargetKcal: Double?
+    /// Eigen eiwitdoel in g per kg; `nil` volgt de standaard voor het doel.
+    var proteinPerKg: Double?
+    /// Deel van de calorieën uit vet.
+    var fatShare: Double = 0.25
+    /// Voeding, gewicht en slaap uit Apple Health halen.
+    var healthSyncEnabled: Bool = false
+    var lastHealthSync: Date?
+    /// Slaap van de laatste nacht uit Apple Health, met de dag waarop die gemeten is.
+    var lastSleepHours: Double?
+    var lastSleepDate: Date?
 
     init() {}
 
@@ -59,6 +71,12 @@ final class UserProfile {
     }
     var age: Int {
         Calendar.current.dateComponents([.year], from: birthDate, to: Date()).year ?? 30
+    }
+
+    /// Slaap van afgelopen nacht, alleen als die vandaag is opgehaald.
+    var sleepHoursToday: Double? {
+        guard let date = lastSleepDate, Calendar.current.isDateInToday(date) else { return nil }
+        return lastSleepHours
     }
 
     func energyInput(weightKg: Double) -> EnergyInput {
@@ -194,6 +212,8 @@ final class SetEntry {
 final class BodyWeightEntry {
     var date: Date = Date()
     var kg: Double = 0
+    /// Gezet als de weging uit Apple Health komt, zodat hij niet dubbel wordt ingelezen.
+    var healthSampleID: String?
 
     init(date: Date = Date(), kg: Double) {
         self.date = date
@@ -222,9 +242,65 @@ final class PersonalRecord {
     var kind: PRKind { PRKind(rawValue: kindRaw) ?? .weight }
 }
 
+/// Inname: een dagtotaal uit een bron (Apple Health) of een snelle handmatige invoer.
+@Model
+final class NutritionEntry {
+    /// Begin van de dag.
+    var date: Date = Date()
+    var kcal: Double = 0
+    var proteinG: Double = 0
+    var carbsG: Double = 0
+    var fatG: Double = 0
+    /// "manual" of de `id` van een `NutritionSource`.
+    var sourceRaw: String = NutritionEntry.manual
+    var note: String = ""
+    var createdAt: Date = Date()
+
+    static let manual = "manual"
+
+    init(date: Date, kcal: Double, proteinG: Double, carbsG: Double, fatG: Double,
+         source: String = NutritionEntry.manual, note: String = "") {
+        self.date = Calendar.current.startOfDay(for: date)
+        self.kcal = kcal
+        self.proteinG = proteinG
+        self.carbsG = carbsG
+        self.fatG = fatG
+        self.sourceRaw = source
+        self.note = note
+    }
+
+    var isManual: Bool { sourceRaw == NutritionEntry.manual }
+}
+
+/// Resultaat van een wekelijkse check-in.
+@Model
+final class CheckIn {
+    var date: Date = Date()
+    var expenditureKcal: Double = 0
+    var confidence: Double = 0
+    var averageIntakeKcal: Double = 0
+    var trendRatePerWeek: Double = 0
+    var loggedDays: Int = 0
+    var previousTargetKcal: Double = 0
+    var proposedTargetKcal: Double = 0
+    var accepted: Bool = false
+
+    init(date: Date = Date(), estimate: ExpenditureEstimate, proposal: CheckInProposal, accepted: Bool) {
+        self.date = date
+        self.expenditureKcal = estimate.kcal
+        self.confidence = estimate.confidence
+        self.averageIntakeKcal = estimate.averageIntake ?? 0
+        self.trendRatePerWeek = estimate.trendRatePerWeek ?? 0
+        self.loggedDays = estimate.loggedDays
+        self.previousTargetKcal = proposal.previousKcal
+        self.proposedTargetKcal = proposal.targetKcal
+        self.accepted = accepted
+    }
+}
+
 enum AppSchema {
     static var models: [any PersistentModel.Type] { [
         UserProfile.self, Exercise.self, Workout.self, WorkoutExercise.self, SetEntry.self,
-        BodyWeightEntry.self, PersonalRecord.self,
+        BodyWeightEntry.self, PersonalRecord.self, NutritionEntry.self, CheckIn.self,
     ] }
 }

@@ -15,6 +15,10 @@ Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en vo
 | Records | Melding met confetti bij een nieuw record, vanaf de tweede sessie | Hevy, Strong |
 | Samenvatting | Na afloop: cijfers, records, vergelijking, deelbare kaart | Hevy |
 | Voortgang | Consistentieraster, gewichtstrend (EMA), volume per week, spierbalans | MacroFactor, Hevy |
+| Voeding | Wat je vandaag nog kunt eten, macro's per dag, week in één grafiek, snel toevoegen | MacroFactor, MyFitnessPal |
+| Adaptief verbruik | Verbruik uit inname en trendgewicht, met zekerheid; tikfouten in het gewicht tellen niet mee | MacroFactor |
+| Wekelijkse check-in | Nieuw caloriedoel op basis van je echte verbruik, in kleine stappen en nooit onder je rustverbranding | MacroFactor |
+| Apple Health | Voeding (ook uit MyFitnessPal), weegschaal en slaap; slaap telt mee in de gereedheid | WHOOP, MacroFactor |
 | Profiel | Krachtniveau per lift ten opzichte van lichaamsgewicht, mijlpalen | Strength Level, Hevy |
 
 ## Bouwen
@@ -27,6 +31,16 @@ open PowerUp.xcodeproj
 
 Kies een iPhone-simulator en druk op Run. Het Xcode-project wordt gegenereerd uit `project.yml` en staat niet in git.
 
+Apple Health testen in de simulator: de app heeft de HealthKit-entitlement nodig, dus bouw met een lokale handtekening in plaats van `CODE_SIGNING_ALLOWED=NO`:
+
+```sh
+xcodebuild build -project PowerUp.xcodeproj -scheme PowerUp \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
+  -derivedDataPath build-signed CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=
+```
+
+In testversies staat onder Voeding → Apple Health een knop die drie weken voorbeeldvoeding, -gewicht en -slaap in Health zet. Voor een echt toestel zijn een eigen bundle-ID en een ontwikkelaarsteam nodig.
+
 Tests van de rekenlaag:
 
 ```sh
@@ -37,17 +51,18 @@ swift test --package-path Packages/PowerCore
 
 | Pad | Inhoud |
 |---|---|
-| `Packages/PowerCore` | Pure berekeningen met unit-tests: TDEE/BMR, 1RM, gewichtstrend, PR-detectie, progressie, trainen-of-rusten, spierherstel, gereedheid, belasting, weekreeks, krachtniveau, schijvencalculator |
+| `Packages/PowerCore` | Pure berekeningen met unit-tests: TDEE/BMR, macro's, adaptief verbruik, wekelijkse check-in, slaap, 1RM, gewichtstrend, PR-detectie, progressie, trainen-of-rusten, spierherstel, gereedheid, belasting, weekreeks, krachtniveau, schijvencalculator |
 | `PowerUp/Models` | SwiftData-modellen |
-| `PowerUp/Services` | Oefenbibliotheek, startschema's, historie, aanbevelingen (`Coach`), statistieken (`Insights`), rusttimer |
+| `PowerUp/Services` | Oefenbibliotheek, startschema's, historie, aanbevelingen (`Coach`), statistieken (`Insights`), voedingsplan en sync (`NutritionPlan`, `HealthSync`), rusttimer |
+| `PowerUp/Services/Health` | `NutritionSource`-protocol en de Apple Health-koppeling |
 | `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
 | `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus onboarding en instellingen |
-| `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings` |
+| `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings` en `PowerUp/InfoPlist.xcstrings` |
 
 ## Fases
 
-1. **MVP** (deze stand): onboarding, trainingen loggen, oefenbibliotheek, aanbevelingen, gereedheid en herstel, records, samenvatting, voortgang, krachtniveau, gewichtstrend, TDEE-calculator
-2. Voeding: Apple Health/MyFitnessPal-sync, macrodoelen, adaptieve TDEE, wekelijkse check-in; slaap en hartslag tellen mee in de gereedheid
+1. **MVP**: onboarding, trainingen loggen, oefenbibliotheek, aanbevelingen, gereedheid en herstel, records, samenvatting, voortgang, krachtniveau, gewichtstrend, TDEE-calculator
+2. **Voeding** (deze stand): Apple Health/MyFitnessPal-sync achter `NutritionSource`, snel toevoegen, instelbare macrodoelen, adaptieve TDEE, wekelijkse check-in, gewicht en slaap uit Health (slaap telt mee in de gereedheid). Nog niet: hartslagvariabiliteit, een directe MyFitnessPal-koppeling zonder Health
 3. Coach: volledige programma's, deload, volume-doelen per spiergroep
 4. Motivatie: uitdagingen, wekelijkse terugblik, sociale functies
 5. Polish: widgets, Live Activities voor de rusttimer, Siri, CloudKit, Watch-app

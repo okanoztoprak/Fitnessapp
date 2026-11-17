@@ -9,6 +9,7 @@ struct TodayView: View {
     @Environment(AppRouter.self) private var router
     @Query(sort: \BodyWeightEntry.date) private var weights: [BodyWeightEntry]
     @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
+    @Query(sort: \NutritionEntry.date) private var nutrition: [NutritionEntry]
     @State private var showWeightSheet = false
     @State private var showReadiness = false
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -33,7 +34,7 @@ struct TodayView: View {
                         quickActions
                     }
                     weightCard
-                    if !profile.hideCalories { nutritionCard }
+                    nutritionCard
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 24)
@@ -41,7 +42,9 @@ struct TodayView: View {
             .screenBackground()
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showWeightSheet) { LogWeightSheet(profile: profile) }
-            .sheet(isPresented: $showReadiness) { ReadinessSheet(finished: finished) }
+            .sheet(isPresented: $showReadiness) {
+                ReadinessSheet(finished: finished, sleepHours: profile.sleepHoursToday)
+            }
         }
     }
 
@@ -72,7 +75,8 @@ struct TodayView: View {
     // MARK: Gereedheid
 
     private var readinessCard: some View {
-        let readiness = Coach.readiness(finished: finished)
+        let sleep = profile.sleepHoursToday
+        let readiness = Coach.readiness(finished: finished, sleepHours: sleep)
         let hasHistory = !finished.isEmpty
         let color = Coach.color(for: readiness.band)
         let load = TrainingLoad.status(ratio: Insights.loadRatio(finished: finished))
@@ -125,8 +129,13 @@ struct TodayView: View {
                     miniStat(value: Coach.loadText(load), label: String(localized: "Belasting"),
                              symbol: "waveform.path.ecg", tint: load == .high ? Theme.bad : Theme.cool)
                     if !stacked { Divider().frame(height: 34) }
-                    miniStat(value: "\(finished.count)", label: String(localized: "Trainingen"),
-                             symbol: "checkmark.circle.fill", tint: Theme.accentText)
+                    if let sleep {
+                        miniStat(value: "\(UnitFormatter.number(sleep, digits: 1)) u", label: String(localized: "Slaap"),
+                                 symbol: "bed.double.fill", tint: sleep < 7 ? Theme.warn : Theme.violet)
+                    } else {
+                        miniStat(value: "\(finished.count)", label: String(localized: "Trainingen"),
+                                 symbol: "checkmark.circle.fill", tint: Theme.accentText)
+                    }
                 }
             }
             .card()
@@ -171,7 +180,7 @@ struct TodayView: View {
     // MARK: Gewicht
 
     private var weightCard: some View {
-        let trend = WeightTrend.ema(weights.map { WeightPoint(date: $0.date, kg: $0.kg) })
+        let trend = WeightTrend.ema(AdaptiveExpenditure.withoutOutliers(weights.map { WeightPoint(date: $0.date, kg: $0.kg) }))
         return VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Gewichtstrend")
@@ -225,24 +234,19 @@ struct TodayView: View {
     // MARK: Voeding
 
     private var nutritionCard: some View {
-        let weightKg = weights.last?.kg ?? 75
-        let target = EnergyCalculator.target(profile.energyInput(weightKg: weightKg), goal: profile.goal)
-        let macros = EnergyCalculator.macros(kcal: target.kcal, weightKg: weightKg, goal: profile.goal,
-                                             bodyFatPercent: profile.bodyFatPercent)
-        return VStack(alignment: .leading, spacing: 12) {
-            Text("Dagdoel")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text("\(Int(target.kcal.rounded()))")
-                    .font(Theme.number(.title))
-                Text("kcal").font(.subheadline).foregroundStyle(.secondary)
+        let plan = NutritionPlan(profile: profile, weights: weights, entries: nutrition)
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Voeding vandaag").font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
                 Spacer()
-                Text(profile.goal.title).font(.footnote).foregroundStyle(.secondary)
+                if !profile.hideCalories {
+                    Text("Doel \(Int(plan.targetKcal.rounded())) kcal")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
             }
-            MacroBar(macros: macros)
+            .padding(.horizontal, 4)
+            TodayIntakeCard(plan: plan, hideCalories: profile.hideCalories, compact: true)
         }
-        .card()
     }
 }
 
@@ -320,6 +324,7 @@ struct MacroBar: View {
 /// Uitleg bij de gereedheidsscore met het herstel per spiergroep.
 struct ReadinessSheet: View {
     let finished: [Workout]
+    var sleepHours: Double?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -327,9 +332,26 @@ struct ReadinessSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Gereedheid schat hoe hersteld je bent op basis van je gelogde trainingen: het herstel per spiergroep en hoe zwaar deze week is vergeleken met je eigen gemiddelde. Slaap en hartslag uit Apple Health tellen later mee.")
+                    Text("Gereedheid schat hoe hersteld je bent: het herstel per spiergroep, hoe zwaar deze week is vergeleken met je eigen gemiddelde, en je slaap uit Apple Health als die er is.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    if let sleepHours {
+                        HStack(spacing: 12) {
+                            Image(systemName: "bed.double.fill")
+                                .foregroundStyle(Theme.violet)
+                                .accessibilityHidden(true)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Slaap afgelopen nacht: \(UnitFormatter.number(sleepHours, digits: 1)) uur")
+                                    .font(.subheadline.weight(.semibold))
+                                Text(sleepHours < 7
+                                     ? String(localized: "Minder dan 7 uur kost \(Int(ReadinessCalculator.sleepPenalty(hours: sleepHours).rounded())) punten.")
+                                     : String(localized: "Genoeg slaap; dat telt niet negatief mee."))
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .card(padding: 14)
+                    }
                     VStack(spacing: 14) {
                         ForEach(statuses) { status in
                             VStack(spacing: 6) {

@@ -29,6 +29,9 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.healthcare-fitness
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht en slaap uit Apple Health om je verbruik, doelen en gereedheid te berekenen."
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Alleen in testversies: POWER UP zet voorbeelddata in Apple Health."
+        CODE_SIGN_ENTITLEMENTS: PowerUp/PowerUp.entitlements
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_EMIT_LOC_STRINGS: YES
 schemes:

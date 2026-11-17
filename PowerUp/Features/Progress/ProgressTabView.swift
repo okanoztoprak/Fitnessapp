@@ -81,7 +81,7 @@ struct ProgressTabView: View {
     @ViewBuilder
     private var weightCard: some View {
         let points = weights.map { WeightPoint(date: $0.date, kg: $0.kg) }
-        let trend = WeightTrend.ema(points)
+        let trend = WeightTrend.ema(AdaptiveExpenditure.withoutOutliers(points))
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
                 Text("Gewicht").font(.headline)

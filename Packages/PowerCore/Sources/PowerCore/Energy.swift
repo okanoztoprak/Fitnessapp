@@ -100,18 +100,25 @@ public enum EnergyCalculator {
         )
     }
 
+    /// Standaard eiwit in g per kg lichaamsgewicht.
+    public static func defaultProteinPerKg(goal: Goal) -> Double { goal == .cut ? 2.2 : 1.8 }
+
     /// Eiwit 1,8 g/kg (2,2 bij een cut), vet 25% van de calorieën, rest koolhydraten.
     /// Met bekend vetpercentage boven 25% wordt eiwit op vetvrije massa gebaseerd.
+    /// Een eigen eiwitdoel (`proteinPerKg`) en vetaandeel (`fatShare`) overschrijven de standaard.
     public static func macros(kcal: Double, weightKg: Double, goal: Goal,
-                              bodyFatPercent: Double? = nil) -> MacroTarget {
+                              bodyFatPercent: Double? = nil, proteinPerKg: Double? = nil,
+                              fatShare: Double = 0.25) -> MacroTarget {
         var reference = weightKg
-        var perKg = goal == .cut ? 2.2 : 1.8
-        if let bf = bodyFatPercent, bf > 25, bf < 70 {
+        var perKg = defaultProteinPerKg(goal: goal)
+        if let proteinPerKg {
+            perKg = proteinPerKg
+        } else if let bf = bodyFatPercent, bf > 25, bf < 70 {
             reference = weightKg * (1 - bf / 100)
             perKg += 0.4
         }
         let protein = min(reference * perKg, kcal * 0.4 / 4)
-        let fat = kcal * 0.25 / 9
+        let fat = kcal * min(max(fatShare, 0.15), 0.45) / 9
         let carbs = max(0, (kcal - protein * 4 - fat * 9) / 4)
         return MacroTarget(proteinG: protein, fatG: fat, carbsG: carbs)
     }

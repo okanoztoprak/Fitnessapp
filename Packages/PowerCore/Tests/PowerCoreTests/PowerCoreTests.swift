@@ -401,3 +401,186 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
         #expect(WeekStreak.current(workoutDays: [date(1), date(-10)], today: date(2), calendar: calendar) == 1)
     }
 }
+
+@Suite struct MacroSettingsTests {
+    @Test func customProteinAndFat() {
+        let macros = EnergyCalculator.macros(kcal: 2400, weightKg: 80, goal: .maintain,
+                                             proteinPerKg: 2.0, fatShare: 0.3)
+        #expect(close(macros.proteinG, 160))
+        #expect(close(macros.fatG, 80))
+        #expect(close(macros.carbsG, (2400 - 640 - 720) / 4.0))
+    }
+
+    @Test func customProteinIgnoresLeanMassAdjustment() {
+        let macros = EnergyCalculator.macros(kcal: 2400, weightKg: 100, goal: .maintain,
+                                             bodyFatPercent: 30, proteinPerKg: 1.6)
+        #expect(close(macros.proteinG, 160))
+    }
+
+    @Test func fatShareIsBounded() {
+        let macros = EnergyCalculator.macros(kcal: 1800, weightKg: 70, goal: .maintain, fatShare: 0.9)
+        #expect(close(macros.fatG, 1800 * 0.45 / 9))
+    }
+}
+
+@Suite struct AdaptiveExpenditureTests {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .iso8601)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+    private let today = Date(timeIntervalSince1970: 1_700_000_000)
+    private func dayAt(_ offset: Int) -> Date {
+        calendar.startOfDay(for: today).addingTimeInterval(Double(offset) * day)
+    }
+
+    private func intake(_ kcal: Double, days: Int = 21) -> [DailyIntake] {
+        (1...days).map { DailyIntake(date: dayAt(-$0), kcal: kcal) }
+    }
+
+    /// Lineair verloop over 60 dagen, zodat de trend is ingeschoten.
+    private func weights(start: Double, perWeek: Double) -> [WeightPoint] {
+        (0...60).map { offset in
+            WeightPoint(date: dayAt(offset - 60), kg: start + perWeek / 7 * Double(offset))
+        }
+    }
+
+    @Test func withoutDataUsesTheFormula() {
+        let estimate = AdaptiveExpenditure.estimate(intake: [], weights: [], formulaTDEE: 2700,
+                                                    today: today, calendar: calendar)
+        #expect(estimate.kcal == 2700)
+        #expect(estimate.confidence == 0)
+        #expect(estimate.observedKcal == nil)
+    }
+
+    @Test func stableWeightMeansIntakeIsExpenditure() {
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(2500), weights: weights(start: 80, perWeek: 0),
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(estimate.confidence == 1)
+        #expect(close(estimate.kcal, 2500, tolerance: 1))
+        #expect(estimate.loggedDays == 21)
+    }
+
+    @Test func losingWeightMeansExpenditureIsAboveIntake() {
+        // 0,5 kg per week verlies = 550 kcal per dag tekort.
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(2000), weights: weights(start: 84, perWeek: -0.5),
+                                                    formulaTDEE: 2500, today: today, calendar: calendar)
+        #expect(close(estimate.kcal, 2550, tolerance: 25))
+        #expect(close(estimate.trendRatePerWeek!, -0.5, tolerance: 0.03))
+    }
+
+    @Test func incompleteDaysAreIgnored() {
+        let mixed = intake(2500, days: 14) + (15...21).map { DailyIntake(date: dayAt(-$0), kcal: 400) }
+        let estimate = AdaptiveExpenditure.estimate(intake: mixed, weights: weights(start: 80, perWeek: 0),
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(estimate.loggedDays == 14)
+        #expect(close(estimate.averageIntake!, 2500))
+    }
+
+    @Test func fewLoggedDaysBlendWithTheFormula() {
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(2300, days: 7), weights: weights(start: 80, perWeek: 0),
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(close(estimate.confidence, 0.5))
+        #expect(close(estimate.kcal, 2500, tolerance: 1))
+    }
+
+    @Test func todayDoesNotCount() {
+        let estimate = AdaptiveExpenditure.estimate(intake: [DailyIntake(date: dayAt(0), kcal: 3000)] + intake(2500),
+                                                    weights: weights(start: 80, perWeek: 0),
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(close(estimate.averageIntake!, 2500))
+    }
+
+    @Test func outliersAreClamped() {
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(1200), weights: weights(start: 80, perWeek: 0),
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(close(estimate.observedKcal!, 2700 * 0.65))
+    }
+
+    @Test func aTypoInTheWeightIsIgnored() {
+        var history = weights(start: 82, perWeek: 0)
+        history.append(WeightPoint(date: dayAt(0), kg: 93))
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(2500), weights: history,
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(close(estimate.kcal, 2500, tolerance: 1))
+        #expect(AdaptiveExpenditure.withoutOutliers(history).count == history.count - 1)
+    }
+
+    @Test func tooShortWeightHistoryKeepsTheFormula() {
+        let short = [WeightPoint(date: dayAt(-3), kg: 80), WeightPoint(date: dayAt(-1), kg: 79.8)]
+        let estimate = AdaptiveExpenditure.estimate(intake: intake(2500), weights: short,
+                                                    formulaTDEE: 2700, today: today, calendar: calendar)
+        #expect(estimate.kcal == 2700)
+        #expect(estimate.loggedDays == 21)
+    }
+}
+
+@Suite struct WeeklyCheckInTests {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .iso8601)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+    private let today = Date(timeIntervalSince1970: 1_700_000_000)
+
+    @Test func cutTargetFollowsExpenditure() {
+        let proposal = WeeklyCheckIn.propose(previousTarget: 2100, expenditure: 2600, goal: .cut, bmr: 1750, weightKg: 80)
+        #expect(proposal.targetKcal == 2080)
+        #expect(!proposal.wasStepLimited)
+    }
+
+    @Test func stepsAreLimited() {
+        let proposal = WeeklyCheckIn.propose(previousTarget: 2000, expenditure: 3000, goal: .maintain, bmr: 1700, weightKg: 80)
+        #expect(proposal.targetKcal == 2300)
+        #expect(proposal.wasStepLimited)
+        #expect(proposal.change == 300)
+    }
+
+    @Test func neverBelowBMR() {
+        let proposal = WeeklyCheckIn.propose(previousTarget: 1500, expenditure: 1700, goal: .cut, bmr: 1450, weightKg: 50)
+        #expect(proposal.targetKcal == 1450)
+        #expect(proposal.wasFloored)
+    }
+
+    @Test func lossRateIsCappedAtOnePercent() {
+        // 80 kg: hooguit 0,8 kg per week = 880 kcal per dag tekort; 20% van 2600 = 520, dat mag.
+        let normal = WeeklyCheckIn.propose(previousTarget: 2100, expenditure: 2600, goal: .cut, bmr: 1750, weightKg: 80)
+        #expect(!normal.wasRateLimited)
+        // 50 kg: hooguit 550 kcal per dag tekort; 20% van 3000 = 600 is te veel.
+        let aggressive = WeeklyCheckIn.propose(previousTarget: 2400, expenditure: 3000, goal: .cut, bmr: 1300, weightKg: 50)
+        #expect(aggressive.wasRateLimited)
+        #expect(aggressive.targetKcal == 2450)
+    }
+
+    @Test func dueAfterSevenDays() {
+        let sixDaysAgo = today.addingTimeInterval(-6 * day)
+        let sevenDaysAgo = today.addingTimeInterval(-7 * day)
+        #expect(!WeeklyCheckIn.isDue(lastCheckIn: nil, firstLoggedDay: nil, today: today, calendar: calendar))
+        #expect(!WeeklyCheckIn.isDue(lastCheckIn: nil, firstLoggedDay: sixDaysAgo, today: today, calendar: calendar))
+        #expect(WeeklyCheckIn.isDue(lastCheckIn: nil, firstLoggedDay: sevenDaysAgo, today: today, calendar: calendar))
+        #expect(!WeeklyCheckIn.isDue(lastCheckIn: sixDaysAgo, firstLoggedDay: sevenDaysAgo, today: today, calendar: calendar))
+        #expect(WeeklyCheckIn.daysUntilDue(lastCheckIn: sixDaysAgo, firstLoggedDay: nil, today: today, calendar: calendar) == 1)
+    }
+}
+
+@Suite struct SleepTests {
+    private let night = Date(timeIntervalSince1970: 1_700_000_000)
+    private func span(_ from: Double, _ to: Double) -> TimeSpan {
+        TimeSpan(start: night.addingTimeInterval(from * 3600), end: night.addingTimeInterval(to * 3600))
+    }
+
+    @Test func overlappingSourcesCountOnce() {
+        #expect(close(SleepCalculator.hours([span(0, 4), span(3, 7)]), 7))
+        #expect(close(SleepCalculator.hours([span(0, 3), span(4, 7)]), 6))
+        #expect(SleepCalculator.hours([]) == 0)
+    }
+
+    @Test func shortSleepLowersReadiness() {
+        #expect(ReadinessCalculator.sleepPenalty(hours: nil) == 0)
+        #expect(ReadinessCalculator.sleepPenalty(hours: 8) == 0)
+        #expect(close(ReadinessCalculator.sleepPenalty(hours: 6), 6))
+        #expect(ReadinessCalculator.sleepPenalty(hours: 2) == 20)
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [], loadRatio: nil, sleepHours: 5).score == 88)
+    }
+}
+

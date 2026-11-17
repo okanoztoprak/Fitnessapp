@@ -10,6 +10,11 @@ struct ProfileView: View {
     @Query private var records: [PersonalRecord]
 
     private var finished: [Workout] { workouts.filter { $0.endedAt != nil } }
+    /// Trendgewicht zonder uitschieters; een enkele tikfout verandert het krachtniveau niet.
+    private var trendWeight: Double {
+        let points = weights.map { WeightPoint(date: $0.date, kg: $0.kg) }
+        return WeightTrend.ema(AdaptiveExpenditure.withoutOutliers(points)).last?.kg ?? 0
+    }
 
     private struct LiftRow: Identifiable {
         let lift: MainLift
@@ -20,7 +25,7 @@ struct ProfileView: View {
 
     private var lifts: [LiftRow] {
         let best = Insights.bestLifts(finished: finished, formula: profile.e1rmFormula)
-        let bodyWeight = weights.last?.kg ?? 0
+        let bodyWeight = trendWeight
         return MainLift.allCases.map { lift in
             let e1rm = best[lift] ?? 0
             return LiftRow(lift: lift, e1rm: e1rm,
@@ -58,7 +63,7 @@ struct ProfileView: View {
         let logged = lifts.filter { $0.e1rm > 0 }
         let overall = logged.isEmpty ? 0 : logged.reduce(0) { $0 + $1.fraction } / Double(logged.count)
         let level = StrengthStandards.level(fraction: overall)
-        let bodyWeight = weights.last?.kg ?? 0
+        let bodyWeight = trendWeight
         return VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 16) {
                 ZStack {

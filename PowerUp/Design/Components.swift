@@ -38,7 +38,7 @@ struct CountUp: View {
     @State private var shown = 0
 
     var body: some View {
-        Text(shown, format: .number.grouping(.never))
+        Text(shown, format: .number)
             .monospacedDigit()
             .contentTransition(.numericText(value: Double(shown)))
             .accessibilityLabel(Text(value, format: .number))
@@ -78,12 +78,13 @@ struct Tag: View {
     let text: String
     var color: Color = Theme.accent
     var filled = false
+    var uppercase = true
 
     var body: some View {
         Text(text)
             .font(.caption2.weight(.bold))
-            .textCase(.uppercase)
-            .tracking(0.6)
+            .textCase(uppercase ? .uppercase : nil)
+            .tracking(uppercase ? 0.6 : 0)
             .padding(.horizontal, 9)
             .padding(.vertical, 5)
             .background(filled ? color : Theme.raised, in: Capsule())

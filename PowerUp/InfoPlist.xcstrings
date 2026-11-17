@@ -1,0 +1,38 @@
+{
+  "sourceLanguage": "nl",
+  "strings": {
+    "NSHealthShareUsageDescription": {
+      "localizations": {
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht en slaap uit Apple Health om je verbruik, doelen en gereedheid te berekenen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POWER UP reads your nutrition (including from MyFitnessPal), weight and sleep from Apple Health to calculate your expenditure, targets and readiness."
+          }
+        }
+      }
+    },
+    "NSHealthUpdateUsageDescription": {
+      "localizations": {
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alleen in testversies: POWER UP zet voorbeelddata in Apple Health."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test builds only: POWER UP writes sample data to Apple Health."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

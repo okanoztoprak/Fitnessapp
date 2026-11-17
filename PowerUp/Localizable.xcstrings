@@ -21,16 +21,6 @@
         }
       }
     },
-    "%@%lld%% volume": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$lld%% volume"
-          }
-        }
-      }
-    },
     "%@: %lld%% hersteld": {
       "localizations": {
         "en": {
@@ -57,6 +47,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld days per week"
+          }
+        }
+      }
+    },
+    "%lld kcal · formule %lld kcal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld kcal · formula %2$lld kcal"
           }
         }
       }
@@ -111,6 +111,16 @@
         }
       }
     },
+    "%lld van de laatste %lld dagen gelogd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of the last %2$lld days logged"
+          }
+        }
+      }
+    },
     "%lld weken op rij": {
       "localizations": {
         "en": {
@@ -127,6 +137,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trained %lld weeks in a row"
+          }
+        }
+      }
+    },
+    "%lld%% van je calorieën": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%% of your calories"
+          }
+        }
+      }
+    },
+    "+%lld%% volume": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%lld%% volume"
           }
         }
       }
@@ -281,6 +311,16 @@
         }
       }
     },
+    "Adaptief": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive"
+          }
+        }
+      }
+    },
     "Afgestemd op je doel, je week en je materiaal.": {
       "localizations": {
         "en": {
@@ -371,6 +411,26 @@
         }
       }
     },
+    "Apple Health gekoppeld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Health connected"
+          }
+        }
+      }
+    },
+    "Apple Health is niet beschikbaar op dit apparaat.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Health is not available on this device."
+          }
+        }
+      }
+    },
     "Automatisch": {
       "localizations": {
         "en": {
@@ -391,12 +451,32 @@
         }
       }
     },
+    "Begrensd zodat je niet meer dan 1% van je lichaamsgewicht per week verliest.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capped so you lose no more than 1% of your body weight per week."
+          }
+        }
+      }
+    },
     "Behaald": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Achieved"
+          }
+        }
+      }
+    },
+    "Bekijk je week en je nieuwe caloriedoel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review your week and your new calorie target."
           }
         }
       }
@@ -417,6 +497,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Load"
+          }
+        }
+      }
+    },
+    "Berekend uit wat je at en hoe je trendgewicht veranderde. Dat zegt meer dan een formule, omdat het je eigen stofwisseling meet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculated from what you ate and how your trend weight changed. That says more than a formula, because it measures your own metabolism."
           }
         }
       }
@@ -461,6 +551,16 @@
         }
       }
     },
+    "Bijgewerkt %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %@"
+          }
+        }
+      }
+    },
     "Billen": {
       "localizations": {
         "en": {
@@ -481,6 +581,36 @@
         }
       }
     },
+    "Caloriedoel uit check-in": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calorie target from check-in"
+          }
+        }
+      }
+    },
+    "Calorieën (kcal)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calories (kcal)"
+          }
+        }
+      }
+    },
+    "Calorieën per dag deze week, met je doel als lijn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calories per day this week, with your target as a line"
+          }
+        }
+      }
+    },
     "Calorieën verbergen": {
       "localizations": {
         "en": {
@@ -491,12 +621,22 @@
         }
       }
     },
-    "Calorieën zijn verborgen. Je ziet hieronder alleen je eiwitdoel.": {
+    "Check-in morgen": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Calories are hidden. Only your protein target is shown below."
+            "value": "Check-in tomorrow"
+          }
+        }
+      }
+    },
+    "Check-in over %lld dagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check-in in %lld days"
           }
         }
       }
@@ -507,6 +647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Consistency"
+          }
+        }
+      }
+    },
+    "Dag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day"
           }
         }
       }
@@ -531,6 +681,16 @@
         }
       }
     },
+    "Dagen gelogd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Days logged"
+          }
+        }
+      }
+    },
     "Dagen per week": {
       "localizations": {
         "en": {
@@ -541,22 +701,22 @@
         }
       }
     },
-    "Dagverbruik (TDEE)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily expenditure (TDEE)"
-          }
-        }
-      }
-    },
     "Datum": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Date"
+          }
+        }
+      }
+    },
+    "De afgelopen %lld dagen, tot en met gisteren.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last %lld days, up to and including yesterday."
           }
         }
       }
@@ -601,6 +761,16 @@
         }
       }
     },
+    "Deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        }
+      }
+    },
     "Dit tempo is meer dan 1% van je lichaamsgewicht per week. Dat is moeilijk vol te houden en kost spiermassa.": {
       "localizations": {
         "en": {
@@ -617,6 +787,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Goal"
+          }
+        }
+      }
+    },
+    "Doel %lld kcal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target %lld kcal"
           }
         }
       }
@@ -681,12 +861,32 @@
         }
       }
     },
+    "E %lld · K %lld · V %lld g": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "P %1$lld · C %2$lld · F %3$lld g"
+          }
+        }
+      }
+    },
     "Een doel per oefening en workouts op basis van je herstel.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "A target per exercise and workouts based on your recovery."
+          }
+        }
+      }
+    },
+    "Een mix van de formule en je eigen data. Hoe meer dagen je logt en weegt, hoe meer je eigen data meetelt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A mix of the formula and your own data. The more days you log and weigh in, the more your own data counts."
           }
         }
       }
@@ -731,6 +931,26 @@
         }
       }
     },
+    "Eiwit (g)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protein (g)"
+          }
+        }
+      }
+    },
+    "Eiwit per kilo lichaamsgewicht": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protein per kilo of body weight"
+          }
+        }
+      }
+    },
     "Elke dag een gereedheidsscore": {
       "localizations": {
         "en": {
@@ -747,6 +967,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Each column is a week; the fuller the square, the more sets that day."
+          }
+        }
+      }
+    },
+    "Formule": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formula"
           }
         }
       }
@@ -811,12 +1041,42 @@
         }
       }
     },
+    "Gem. %lld kcal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avg. %lld kcal"
+          }
+        }
+      }
+    },
+    "Gem. inname (kcal)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avg. intake (kcal)"
+          }
+        }
+      }
+    },
     "Gemiddeld actief": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Moderately active"
+          }
+        }
+      }
+    },
+    "Genoeg slaap; dat telt niet negatief mee.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enough sleep; it does not count against you."
           }
         }
       }
@@ -841,22 +1101,12 @@
         }
       }
     },
-    "Gereedheid schat hoe hersteld je bent op basis van je gelogde trainingen: het herstel per spiergroep en hoe zwaar deze week is vergeleken met je eigen gemiddelde. Slaap en hartslag uit Apple Health tellen later mee.": {
+    "Gereedheid schat hoe hersteld je bent: het herstel per spiergroep, hoe zwaar deze week is vergeleken met je eigen gemiddelde, en je slaap uit Apple Health als die er is.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Readiness estimates how recovered you are from your logged workouts: recovery per muscle group and how heavy this week is compared with your own average. Sleep and heart rate from Apple Health will count later."
-          }
-        }
-      }
-    },
-    "Geschat met %@. Vanaf fase 2 berekent de app je echte verbruik uit je inname en gewichtstrend.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estimated with %@. From phase 2 the app calculates your real expenditure from your intake and weight trend."
+            "value": "Readiness estimates how recovered you are: recovery per muscle group, how heavy this week is compared with your own average, and your sleep from Apple Health when available."
           }
         }
       }
@@ -1151,6 +1401,16 @@
         }
       }
     },
+    "Huidig doel houden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep current target"
+          }
+        }
+      }
+    },
     "Ik heb dit gelezen en begrepen": {
       "localizations": {
         "en": {
@@ -1177,6 +1437,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your target was raised to your resting expenditure. We don't go lower."
+          }
+        }
+      }
+    },
+    "Je doel past bij je verbruik. Ga zo door.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your target fits your expenditure. Keep it up."
+          }
+        }
+      }
+    },
+    "Je doel staat op je rustverbranding. Lager gaan we niet, ook niet als je sneller wilt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your target is at your resting metabolic rate. We do not go lower, even if you want to go faster."
+          }
+        }
+      }
+    },
+    "Je doel staat op je rustverbranding. Lager gaan we niet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your target is at your resting metabolic rate. We do not go lower."
           }
         }
       }
@@ -1261,6 +1551,16 @@
         }
       }
     },
+    "Je nieuwe dagdoel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your new daily target"
+          }
+        }
+      }
+    },
     "Je plan staat klaar": {
       "localizations": {
         "en": {
@@ -1307,6 +1607,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your expenditure"
+          }
+        }
+      }
+    },
+    "Je verbruik wijkt flink af van je doel. We passen het stap voor stap aan, zodat je kunt wennen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your expenditure differs a lot from your target. We adjust it step by step so you can get used to it."
+          }
+        }
+      }
+    },
+    "Je verbruikt meer dan gedacht. Met meer eten blijf je op koers voor je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You burn more than expected. Eating more keeps you on track for your goal."
+          }
+        }
+      }
+    },
+    "Je verbruikt minder dan gedacht. Met iets minder eten blijf je op koers voor je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You burn less than expected. Eating a little less keeps you on track for your goal."
           }
         }
       }
@@ -1381,12 +1711,42 @@
         }
       }
     },
-    "Koppeling met MyFitnessPal via Apple Health komt in de volgende fase.": {
+    "Koolhydraten (g)": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "MyFitnessPal sync via Apple Health arrives in the next phase."
+            "value": "Carbohydrates (g)"
+          }
+        }
+      }
+    },
+    "Koolhydraten vullen de rest aan. 1,6 tot 2,2 g eiwit per kg helpt spiermassa te behouden en op te bouwen; bij een cut is meer zinvol.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carbohydrates fill the rest. 1.6 to 2.2 g of protein per kg helps you keep and build muscle; during a cut more makes sense."
+          }
+        }
+      }
+    },
+    "Koppel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect"
+          }
+        }
+      }
+    },
+    "Koppel Apple Health": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect Apple Health"
           }
         }
       }
@@ -1431,12 +1791,32 @@
         }
       }
     },
+    "Laat calorieën leeg om ze uit je macro's te berekenen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leave calories empty to calculate them from your macros."
+          }
+        }
+      }
+    },
     "Langzaam vet eraf en spier erbij": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Slowly lose fat and gain muscle"
+          }
+        }
+      }
+    },
+    "Later": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
           }
         }
       }
@@ -1521,6 +1901,36 @@
         }
       }
     },
+    "Log je eten een week lang; daarna stellen we je doel bij.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log your food for a week; then we adjust your target."
+          }
+        }
+      }
+    },
+    "Macro's": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macros"
+          }
+        }
+      }
+    },
+    "Macroverdeling": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macro split"
+          }
+        }
+      }
+    },
     "Man": {
       "localizations": {
         "en": {
@@ -1557,6 +1967,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Milestones"
+          }
+        }
+      }
+    },
+    "Minder dan 7 uur kost %lld punten.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less than 7 hours costs %lld points."
           }
         }
       }
@@ -1601,6 +2021,16 @@
         }
       }
     },
+    "Nieuw doel overnemen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use new target"
+          }
+        }
+      }
+    },
     "Nieuw record: %@": {
       "localizations": {
         "en": {
@@ -1641,6 +2071,16 @@
         }
       }
     },
+    "Nog een schatting met de formule. Log een week je eten en weeg je een paar keer; daarna rekent de app met je echte verbruik.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still a formula estimate. Log your food for a week and weigh in a few times; then the app uses your real expenditure."
+          }
+        }
+      }
+    },
     "Nog geen afgeronde trainingen.": {
       "localizations": {
         "en": {
@@ -1667,6 +2107,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No weigh-ins yet."
+          }
+        }
+      }
+    },
+    "Nog niet alle data is binnen, dus de formule telt nog mee. Blijf loggen en wegen voor een scherper verbruik.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not all data is in yet, so the formula still counts. Keep logging and weighing in for a sharper estimate."
           }
         }
       }
@@ -1761,6 +2211,16 @@
         }
       }
     },
+    "Omschrijving (optioneel)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description (optional)"
+          }
+        }
+      }
+    },
     "Onderarmen": {
       "localizations": {
         "en": {
@@ -1777,6 +2237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Maintain"
+          }
+        }
+      }
+    },
+    "Ontkoppel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disconnect"
           }
         }
       }
@@ -1981,12 +2451,12 @@
         }
       }
     },
-    "Rustverbranding (BMR)": {
+    "Rustverbranding": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Resting expenditure (BMR)"
+            "value": "Resting burn"
           }
         }
       }
@@ -2091,6 +2561,26 @@
         }
       }
     },
+    "Slaap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep"
+          }
+        }
+      }
+    },
+    "Slaap afgelopen nacht: %@ uur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep last night: %@ hours"
+          }
+        }
+      }
+    },
     "Slimme training": {
       "localizations": {
         "en": {
@@ -2107,6 +2597,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Close"
+          }
+        }
+      }
+    },
+    "Snel toegevoegd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick add"
+          }
+        }
+      }
+    },
+    "Snel toevoegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick add"
           }
         }
       }
@@ -2191,6 +2701,16 @@
         }
       }
     },
+    "Standaard herstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore defaults"
+          }
+        }
+      }
+    },
     "Stang (%@)": {
       "localizations": {
         "en": {
@@ -2231,6 +2751,26 @@
         }
       }
     },
+    "Synchroniseer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync"
+          }
+        }
+      }
+    },
+    "Synchroniseren mislukt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync failed"
+          }
+        }
+      }
+    },
     "Systeem": {
       "localizations": {
         "en": {
@@ -2247,6 +2787,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back"
+          }
+        }
+      }
+    },
+    "Terugzetten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
           }
         }
       }
@@ -2411,12 +2961,12 @@
         }
       }
     },
-    "Uur getraind": {
+    "Trendgewicht per week": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hours trained"
+            "value": "Trend weight per week"
           }
         }
       }
@@ -2427,6 +2977,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Today"
+          }
+        }
+      }
+    },
+    "Vandaag gelogd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logged today"
           }
         }
       }
@@ -2461,6 +3021,16 @@
         }
       }
     },
+    "Verbruik (kcal)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expenditure (kcal)"
+          }
+        }
+      }
+    },
     "Verder": {
       "localizations": {
         "en": {
@@ -2487,16 +3057,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Version"
-          }
-        }
-      }
-    },
-    "Verwacht per week": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Expected per week"
           }
         }
       }
@@ -2541,6 +3101,16 @@
         }
       }
     },
+    "Vet (g)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fat (g)"
+          }
+        }
+      }
+    },
     "Vet verliezen en spiermassa behouden": {
       "localizations": {
         "en": {
@@ -2571,6 +3141,16 @@
         }
       }
     },
+    "Vetpercentage van je calorieën": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fat share of your calories"
+          }
+        }
+      }
+    },
     "Vier oefeningen voor één spiergroep, passend bij je materiaal.": {
       "localizations": {
         "en": {
@@ -2591,12 +3171,62 @@
         }
       }
     },
+    "Voeding uit MyFitnessPal komt binnen via Apple Health. Zet in MyFitnessPal onder Instellingen → Gekoppelde apps het delen van voeding met Apple Health aan.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Food from MyFitnessPal comes in through Apple Health. In MyFitnessPal, turn on sharing nutrition with Apple Health under Settings → Connected apps."
+          }
+        }
+      }
+    },
+    "Voeding vandaag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutrition today"
+          }
+        }
+      }
+    },
+    "Volgens formule": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "By formula"
+          }
+        }
+      }
+    },
     "Volume per week": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Volume per week"
+          }
+        }
+      }
+    },
+    "Voor MyFitnessPal, je weegschaal en je slaap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For MyFitnessPal, your scale and your sleep"
+          }
+        }
+      }
+    },
+    "Voorbeelddata in Apple Health zetten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write sample data to Apple Health"
           }
         }
       }
@@ -2651,6 +3281,26 @@
         }
       }
     },
+    "Vorige keer: doel %lld kcal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last time: target %lld kcal"
+          }
+        }
+      }
+    },
+    "Vorige keer: doel ongewijzigd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last time: target unchanged"
+          }
+        }
+      }
+    },
     "Vrije training": {
       "localizations": {
         "en": {
@@ -2697,6 +3347,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "What is your goal?"
+          }
+        }
+      }
+    },
+    "Wat je in MyFitnessPal logt, komt via Apple Health automatisch hier binnen. Met je gewicht erbij berekent de app je echte verbruik.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What you log in MyFitnessPal arrives here automatically through Apple Health. With your weight, the app calculates your real expenditure."
           }
         }
       }
@@ -2791,6 +3451,16 @@
         }
       }
     },
+    "Wekelijkse check-in": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly check-in"
+          }
+        }
+      }
+    },
     "Weken op rij": {
       "localizations": {
         "en": {
@@ -2817,6 +3487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Very active"
+          }
+        }
+      }
+    },
+    "Zekerheid": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confidence"
           }
         }
       }
@@ -2851,12 +3531,32 @@
         }
       }
     },
-    "g eiwit per dag": {
+    "kcal over": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "g protein per day"
+            "value": "kcal left"
+          }
+        }
+      }
+    },
+    "kcal per dag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kcal per day"
+          }
+        }
+      }
+    },
+    "kcal te veel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kcal over"
           }
         }
       }
@@ -2867,6 +3567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "of 100"
+          }
+        }
+      }
+    },
+    "± %lld min": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "± %lld min"
           }
         }
       }

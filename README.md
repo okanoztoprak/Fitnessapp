@@ -1,6 +1,21 @@
 # POWER UP
 
-Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om training, gewicht en voeding bij te houden, in een originele anime-stijl.
+Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en voeding bij te houden. Modern en donker van opzet, met één felle accentkleur, en gebouwd rond drie vragen: hoe hersteld ben ik, wat train ik vandaag, en word ik sterker?
+
+## Wat de app doet
+
+| Onderdeel | Wat het is | Geïnspireerd door |
+|---|---|---|
+| Gereedheid | Dagscore 0–100 uit het herstel per spiergroep en de trainingsbelasting van deze week | WHOOP, Bevel |
+| Herstel per spiergroep | Percentage per spiergroep; tik voor een focus-training | Fitbod |
+| Slimme training | Workout uit de spiergroepen die het best hersteld zijn | Fitbod |
+| Aanbeveling | Trainen of rusten, met uitleg en de schemadag die aan de beurt is | Fitbod, Alpha Progression |
+| Logscherm | Kolom "Vorige" (tik om over te nemen), live duur/volume/sets, zwevende rusttimer | Strong, Hevy |
+| Doel per oefening | Dubbele progressie: eerst reps, dan gewicht | Alpha Progression |
+| Records | Melding met confetti bij een nieuw record, vanaf de tweede sessie | Hevy, Strong |
+| Samenvatting | Na afloop: cijfers, records, vergelijking, deelbare kaart | Hevy |
+| Voortgang | Consistentieraster, gewichtstrend (EMA), volume per week, spierbalans | MacroFactor, Hevy |
+| Profiel | Krachtniveau per lift ten opzichte van lichaamsgewicht, mijlpalen | Strength Level, Hevy |
 
 ## Bouwen
 
@@ -22,19 +37,19 @@ swift test --package-path Packages/PowerCore
 
 | Pad | Inhoud |
 |---|---|
-| `Packages/PowerCore` | Pure berekeningen met unit-tests: TDEE/BMR, 1RM, gewichtstrend, PR-detectie, XP, power level, schijvencalculator |
+| `Packages/PowerCore` | Pure berekeningen met unit-tests: TDEE/BMR, 1RM, gewichtstrend, PR-detectie, progressie, trainen-of-rusten, spierherstel, gereedheid, belasting, weekreeks, krachtniveau, schijvencalculator |
 | `PowerUp/Models` | SwiftData-modellen |
-| `PowerUp/Services` | Oefenbibliotheek, startplannen, historie, XP en power level, rusttimer |
-| `PowerUp/Design` | Thema, aura- en scanner-animaties, componenten |
-| `PowerUp/Features` | Schermen per tab: Vandaag, Train, Voeding, Voortgang, Held, plus onboarding en instellingen |
+| `PowerUp/Services` | Oefenbibliotheek, startschema's, historie, aanbevelingen (`Coach`), statistieken (`Insights`), rusttimer |
+| `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
+| `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus onboarding en instellingen |
 | `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings` |
 
 ## Fases
 
-1. **MVP** (deze stand): onboarding, trainingen loggen, oefenbibliotheek, rusttimer, gewicht met trend, TDEE-calculator, dashboard, power level en XP, plus een eerste versie van de aanbevelingen uit fase 3 (trainen of rusten met uitleg, schemakeuze, herstel per spiergroep met focus-training, doel per oefening via dubbele progressie)
-2. Voeding: Apple Health/MyFitnessPal-sync, macrodoelen, adaptieve TDEE, wekelijkse check-in
-3. Coach: programma's, progressive overload, deload, volume per spiergroep, herstelscore
-4. Gamification++: transformaties, quests, boss fights, mentor, animaties
-5. Polish: widgets, Live Activities, Siri, CloudKit, Watch-app
+1. **MVP** (deze stand): onboarding, trainingen loggen, oefenbibliotheek, aanbevelingen, gereedheid en herstel, records, samenvatting, voortgang, krachtniveau, gewichtstrend, TDEE-calculator
+2. Voeding: Apple Health/MyFitnessPal-sync, macrodoelen, adaptieve TDEE, wekelijkse check-in; slaap en hartslag tellen mee in de gereedheid
+3. Coach: volledige programma's, deload, volume-doelen per spiergroep
+4. Motivatie: uitdagingen, wekelijkse terugblik, sociale functies
+5. Polish: widgets, Live Activities voor de rusttimer, Siri, CloudKit, Watch-app
 
 De app geeft geen medisch advies.

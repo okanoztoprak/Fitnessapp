@@ -4,10 +4,15 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var profile: UserProfile
-    @Environment(\.modelContext) private var context
 
     var body: some View {
         Form {
+            Section("Weergave") {
+                Picker("Weergave", selection: $profile.appearance) {
+                    ForEach(Appearance.allCases, id: \.self) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.segmented)
+            }
             Section("Eenheden") {
                 Picker("Eenheden", selection: $profile.usesMetric) {
                     Text("kg / cm").tag(true)
@@ -30,12 +35,7 @@ struct SettingsView: View {
                     Text("Epley").tag(OneRepMax.Formula.epley)
                     Text("Brzycki").tag(OneRepMax.Formula.brzycki)
                 }
-            }
-            Section("Mentor") {
-                Picker("Toon", selection: $profile.mentorTone) {
-                    ForEach(MentorTone.allCases, id: \.self) { Text($0.title).tag($0) }
-                }
-                Toggle("Recordmoment vieren", isOn: $profile.celebratePRs)
+                Toggle("Records vieren", isOn: $profile.celebratePRs)
             }
             Section {
                 Toggle("Calorieën verbergen", isOn: $profile.hideCalories)
@@ -52,8 +52,9 @@ struct SettingsView: View {
                                value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
             }
         }
+        .scrollContentBackground(.hidden)
+        .screenBackground()
         .navigationTitle("Instellingen")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: profile.trainingDaysPerWeek) { GameService.refreshPowerLevel(in: context) }
     }
 }

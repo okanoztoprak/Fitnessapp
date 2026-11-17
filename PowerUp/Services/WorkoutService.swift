@@ -11,10 +11,15 @@ enum History {
             .filter { $0.workout?.endedAt != nil && $0.workout !== workout }
             .sorted { ($0.workout?.startedAt ?? .distantPast) > ($1.workout?.startedAt ?? .distantPast) }
         for usage in usages {
-            let sets = usage.sortedSets.filter { $0.isDone && $0.kind != .warmup }
+            let sets = usage.sortedSets.filter { $0.isDone && $0.kind != .warmup && hasValues($0, exercise) }
             if !sets.isEmpty { return sets }
         }
         return []
+    }
+
+    /// Lege sets (uit oudere versies) tellen niet als prestatie.
+    private static func hasValues(_ set: SetEntry, _ exercise: Exercise) -> Bool {
+        exercise.isCardio ? (set.durationMinutes ?? 0) > 0 || (set.distanceKm ?? 0) > 0 : set.reps > 0
     }
 
     static func hasFinishedHistory(_ exercise: Exercise) -> Bool {

@@ -187,93 +187,6 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
     }
 }
 
-@Suite struct XPTests {
-    @Test func levelCurve() {
-        #expect(LevelCurve.totalXP(toReach: 1) == 0)
-        #expect(LevelCurve.totalXP(toReach: 2) == 100)
-        #expect(LevelCurve.totalXP(toReach: 3) == 250)
-        #expect(LevelCurve.totalXP(toReach: 4) == 450)
-    }
-
-    @Test func progress() {
-        #expect(LevelCurve.progress(totalXP: 0) == LevelProgress(level: 1, xpIntoLevel: 0, xpForNextLevel: 100))
-        #expect(LevelCurve.progress(totalXP: 100) == LevelProgress(level: 2, xpIntoLevel: 0, xpForNextLevel: 150))
-        #expect(LevelCurve.progress(totalXP: 260) == LevelProgress(level: 3, xpIntoLevel: 10, xpForNextLevel: 200))
-    }
-
-    @Test func progressMatchesTotals() {
-        for level in 1...30 {
-            #expect(LevelCurve.progress(totalXP: LevelCurve.totalXP(toReach: level)).level == level)
-        }
-    }
-
-    @Test func secondWorkoutSameDayEarnsNothing() {
-        #expect(XPRules.award(.workout, countTodayForSource: 0, totalToday: 0) == 100)
-        #expect(XPRules.award(.workout, countTodayForSource: 1, totalToday: 100) == 0)
-    }
-
-    @Test func dailyCap() {
-        #expect(XPRules.award(.personalRecord, countTodayForSource: 0, totalToday: 380) == 20)
-        #expect(XPRules.award(.weighIn, countTodayForSource: 0, totalToday: 400) == 0)
-    }
-}
-
-@Suite struct PowerLevelTests {
-    @Test func breakdown() {
-        let result = PowerLevelCalculator.calculate(PowerLevelInput(
-            bodyWeightKg: 80, sex: .male, experience: .beginner,
-            liftE1RMs: [.squat: 160], sessionsLast28Days: 12,
-            plannedSessionsPerWeek: 3, cardioMinutesPerWeek: 75))
-        #expect(result.strength == 1200)
-        #expect(result.consistency == 2500)
-        #expect(result.conditioning == 600)
-        #expect(result.total == 4350)
-        #expect(result.stage == .ascended)
-    }
-
-    @Test func newUserStartsAsRookie() {
-        let result = PowerLevelCalculator.calculate(PowerLevelInput(
-            bodyWeightKg: 70, sex: .female, experience: .beginner))
-        #expect(result.total == 50)
-        #expect(result.stage == .rookie)
-    }
-
-    @Test func overtrainingIsNotRewarded() {
-        let planned = PowerLevelInput(bodyWeightKg: 80, sex: .male, experience: .beginner,
-                                      sessionsLast28Days: 12, plannedSessionsPerWeek: 3)
-        var extra = planned
-        extra.sessionsLast28Days = 28
-        #expect(PowerLevelCalculator.calculate(planned) == PowerLevelCalculator.calculate(extra))
-    }
-
-    @Test func femaleStandardsAreScaled() {
-        let male = PowerLevelCalculator.calculate(PowerLevelInput(
-            bodyWeightKg: 60, sex: .male, experience: .beginner, liftE1RMs: [.bench: 63]))
-        let female = PowerLevelCalculator.calculate(PowerLevelInput(
-            bodyWeightKg: 60, sex: .female, experience: .beginner, liftE1RMs: [.bench: 63]))
-        #expect(male.strength == 840)
-        #expect(female.strength == 1200)
-    }
-
-    @Test func cappedAtMaximum() {
-        let lifts = Dictionary(uniqueKeysWithValues: MainLift.allCases.map { ($0, 1000.0) })
-        let result = PowerLevelCalculator.calculate(PowerLevelInput(
-            bodyWeightKg: 80, sex: .male, experience: .advanced, liftE1RMs: lifts,
-            sessionsLast28Days: 20, plannedSessionsPerWeek: 5, cardioMinutesPerWeek: 300))
-        #expect(result.total == 9999)
-        #expect(result.stage == .mythic)
-    }
-
-    @Test func stageThresholds() {
-        #expect(Stage.stage(forPowerLevel: 0) == .rookie)
-        #expect(Stage.stage(forPowerLevel: 499) == .rookie)
-        #expect(Stage.stage(forPowerLevel: 500) == .kindled)
-        #expect(Stage.stage(forPowerLevel: 9999) == .mythic)
-        #expect(Stage.rookie.next == .kindled)
-        #expect(Stage.mythic.next == nil)
-    }
-}
-
 @Suite struct PlateTests {
     @Test func simpleLoad() {
         let loadout = PlateCalculator.loadout(target: 100, bar: 20, plates: PlateCalculator.standardKg)
@@ -294,35 +207,6 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
     @Test func belowBar() {
         let loadout = PlateCalculator.loadout(target: 15, bar: 20, plates: PlateCalculator.standardKg)
         #expect(loadout == PlateLoadout(perSide: [], remainder: 0))
-    }
-}
-
-@Suite struct StreakTests {
-    var calendar: Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        return calendar
-    }
-
-    @Test func countsConsecutiveDays() {
-        let days = [start, start - day, start - 2 * day]
-        #expect(StreakCalculator.current(activeDays: days, today: start, calendar: calendar) == 3)
-    }
-
-    @Test func todayNotYetLoggedKeepsStreak() {
-        let days = [start - day, start - 2 * day]
-        #expect(StreakCalculator.current(activeDays: days, today: start, calendar: calendar) == 2)
-    }
-
-    @Test func gapBreaksStreak() {
-        let days = [start, start - 2 * day, start - 3 * day]
-        #expect(StreakCalculator.current(activeDays: days, today: start, calendar: calendar) == 1)
-        #expect(StreakCalculator.current(activeDays: [start - 3 * day], today: start, calendar: calendar) == 0)
-    }
-
-    @Test func multipleEntriesPerDayCountOnce() {
-        let days = [start, start + 60, start - day]
-        #expect(StreakCalculator.current(activeDays: days, today: start, calendar: calendar) == 2)
     }
 }
 
@@ -425,11 +309,95 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
         #expect(SessionAdvisor.nextDayIndex(lastPerformed: [date(0), nil, nil]) == 1)
         #expect(SessionAdvisor.nextDayIndex(lastPerformed: [date(2), date(0), date(1)]) == 1)
     }
+}
 
-    @Test func recoveryStatus() {
-        #expect(RecoveryStatus.status(hoursSinceTrained: nil) == .untrained)
-        #expect(RecoveryStatus.status(hoursSinceTrained: 20) == .recovering)
-        #expect(RecoveryStatus.status(hoursSinceTrained: 72) == .ready)
-        #expect(RecoveryStatus.status(hoursSinceTrained: 200) == .overdue)
+@Suite struct StrengthTests {
+    @Test func fractionAgainstEliteStandard() {
+        // Squat: elite is 2,0 × lichaamsgewicht.
+        #expect(close(StrengthStandards.fraction(e1rm: 80, bodyWeightKg: 80, lift: .squat, sex: .male), 0.5))
+        #expect(close(StrengthStandards.fraction(e1rm: 56, bodyWeightKg: 80, lift: .squat, sex: .female), 0.5))
+        #expect(StrengthStandards.fraction(e1rm: 0, bodyWeightKg: 80, lift: .squat, sex: .male) == 0)
+        #expect(StrengthStandards.fraction(e1rm: 100, bodyWeightKg: 0, lift: .squat, sex: .male) == 0)
+    }
+
+    @Test func levels() {
+        #expect(StrengthStandards.level(fraction: 0.1) == .beginner)
+        #expect(StrengthStandards.level(fraction: 0.35) == .novice)
+        #expect(StrengthStandards.level(fraction: 0.6) == .intermediate)
+        #expect(StrengthStandards.level(fraction: 0.75) == .advanced)
+        #expect(StrengthStandards.level(fraction: 1.1) == .elite)
+    }
+
+    @Test func progressAndNextTarget() {
+        #expect(close(StrengthStandards.progressToNext(fraction: 0.6), 0.5))
+        #expect(StrengthStandards.progressToNext(fraction: 1.0) == 1)
+        // Van gevorderd (0,5) naar ver gevorderd (0,7) bij 80 kg: 0,7 × 160 = 112 kg.
+        let target = StrengthStandards.nextTarget(fraction: 0.6, bodyWeightKg: 80, lift: .squat, sex: .male)
+        #expect(close(target!, 112))
+        #expect(StrengthStandards.nextTarget(fraction: 0.95, bodyWeightKg: 80, lift: .squat, sex: .male) == nil)
+    }
+}
+
+@Suite struct InsightTests {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .iso8601)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }
+    /// Maandag 13 november 2023, 12:00 UTC.
+    private let monday = Date(timeIntervalSince1970: 1_699_876_800)
+    private func date(_ offset: Int) -> Date { monday.addingTimeInterval(Double(offset) * day) }
+
+    @Test func recoveryTakesLongerAfterMoreSets() {
+        #expect(MuscleRecovery.hoursToRecover(sets: 3) == 48)
+        #expect(MuscleRecovery.hoursToRecover(sets: 8) == 72)
+        #expect(MuscleRecovery.hoursToRecover(sets: 40) == 96)
+    }
+
+    @Test func recoveryFraction() {
+        #expect(MuscleRecovery.fraction(hoursSinceTrained: nil, sets: 0) == 1)
+        #expect(close(MuscleRecovery.fraction(hoursSinceTrained: 24, sets: 4), 0.5))
+        #expect(MuscleRecovery.fraction(hoursSinceTrained: 200, sets: 4) == 1)
+        #expect(MuscleRecovery.fraction(hoursSinceTrained: -5, sets: 4) == 0)
+    }
+
+    @Test func loadRatioAndStatus() {
+        #expect(TrainingLoad.ratio(last7Days: 30, previous28Days: 0) == nil)
+        #expect(close(TrainingLoad.ratio(last7Days: 30, previous28Days: 80)!, 1.5))
+        #expect(TrainingLoad.status(ratio: nil) == .building)
+        #expect(TrainingLoad.status(ratio: 0.5) == .low)
+        #expect(TrainingLoad.status(ratio: 1.0) == .steady)
+        #expect(TrainingLoad.status(ratio: 1.6) == .high)
+    }
+
+    @Test func readinessWithoutDataIsFull() {
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [], loadRatio: nil) == Readiness(score: 100))
+    }
+
+    @Test func readinessFollowsRecoveryAndBands() {
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [1, 1, 1, 1], loadRatio: 1.0).band == .high)
+        let half = ReadinessCalculator.readiness(muscleRecovery: [0, 1], loadRatio: nil)
+        #expect(half.score == 50)
+        #expect(half.band == .moderate)
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [0.1, 0.2], loadRatio: nil).band == .low)
+    }
+
+    @Test func highLoadLowersReadinessWithACap() {
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [1], loadRatio: 1.5).score == 90)
+        #expect(ReadinessCalculator.readiness(muscleRecovery: [1], loadRatio: 5).score == 75)
+    }
+
+    @Test func weekStreakCountsConsecutiveWeeks() {
+        #expect(WeekStreak.current(workoutDays: [], today: monday, calendar: calendar) == 0)
+        // Deze week, vorige week en de week daarvoor.
+        #expect(WeekStreak.current(workoutDays: [date(1), date(-3), date(-10)], today: date(2), calendar: calendar) == 3)
+    }
+
+    @Test func emptyCurrentWeekDoesNotBreakTheStreak() {
+        #expect(WeekStreak.current(workoutDays: [date(-3), date(-10)], today: date(1), calendar: calendar) == 2)
+    }
+
+    @Test func aMissedWeekBreaksTheStreak() {
+        #expect(WeekStreak.current(workoutDays: [date(1), date(-10)], today: date(2), calendar: calendar) == 1)
     }
 }

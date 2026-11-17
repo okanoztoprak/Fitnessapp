@@ -110,23 +110,3 @@ public enum SessionAdvisor {
         return lastPerformed.indices.min { lastPerformed[$0]! < lastPerformed[$1]! }
     }
 }
-
-// MARK: - Herstel per spiergroep
-
-public enum RecoveryStatus: String, Sendable, CaseIterable {
-    /// Nog niet getraind.
-    case untrained
-    /// Minder dan 48 uur geleden getraind.
-    case recovering
-    /// Hersteld en klaar voor een nieuwe prikkel.
-    case ready
-    /// Een week of langer niet getraind.
-    case overdue
-
-    public static func status(hoursSinceTrained hours: Double?) -> RecoveryStatus {
-        guard let hours else { return .untrained }
-        if hours < 48 { return .recovering }
-        if hours < 7 * 24 { return .ready }
-        return .overdue
-    }
-}

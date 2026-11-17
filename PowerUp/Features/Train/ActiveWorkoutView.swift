@@ -9,22 +9,38 @@ struct ActiveWorkoutView: View {
     @Environment(AppRouter.self) private var router
     @State private var showPicker = false
     @State private var showDiscardConfirm = false
+    @State private var showSummary = false
     @State private var plateTarget: PlateTarget?
-    @State private var burst: BurstInfo?
+    @State private var toast: ToastInfo?
 
     struct PlateTarget: Identifiable {
         let id = UUID()
         let kg: Double
     }
 
-    struct BurstInfo: Equatable {
+    struct ToastInfo: Equatable {
         let id = UUID()
-        let subtitle: String
+        let title: String
+        let detail: String
     }
 
     var body: some View {
+        if showSummary {
+            WorkoutSummaryView(workout: workout, profile: profile) { router.presentedWorkout = nil }
+                .transition(.opacity)
+        } else {
+            logger
+        }
+    }
+
+    private var logger: some View {
         NavigationStack {
             List {
+                Section {
+                    LiveStats(workout: workout, units: profile.units)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                }
                 ForEach(workout.sortedExercises) { item in
                     ExerciseSection(item: item, workout: workout, profile: profile,
                                     onComplete: { complete($0, in: item) },
@@ -35,12 +51,17 @@ struct ActiveWorkoutView: View {
                         showPicker = true
                     } label: {
                         Label("Oefening toevoegen", systemImage: "plus.circle.fill")
+                            .font(.body.weight(.semibold))
                     }
+                    .listRowBackground(Theme.card)
                 }
                 Section("Notities") {
                     TextField("Hoe ging het?", text: $workout.notes, axis: .vertical)
+                        .listRowBackground(Theme.card)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle(workout.name)
             .navigationBarTitleDisplayMode(.inline)
@@ -52,14 +73,9 @@ struct ActiveWorkoutView: View {
                             showDiscardConfirm = true
                         }
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "ellipsis")
                     }
                     .accessibilityLabel("Meer opties")
-                }
-                ToolbarItem(placement: .principal) {
-                    Text(workout.startedAt, style: .timer)
-                        .font(.headline.monospacedDigit())
-                        .accessibilityLabel("Trainingsduur")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Klaar") { finish() }.fontWeight(.bold)
@@ -86,27 +102,49 @@ struct ActiveWorkoutView: View {
                 Text("Alle gelogde sets van deze training worden verwijderd.")
             }
         }
-        .overlay {
-            if let burst {
-                PRBurstView(title: String(localized: "NIEUW RECORD!"), subtitle: burst.subtitle)
-                    .onTapGesture { self.burst = nil }
-                    .transition(.opacity)
+        .overlay(alignment: .top) {
+            if let toast {
+                RecordToast(title: toast.title, detail: toast.detail)
+                    .padding(.top, 54)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onTapGesture { withAnimation { self.toast = nil } }
             }
         }
-        .task(id: burst) {
-            guard burst != nil else { return }
-            try? await Task.sleep(for: .seconds(2))
-            if !Task.isCancelled { withAnimation { burst = nil } }
+        .overlay {
+            if toast != nil { ConfettiView().id(toast?.id) }
+        }
+        .task(id: toast) {
+            guard toast != nil else { return }
+            try? await Task.sleep(for: .seconds(3))
+            if !Task.isCancelled { withAnimation { toast = nil } }
         }
     }
 
     private func complete(_ set: SetEntry, in item: WorkoutExercise) {
         hideKeyboard()
-        set.isDone.toggle()
-        guard set.isDone else {
+        if set.isDone {
+            set.isDone = false
             set.completedAt = nil
+            removeRecords(for: set, in: item)
             return
         }
+        let isCardio = item.exercise?.isCardio ?? false
+        if !Self.hasValues(set, isCardio: isCardio) {
+            // Leeg: neem de vorige prestatie of de set erboven over, zoals in de bekende loggers.
+            let index = item.sortedSets.firstIndex { $0 === set } ?? 0
+            let previous = item.exercise.map { History.lastSets(for: $0, before: workout) } ?? []
+            let source = index < previous.count ? previous[index]
+                : item.sortedSets.prefix(index).last { Self.hasValues($0, isCardio: isCardio) }
+            guard let source else {
+                Haptics.warning()
+                return
+            }
+            set.weightKg = source.weightKg
+            set.reps = source.reps
+            set.durationMinutes = source.durationMinutes
+            set.distanceKm = source.distanceKm
+        }
+        set.isDone = true
         set.completedAt = Date()
         Haptics.tap()
         router.restTimer.start(seconds: profile.restSeconds)
@@ -121,13 +159,29 @@ struct ActiveWorkoutView: View {
         for kind in kinds {
             context.insert(PersonalRecord(exercise: exercise, kind: kind, weightKg: set.weightKg, reps: set.reps))
         }
-        GameService.award(.personalRecord, in: context)
         if profile.celebratePRs {
             let names = PRKind.allCases.filter(kinds.contains).map(\.title).joined(separator: " · ")
             Haptics.burst()
-            withAnimation {
-                burst = BurstInfo(subtitle: "\(exercise.name)\n\(SetText.describe(set, isCardio: false, units: profile.units))\n\(names)")
+            withAnimation(.spring(duration: 0.4)) {
+                toast = ToastInfo(
+                    title: String(localized: "Nieuw record: \(exercise.name)"),
+                    detail: "\(SetText.describe(set, isCardio: false, units: profile.units)) · \(names)")
             }
+        }
+    }
+
+    static func hasValues(_ set: SetEntry, isCardio: Bool) -> Bool {
+        isCardio ? (set.durationMinutes ?? 0) > 0 || (set.distanceKm ?? 0) > 0 : set.reps > 0
+    }
+
+    /// Een set die weer wordt uitgevinkt neemt de records mee die hij opleverde.
+    private func removeRecords(for set: SetEntry, in item: WorkoutExercise) {
+        guard let slug = item.exercise?.slug else { return }
+        let since = workout.startedAt
+        for record in (try? context.fetch(FetchDescriptor<PersonalRecord>())) ?? []
+        where record.exerciseSlug == slug && record.date >= since
+            && abs(record.weightKg - set.weightKg) < 0.001 && record.reps == set.reps {
+            context.delete(record)
         }
     }
 
@@ -139,12 +193,10 @@ struct ActiveWorkoutView: View {
             return
         }
         workout.endedAt = Date()
-        GameService.award(.workout, in: context)
-        GameService.refreshPowerLevel(in: context)
         Haptics.success()
+        withAnimation { showSummary = true }
         let finished = workout
-        router.presentedWorkout = nil
-        // Niet-afgevinkte sets opruimen nadat het scherm dicht is.
+        // Niet-afgevinkte sets opruimen nadat het logscherm weg is.
         Task {
             try? await Task.sleep(for: .milliseconds(700))
             for item in finished.exercises ?? [] {
@@ -162,20 +214,57 @@ struct ActiveWorkoutView: View {
         context.saveOrLog() // Na opslaan is de identifier definitief.
         router.discardedWorkoutID = discarded.persistentModelID
         router.presentedWorkout = nil
-        // Records en record-XP uit deze training vervallen mee.
+        // Records uit deze training vervallen mee.
         let since = discarded.startedAt
         for record in (try? context.fetch(FetchDescriptor<PersonalRecord>())) ?? [] where record.date >= since {
             context.delete(record)
-        }
-        for event in (try? context.fetch(FetchDescriptor<XPEvent>())) ?? []
-        where event.source == .personalRecord && event.date >= since {
-            context.delete(event)
         }
         Task {
             try? await Task.sleep(for: .milliseconds(700))
             context.delete(discarded)
             context.saveOrLog()
         }
+    }
+}
+
+/// Duur, volume en sets, live bijgewerkt tijdens het loggen.
+private struct LiveStats: View {
+    let workout: Workout
+    let units: UnitFormatter
+
+    var body: some View {
+        let total = (workout.exercises ?? []).reduce(0) { $0 + ($1.sets ?? []).count }
+        HStack(spacing: 0) {
+            stat(label: String(localized: "Duur")) {
+                Text(workout.startedAt, style: .timer)
+            }
+            Divider().frame(height: 32)
+            stat(label: String(localized: "Volume")) {
+                Text(units.weightText(workout.volumeKg, digits: 0))
+                    .contentTransition(.numericText())
+            }
+            Divider().frame(height: 32)
+            stat(label: String(localized: "Sets")) {
+                Text("\(workout.doneSets.count)/\(total)")
+                    .contentTransition(.numericText())
+            }
+        }
+        .padding(.vertical, 14)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.corner, style: .continuous))
+        .animation(.snappy, value: workout.doneSets.count)
+    }
+
+    private func stat(label: String, @ViewBuilder value: () -> some View) -> some View {
+        VStack(spacing: 2) {
+            value()
+                .font(Theme.number(.title3))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            Text(label).font(.caption).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -203,43 +292,39 @@ private struct ExerciseSection: View {
     }
 
     var body: some View {
+        let previous = item.exercise.map { History.lastSets(for: $0, before: workout) } ?? []
         Section {
-            if let exercise = item.exercise {
-                let previous = History.lastSets(for: exercise, before: workout)
-                if !previous.isEmpty {
-                    let summary = previous
-                        .map { SetText.describe($0, isCardio: isCardio, units: profile.units) }
-                        .joined(separator: ", ")
-                    Text("Vorige keer: \(summary)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-                if let target = Coach.target(for: exercise, before: workout, units: profile.units) {
-                    TargetRow(target: target, isApplied: isApplied(target.suggestion)) { apply(target.suggestion) }
-                }
+            if let exercise = item.exercise,
+               let target = Coach.target(for: exercise, before: workout, units: profile.units) {
+                TargetRow(target: target, isApplied: isApplied(target.suggestion)) { apply(target.suggestion) }
             }
-            ForEach(item.sortedSets) { set in
-                SetRow(set: set, isCardio: isCardio, units: profile.units) { onComplete(set) }
+            ColumnHeader(isCardio: isCardio, unit: profile.units.weightUnit)
+                .listRowBackground(Theme.card)
+                .listRowSeparator(.hidden)
+            ForEach(Array(item.sortedSets.enumerated()), id: \.element.persistentModelID) { index, set in
+                SetRow(set: set, isCardio: isCardio, units: profile.units,
+                       previous: index < previous.count ? previous[index] : nil) { onComplete(set) }
+                    .listRowBackground(set.isDone ? Theme.good.opacity(0.14) : Theme.card)
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing) {
                         Button("Verwijder", systemImage: "trash", role: .destructive) {
                             context.delete(set)
                         }
                     }
-                    .swipeActions(edge: .leading) {
-                        if !isCardio, item.exercise?.gearRaw == "barbell" {
-                            Button("Schijven", systemImage: "circle.circle") { onPlates(set.weightKg) }
-                                .tint(.blue)
-                        }
-                    }
             }
-            TextField("Notitie", text: $item.notes, axis: .vertical)
-                .font(.footnote)
             Button {
                 WorkoutFactory.addSet(to: item, in: context)
             } label: {
                 Label("Set toevoegen", systemImage: "plus")
-                    .font(.subheadline)
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
             }
+            .listRowBackground(Theme.card)
+            .listRowSeparator(.hidden)
+            TextField("Notitie", text: $item.notes, axis: .vertical)
+                .font(.footnote)
+                .listRowBackground(Theme.card)
+                .listRowSeparator(.hidden)
         } header: {
             HStack {
                 Text(item.exercise?.name ?? "")
@@ -247,13 +332,49 @@ private struct ExerciseSection: View {
                     .foregroundStyle(.primary)
                     .textCase(nil)
                 Spacer()
-                Button("Verwijder oefening", systemImage: "xmark.circle.fill") {
-                    context.delete(item)
+                Menu {
+                    if !isCardio, item.exercise?.gearRaw == "barbell" {
+                        Button("Schijvencalculator", systemImage: "circle.circle") {
+                            onPlates(item.sortedSets.first { !$0.isDone }?.weightKg ?? item.sortedSets.last?.weightKg ?? 0)
+                        }
+                    }
+                    Button("Verwijder oefening", systemImage: "trash", role: .destructive) {
+                        context.delete(item)
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
                 }
-                .labelStyle(.iconOnly)
-                .foregroundStyle(.secondary)
+                .accessibilityLabel("Opties voor \(item.exercise?.name ?? "")")
             }
         }
+    }
+}
+
+/// Vaste kolombreedtes, gedeeld door de kop en de rijen.
+private enum Column {
+    static let set: CGFloat = 34
+    static let field: CGFloat = 72
+    static let check: CGFloat = 40
+}
+
+private struct ColumnHeader: View {
+    let isCardio: Bool
+    let unit: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text("Set").frame(width: Column.set)
+            Text("Vorige").frame(maxWidth: .infinity, alignment: .leading)
+            Text(isCardio ? "min" : unit).frame(width: Column.field)
+            Text(isCardio ? "km" : "reps").frame(width: Column.field)
+            Image(systemName: "checkmark").frame(width: Column.check)
+        }
+        .font(.caption2.weight(.bold))
+        .textCase(.uppercase)
+        .foregroundStyle(.secondary)
+        .accessibilityHidden(true)
     }
 }
 
@@ -265,7 +386,7 @@ private struct TargetRow: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "scope")
-                .foregroundStyle(Theme.accent)
+                .foregroundStyle(Theme.accentText)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Doel vandaag: \(target.text)")
@@ -285,7 +406,7 @@ private struct TargetRow: View {
                     .font(.caption.weight(.bold))
             }
         }
-        .listRowBackground(Theme.accent.opacity(0.1))
+        .listRowBackground(Theme.accentText.opacity(0.12))
     }
 }
 
@@ -293,43 +414,77 @@ private struct SetRow: View {
     @Bindable var set: SetEntry
     let isCardio: Bool
     let units: UnitFormatter
+    let previous: SetEntry?
     let onToggle: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
+            kindMenu
+            previousButton
             if isCardio {
                 field(Binding(get: { set.durationMinutes ?? 0 }, set: { set.durationMinutes = $0 }), label: "min")
                 field(Binding(get: { set.distanceKm ?? 0 }, set: { set.distanceKm = $0 }), label: "km")
             } else {
-                kindMenu
                 field(Binding(get: { units.displayWeight(set.weightKg) },
                               set: { set.weightKg = units.kg(fromDisplay: $0) }),
                       label: units.weightUnit)
                 field(Binding(int: $set.reps), label: "reps", decimal: false)
-                rirMenu
             }
-            Spacer(minLength: 0)
             Button(action: onToggle) {
                 Image(systemName: set.isDone ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(set.isDone ? Color.green : Color.secondary)
+                    .foregroundStyle(set.isDone ? Theme.good : Color.secondary)
+                    .contentTransition(.symbolEffect(.replace))
+                    .frame(width: Column.check, height: 36)
             }
             .buttonStyle(.borderless)
             .accessibilityLabel(set.isDone ? Text("Set afgerond") : Text("Set afvinken"))
         }
-        .opacity(set.isDone ? 0.75 : 1)
+    }
+
+    /// Vorige prestatie; een tik neemt de waarden over.
+    @ViewBuilder
+    private var previousButton: some View {
+        if let previous {
+            Button {
+                set.weightKg = previous.weightKg
+                set.reps = previous.reps
+                set.durationMinutes = previous.durationMinutes
+                set.distanceKm = previous.distanceKm
+                Haptics.tap()
+            } label: {
+                Text(compact(previous))
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Vorige keer: \(SetText.describe(previous, isCardio: isCardio, units: units))")
+            .accessibilityHint("Neemt deze waarden over")
+        } else {
+            Text("–")
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private func compact(_ entry: SetEntry) -> String {
+        if isCardio { return SetText.describe(entry, isCardio: true, units: units) }
+        if entry.weightKg == 0 { return "× \(entry.reps)" }
+        return "\(UnitFormatter.number(units.displayWeight(entry.weightKg), digits: 2)) × \(entry.reps)"
     }
 
     private func field(_ binding: Binding<Double>, label: String, decimal: Bool = true) -> some View {
-        VStack(spacing: 0) {
-            NumberField(value: binding, allowsDecimal: decimal)
-                .font(.system(.body, design: .rounded).weight(.semibold))
-                .padding(.vertical, 6)
-                .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
-                .accessibilityLabel(label)
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .frame(minWidth: 56, maxWidth: 84)
+        NumberField(value: binding, allowsDecimal: decimal)
+            .font(Theme.number(.body))
+            .padding(.vertical, 8)
+            .frame(width: Column.field)
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .accessibilityLabel(label)
     }
 
     private var kindMenu: some View {
@@ -337,61 +492,70 @@ private struct SetRow: View {
             Picker("Soort set", selection: $set.kind) {
                 ForEach(SetKind.allCases, id: \.self) { Text($0.title).tag($0) }
             }
+            Picker("Reps in reserve", selection: $set.rir) {
+                Text("RIR: geen").tag(Int?.none)
+                ForEach(0..<6) { Text("RIR \($0)").tag(Int?.some($0)) }
+            }
+            .pickerStyle(.menu)
         } label: {
-            Text(set.kind.badge.isEmpty ? "\(set.order + 1)" : set.kind.badge)
-                .font(.subheadline.weight(.heavy))
-                .padding(4)
-                .frame(minWidth: 30, minHeight: 30)
-                .background(set.kind == .normal ? Color(.tertiarySystemFill) : Theme.accent.opacity(0.3),
-                            in: Circle())
+            VStack(spacing: 0) {
+                Text(set.kind.badge.isEmpty ? "\(set.order + 1)" : set.kind.badge)
+                    .font(Theme.number(.subheadline))
+                    .foregroundStyle(set.kind == .normal ? Color.primary : Theme.accentText)
+                if let rir = set.rir {
+                    Text("R\(rir)").font(.system(size: 9, weight: .bold)).foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: Column.set, height: 36)
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .accessibilityLabel("Soort set: \(set.kind.title)")
     }
-
-    private var rirMenu: some View {
-        Menu {
-            Picker("RIR", selection: $set.rir) {
-                Text("Geen").tag(Int?.none)
-                ForEach(0..<6) { Text("\($0)").tag(Int?.some($0)) }
-            }
-        } label: {
-            VStack(spacing: 0) {
-                Text(set.rir.map { "\($0)" } ?? "–")
-                    .font(.system(.body, design: .rounded).weight(.semibold))
-                    .frame(width: 40)
-                    .padding(.vertical, 6)
-                    .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 8))
-                Text("RIR").font(.caption2).foregroundStyle(.secondary)
-            }
-        }
-        .accessibilityLabel("Reps in reserve")
-    }
 }
 
+/// Zwevende rusttimer met ring en knoppen om tijd toe te voegen of over te slaan.
 struct RestTimerBar: View {
     let timer: RestTimer
 
     var body: some View {
         if timer.isRunning {
-            TimelineView(.periodic(from: .now, by: 0.5)) { timeline in
+            TimelineView(.periodic(from: .now, by: 0.25)) { timeline in
                 let remaining = timer.remaining(at: timeline.date)
                 HStack(spacing: 12) {
-                    Image(systemName: "timer").accessibilityHidden(true)
-                    Text(Duration.seconds(remaining), format: .time(pattern: .minuteSecond))
-                        .font(.system(.title3, design: .rounded).weight(.heavy))
-                        .monospacedDigit()
-                        .accessibilityLabel("Rusttijd")
-                    EnergyBar(fraction: Double(remaining) / Double(max(timer.totalSeconds, 1)))
+                    ZStack {
+                        Circle().stroke(Theme.accent.opacity(0.2), lineWidth: 4)
+                        Circle()
+                            .trim(from: 0, to: Double(remaining) / Double(max(timer.totalSeconds, 1)))
+                            .stroke(Theme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                        Image(systemName: "timer").font(.caption.weight(.bold))
+                    }
+                    .frame(width: 34, height: 34)
+                    .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Rust").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                        Text(Duration.seconds(remaining), format: .time(pattern: .minuteSecond))
+                            .font(Theme.number(.title3))
+                            .monospacedDigit()
+                            .accessibilityLabel("Rusttijd")
+                    }
+                    Spacer(minLength: 4)
                     Button("−15") { timer.add(seconds: -15) }
                     Button("+15") { timer.add(seconds: 15) }
                     Button("Sla over", systemImage: "forward.end.fill") { timer.stop() }
                         .labelStyle(.iconOnly)
                 }
                 .buttonStyle(.bordered)
-                .padding(.horizontal)
+                .buttonBorderShape(.capsule)
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 14)
                 .padding(.vertical, 10)
-                .background(.bar)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                .shadow(color: .black.opacity(0.2), radius: 14, y: 6)
+                .padding(.horizontal)
+                .padding(.bottom, 6)
             }
+            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 }
@@ -423,7 +587,7 @@ struct PlateCalculatorSheet: View {
                         Text("Alleen de stang").foregroundStyle(.secondary)
                     } else {
                         Text(loadout.perSide.map { UnitFormatter.number($0, digits: 2) }.joined(separator: " + "))
-                            .font(.system(.title3, design: .rounded).weight(.heavy))
+                            .font(Theme.number(.title3))
                     }
                     if loadout.remainder > 0 {
                         Label("\(UnitFormatter.number(loadout.remainder, digits: 2)) \(units.weightUnit) is niet te laden met deze schijven.",

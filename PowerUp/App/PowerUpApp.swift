@@ -21,20 +21,37 @@ struct PowerUpApp: App {
     }
 }
 
-/// Gedeelde navigatiestatus: welke training staat open als full-screen cover.
+/// Gedeelde navigatiestatus: welke training staat open, en welk voorstel wordt bekeken.
 @MainActor
 @Observable
 final class AppRouter {
     var presentedWorkout: Workout?
     /// Training die net is weggegooid en zo wordt verwijderd; telt nergens meer mee.
     var discardedWorkoutID: PersistentIdentifier?
+    /// Voorstel dat als sheet wordt getoond.
+    var proposal: WorkoutProposal?
+    /// Voorstel dat start zodra de sheet dicht is.
+    var pendingStart: WorkoutProposal?
     let restTimer = RestTimer()
+
+    func start(_ proposal: WorkoutProposal) {
+        pendingStart = proposal
+        self.proposal = nil
+    }
 }
 
 struct RootView: View {
     @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
     @State private var router = AppRouter()
+
+    private var colorScheme: ColorScheme? {
+        switch profiles.first?.appearance ?? .dark {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
 
     var body: some View {
         Group {
@@ -44,37 +61,50 @@ struct RootView: View {
                 OnboardingView()
             }
         }
-        .tint(Theme.accent)
+        .tint(Theme.accentText)
         .environment(router)
+        .preferredColorScheme(colorScheme)
         .task { ExerciseSeed.seedIfNeeded(context) }
     }
 }
 
 struct MainTabView: View {
     let profile: UserProfile
+    @Environment(\.modelContext) private var context
     @Environment(AppRouter.self) private var router
 
     var body: some View {
         @Bindable var router = router
         TabView {
-            Tab("Vandaag", systemImage: "bolt.fill") {
+            Tab("Vandaag", systemImage: "circle.hexagongrid.fill") {
                 TodayView(profile: profile)
             }
-            Tab("Train", systemImage: "dumbbell.fill") {
+            Tab("Training", systemImage: "dumbbell.fill") {
                 TrainView(profile: profile)
+            }
+            Tab("Voortgang", systemImage: "chart.xyaxis.line") {
+                ProgressTabView(profile: profile)
             }
             Tab("Voeding", systemImage: "fork.knife") {
                 NutritionView(profile: profile)
             }
-            Tab("Voortgang", systemImage: "chart.line.uptrend.xyaxis") {
-                ProgressTabView(profile: profile)
+            Tab("Profiel", systemImage: "person.fill") {
+                ProfileView(profile: profile)
             }
-            Tab("Held", systemImage: "flame.fill") {
-                HeroView(profile: profile)
-            }
+        }
+        .sheet(item: $router.proposal, onDismiss: startPending) { proposal in
+            WorkoutPreviewSheet(proposal: proposal, profile: profile)
         }
         .fullScreenCover(item: $router.presentedWorkout) { workout in
             ActiveWorkoutView(workout: workout, profile: profile)
         }
+    }
+
+    /// Start pas als de sheet weg is; twee presentaties tegelijk botsen.
+    private func startPending() {
+        guard let proposal = router.pendingStart else { return }
+        router.pendingStart = nil
+        router.presentedWorkout = WorkoutFactory.start(name: proposal.title, slugs: proposal.exercises.map(\.slug),
+                                                       in: context)
     }
 }

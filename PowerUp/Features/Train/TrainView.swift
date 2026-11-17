@@ -7,13 +7,6 @@ struct TrainView: View {
     @Environment(\.modelContext) private var context
     @Environment(AppRouter.self) private var router
     @Query(sort: \Workout.startedAt, order: .reverse) private var allWorkouts: [Workout]
-    @State private var focus: FocusProposal?
-
-    struct FocusProposal: Identifiable {
-        let muscle: MuscleGroup
-        let exercises: [Exercise]
-        var id: String { muscle.rawValue }
-    }
 
     private var workouts: [Workout] {
         allWorkouts.filter { $0.persistentModelID != router.discardedWorkoutID }
@@ -21,186 +14,322 @@ struct TrainView: View {
     private var active: Workout? { workouts.first { $0.endedAt == nil } }
     private var finished: [Workout] { workouts.filter { $0.endedAt != nil } }
     private var plan: StarterPlan { Coach.plan(for: profile) }
+    @ScaledMetric(relativeTo: .footnote) private var tileWidth = 104.0
 
     var body: some View {
         NavigationStack {
-            List {
-                if let active {
-                    Section("Bezig") {
-                        Button {
-                            router.presentedWorkout = active
-                        } label: {
-                            Label("Ga verder met \(active.name)", systemImage: "play.fill")
-                        }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    let recommendation = Coach.recommendation(profile: profile, finished: finished)
+                    if let active {
+                        ActiveWorkoutCard(workout: active)
+                    } else {
+                        NextWorkoutCard(recommendation: recommendation, profile: profile)
                     }
-                } else {
-                    startSections
+                    programSection(recommended: recommendation.day)
+                    recoverySection
+                    librarySection
+                    historySection
                 }
-                Section {
-                    NavigationLink {
-                        ExerciseLibraryView(profile: profile)
-                    } label: {
-                        Label("Oefenbibliotheek", systemImage: "books.vertical.fill")
-                    }
-                }
-                Section("Geschiedenis") {
-                    if finished.isEmpty {
-                        Text("Nog geen trainingen. Je eerste sessie legt je basislijn vast.")
-                            .foregroundStyle(.secondary)
-                    }
-                    ForEach(finished) { workout in
-                        NavigationLink {
-                            WorkoutDetailView(workout: workout, profile: profile)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(workout.name).font(.headline)
-                                Text("\(workout.startedAt.formatted(date: .abbreviated, time: .shortened)) · \(workout.doneSets.count) sets · \(profile.units.weightText(workout.volumeKg, digits: 0))")
-                                    .font(.footnote).foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .onDelete { offsets in
-                        for index in offsets { context.delete(finished[index]) }
-                        GameService.refreshPowerLevel(in: context)
-                    }
-                }
+                .padding(.horizontal)
+                .padding(.bottom, 24)
             }
-            .navigationTitle("Train")
-            .confirmationDialog(focus.map { String(localized: "Focus: \($0.muscle.title)") } ?? "",
-                                isPresented: Binding(get: { focus != nil }, set: { if !$0 { focus = nil } }),
-                                titleVisibility: .visible, presenting: focus) { proposal in
-                Button("Start focus-training") {
-                    start(name: String(localized: "Focus: \(proposal.muscle.title)"),
-                          slugs: proposal.exercises.map(\.slug))
-                }
-            } message: { proposal in
-                Text(proposal.exercises.map(\.name).joined(separator: "\n"))
-            }
+            .screenBackground()
+            .navigationTitle("Training")
         }
     }
 
+    // MARK: Schema
+
     @ViewBuilder
-    private var startSections: some View {
-        let recommendation = Coach.recommendation(profile: profile, finished: finished)
-        Section {
-            CoachCard(recommendation: recommendation) { start(name: $0.name, slugs: $0.slugs) }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
+    private func programSection(recommended: TemplateDay?) -> some View {
+        let suggested = StarterPlan.recommend(daysPerWeek: profile.trainingDaysPerWeek)
+        SectionTitle(String(localized: "Schema"),
+                     caption: String(localized: "Bij \(profile.trainingDaysPerWeek) dagen per week past \(suggested.title) het best."))
+        Picker("Schema", selection: Binding(get: { plan }, set: { profile.preferredPlan = $0 })) {
+            ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag($0) }
         }
-        Section {
-            Picker("Schema", selection: Binding(get: { plan }, set: { profile.preferredPlan = $0 })) {
-                ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag($0) }
-            }
-            .pickerStyle(.segmented)
-            ForEach(Coach.dayStatuses(plan: plan, profile: profile, finished: finished)) { status in
-                Button {
-                    start(name: status.day.name, slugs: status.day.slugs)
-                } label: {
-                    HStack {
-                        Image(systemName: "bolt.fill")
-                            .foregroundStyle(Theme.accent)
-                            .frame(width: 28)
-                            .accessibilityHidden(true)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(status.day.name).font(.headline)
-                            Text("\(status.day.slugs.count) oefeningen · \(Coach.relativeDay(status.lastPerformed))")
-                                .font(.footnote).foregroundStyle(.secondary)
-                        }
-                        Spacer(minLength: 4)
-                        if status.day == recommendation.day {
-                            Text("Aan de beurt")
-                                .font(.caption2.weight(.heavy))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Theme.energy, in: Capsule())
-                                .foregroundStyle(.black)
-                        }
+        .pickerStyle(.segmented)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(Coach.dayStatuses(plan: plan, profile: profile, finished: finished)) { status in
+                    Button {
+                        router.proposal = Coach.proposal(
+                            for: status.day, caption: Coach.relativeDay(status.lastPerformed), in: context)
+                    } label: {
+                        DayCard(status: status, isNext: status.day == recommended)
                     }
+                    .buttonStyle(PressableStyle())
                 }
-                .foregroundStyle(.primary)
             }
+        }
+        .scrollClipDisabled()
+        HStack(spacing: 10) {
             Button {
-                start(name: String(localized: "Vrije training"), slugs: [])
+                router.proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+            } label: {
+                Label("Slimme training", systemImage: "sparkles")
+            }
+            .buttonStyle(SoftButtonStyle())
+            Button {
+                router.presentedWorkout = WorkoutFactory.start(name: String(localized: "Vrije training"), in: context)
             } label: {
                 Label("Lege training", systemImage: "plus")
             }
-        } header: {
-            Text("Schema")
-        } footer: {
-            let suggested = StarterPlan.recommend(daysPerWeek: profile.trainingDaysPerWeek)
-            Text("Bij \(profile.trainingDaysPerWeek) dagen per week past \(suggested.title) het best. Je kunt altijd wisselen.")
+            .buttonStyle(SoftButtonStyle())
         }
-        Section {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Coach.muscleStatuses(finished: finished)) { status in
-                        Button {
-                            focus = FocusProposal(muscle: status.muscle, exercises: Coach.focusExercises(
-                                for: status.muscle, equipment: profile.equipment, in: context))
-                        } label: {
-                            MuscleChip(status: status)
-                        }
-                        .buttonStyle(.plain)
-                    }
+        .disabled(active != nil)
+        .opacity(active != nil ? 0.4 : 1)
+    }
+
+    // MARK: Herstel
+
+    @ViewBuilder
+    private var recoverySection: some View {
+        SectionTitle(String(localized: "Herstel per spiergroep"),
+                     caption: String(localized: "Tik op een spiergroep voor een focus-training."))
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: tileWidth), spacing: 10)], spacing: 10) {
+            ForEach(Coach.muscleStatuses(finished: finished)) { status in
+                Button {
+                    router.proposal = Coach.focusProposal(for: status.muscle, equipment: profile.equipment, in: context)
+                } label: {
+                    MuscleTile(status: status)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 4)
+                .buttonStyle(PressableStyle())
             }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-        } header: {
-            Text("Herstel per spiergroep")
-        } footer: {
-            Text("Tik op een spiergroep voor een focus-training met vier oefeningen.")
         }
     }
 
-    private func start(name: String, slugs: [String]) {
-        router.presentedWorkout = WorkoutFactory.start(name: name, slugs: slugs, in: context)
+    // MARK: Bibliotheek en geschiedenis
+
+    private var librarySection: some View {
+        NavigationLink {
+            ExerciseLibraryView(profile: profile)
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "books.vertical.fill")
+                    .foregroundStyle(Theme.accentText)
+                    .frame(width: 30)
+                    .accessibilityHidden(true)
+                Text("Oefenbibliotheek").font(.body.weight(.semibold))
+                Spacer()
+                Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+            }
+            .foregroundStyle(.primary)
+            .card(padding: 16)
+        }
+        .buttonStyle(PressableStyle())
+        .padding(.top, 8)
+    }
+
+    @ViewBuilder
+    private var historySection: some View {
+        SectionTitle(String(localized: "Geschiedenis"))
+        if finished.isEmpty {
+            Text("Nog geen trainingen. Je eerste sessie legt je basislijn vast.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .card()
+        }
+        ForEach(finished) { workout in
+            NavigationLink {
+                WorkoutDetailView(workout: workout, profile: profile)
+            } label: {
+                HistoryRow(workout: workout, profile: profile)
+            }
+            .buttonStyle(PressableStyle())
+            .contextMenu {
+                Button("Verwijder training", systemImage: "trash", role: .destructive) {
+                    context.delete(workout)
+                    context.saveOrLog()
+                }
+            }
+        }
+    }
+}
+
+private struct DayCard: View {
+    let status: Coach.DayStatus
+    let isNext: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if isNext {
+                Tag(text: String(localized: "Aan de beurt"), filled: true)
+                    .fixedSize()
+            } else {
+                Image(systemName: "bolt.fill")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(Theme.accentText)
+                    .frame(width: 30, height: 30)
+                    .background(Theme.raised, in: Circle())
+                    .accessibilityHidden(true)
+            }
+            Spacer(minLength: 4)
+            Text(status.day.name)
+                .font(.headline)
+                .foregroundStyle(.primary)
+            Text("\(status.day.slugs.count) oefeningen")
+                .font(.footnote).foregroundStyle(.secondary)
+            Text(Coach.relativeDay(status.lastPerformed))
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .frame(width: 168, alignment: .leading)
+        .frame(minHeight: 128, alignment: .topLeading)
+        .card(padding: 14)
+        .overlay {
+            if isNext {
+                RoundedRectangle(cornerRadius: Theme.corner, style: .continuous)
+                    .strokeBorder(Theme.accentText.opacity(0.6), lineWidth: 1.5)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Herstel van één spiergroep als ring met percentage.
+struct MuscleTile: View {
+    let status: Coach.MuscleStatus
+    @ScaledMetric(relativeTo: .footnote) private var ringSize = 52.0
+
+    var body: some View {
+        let percent = Int((status.recovery * 100).rounded())
+        VStack(spacing: 8) {
+            ZStack {
+                Ring(progress: status.recovery, lineWidth: 6, color: Coach.color(forRecovery: status.recovery))
+                Text("\(percent)")
+                    .font(Theme.number(.footnote))
+                    .monospacedDigit()
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .padding(ringSize * 0.16)
+            }
+            .frame(width: ringSize, height: ringSize)
+            Text(status.muscle.title)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Text(Coach.statusText(status))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .card(padding: 12)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(status.muscle.title): \(percent)% hersteld")
+    }
+}
+
+private struct HistoryRow: View {
+    let workout: Workout
+    let profile: UserProfile
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(spacing: 0) {
+                Text(workout.startedAt, format: .dateTime.day())
+                    .font(Theme.number(.title3))
+                Text(workout.startedAt, format: .dateTime.month(.abbreviated))
+                    .font(.caption2.weight(.semibold))
+                    .textCase(.uppercase)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(width: 46, height: 50)
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            VStack(alignment: .leading, spacing: 3) {
+                Text(workout.name).font(.headline)
+                Text("\(workout.doneSets.count) sets · \(profile.units.weightText(workout.volumeKg, digits: 0))")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 4)
+            if let duration = workout.duration {
+                Text("\(max(1, Int(duration / 60))) min")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+        }
+        .foregroundStyle(.primary)
+        .card(padding: 14)
+        .accessibilityElement(children: .combine)
     }
 }
 
 struct WorkoutDetailView: View {
     let workout: Workout
     let profile: UserProfile
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @State private var confirmDelete = false
 
     var body: some View {
-        List {
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(workout.startedAt, format: .dateTime.weekday(.wide).day().month(.wide).hour().minute())
+                    .font(.subheadline).foregroundStyle(.secondary)
                 HStack {
-                    StatView(value: "\(workout.doneSets.count)", label: String(localized: "Sets"))
-                    StatView(value: profile.units.weightText(workout.volumeKg, digits: 0), label: String(localized: "Volume"))
+                    StatTile(value: "\(workout.doneSets.count)", label: String(localized: "Sets"), symbol: "checkmark.circle.fill")
+                    StatTile(value: profile.units.weightText(workout.volumeKg, digits: 0),
+                             label: String(localized: "Volume"), symbol: "scalemass.fill")
                     if let duration = workout.duration {
-                        StatView(value: "\(Int(duration / 60)) min", label: String(localized: "Duur"))
+                        StatTile(value: "\(max(1, Int(duration / 60))) min", label: String(localized: "Duur"), symbol: "clock.fill")
                     }
                 }
-            }
-            ForEach(workout.sortedExercises) { item in
-                Section(item.exercise?.name ?? "") {
-                    ForEach(item.sortedSets.filter(\.isDone)) { set in
-                        HStack {
-                            Text(set.kind.badge.isEmpty ? "\(set.order + 1)" : set.kind.badge)
-                                .font(.caption.weight(.bold))
-                                .frame(width: 24)
-                                .foregroundStyle(.secondary)
-                            Text(SetText.describe(set, isCardio: item.exercise?.isCardio ?? false, units: profile.units))
-                            Spacer()
-                            if let rir = set.rir {
-                                Text("RIR \(rir)").font(.footnote).foregroundStyle(.secondary)
+                .card()
+                ForEach(workout.sortedExercises) { item in
+                    let isCardio = item.exercise?.isCardio ?? false
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(item.exercise?.name ?? "").font(.headline)
+                        ForEach(item.sortedSets.filter(\.isDone)) { set in
+                            HStack {
+                                Text(set.kind.badge.isEmpty ? "\(set.order + 1)" : set.kind.badge)
+                                    .font(Theme.number(.caption))
+                                    .frame(width: 26, height: 26)
+                                    .background(Theme.raised, in: Circle())
+                                Text(SetText.describe(set, isCardio: isCardio, units: profile.units))
+                                    .font(.body.monospacedDigit())
+                                Spacer()
+                                if let rir = set.rir {
+                                    Text("RIR \(rir)").font(.footnote).foregroundStyle(.secondary)
+                                }
                             }
                         }
+                        if !item.notes.isEmpty {
+                            Text(item.notes).font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
-                    if !item.notes.isEmpty {
-                        Text(item.notes).font(.footnote).foregroundStyle(.secondary)
+                    .card()
+                }
+                if !workout.notes.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Notities").font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
+                        Text(workout.notes)
                     }
+                    .card()
                 }
             }
-            if !workout.notes.isEmpty {
-                Section("Notities") { Text(workout.notes) }
-            }
+            .padding()
         }
+        .screenBackground()
         .navigationTitle(workout.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button("Verwijder training", systemImage: "trash", role: .destructive) { confirmDelete = true }
+        }
+        .confirmationDialog("Training verwijderen?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            Button("Verwijder", role: .destructive) {
+                let target = workout
+                dismiss()
+                // Verwijder pas als het scherm weg is; een view op een verwijderd model crasht.
+                Task {
+                    try? await Task.sleep(for: .milliseconds(600))
+                    context.delete(target)
+                    context.saveOrLog()
+                }
+            }
+        }
     }
 }
 

@@ -14,11 +14,9 @@ final class UserProfile {
     var bodyFatPercent: Double?
     var activityRaw: String = ActivityLevel.moderate.rawValue
     var goalRaw: String = Goal.maintain.rawValue
-    var experienceRaw: String = Experience.beginner.rawValue
     var trainingDaysPerWeek: Int = 3
     var equipmentRaw: String = Equipment.gym.rawValue
     var usesMetric: Bool = true
-    var mentorToneRaw: String = MentorTone.hype.rawValue
     var hideCalories: Bool = false
     var hideWeight: Bool = false
     var celebratePRs: Bool = true
@@ -26,6 +24,8 @@ final class UserProfile {
     var restSeconds: Int = 120
     /// Zelf gekozen schema; `nil` volgt het aantal trainingsdagen.
     var preferredPlanRaw: String?
+    /// Weergave: system, light of dark.
+    var appearanceRaw: String = Appearance.dark.rawValue
 
     init() {}
 
@@ -41,21 +41,17 @@ final class UserProfile {
         get { Goal(rawValue: goalRaw) ?? .maintain }
         set { goalRaw = newValue.rawValue }
     }
-    var experience: Experience {
-        get { Experience(rawValue: experienceRaw) ?? .beginner }
-        set { experienceRaw = newValue.rawValue }
-    }
     var equipment: Equipment {
         get { Equipment(rawValue: equipmentRaw) ?? .gym }
         set { equipmentRaw = newValue.rawValue }
     }
-    var mentorTone: MentorTone {
-        get { MentorTone(rawValue: mentorToneRaw) ?? .hype }
-        set { mentorToneRaw = newValue.rawValue }
-    }
     var e1rmFormula: OneRepMax.Formula {
         get { OneRepMax.Formula(rawValue: e1rmFormulaRaw) ?? .epley }
         set { e1rmFormulaRaw = newValue.rawValue }
+    }
+    var appearance: Appearance {
+        get { Appearance(rawValue: appearanceRaw) ?? .dark }
+        set { appearanceRaw = newValue.rawValue }
     }
     var preferredPlan: StarterPlan? {
         get { preferredPlanRaw.flatMap(StarterPlan.init(rawValue:)) }
@@ -71,8 +67,8 @@ final class UserProfile {
     }
 }
 
-enum MentorTone: String, CaseIterable {
-    case hype, strict, calm
+enum Appearance: String, CaseIterable {
+    case system, light, dark
 }
 
 enum MuscleGroup: String, CaseIterable {
@@ -206,21 +202,6 @@ final class BodyWeightEntry {
 }
 
 @Model
-final class XPEvent {
-    var date: Date = Date()
-    var sourceRaw: String = XPSource.workout.rawValue
-    var amount: Int = 0
-
-    init(date: Date = Date(), source: XPSource, amount: Int) {
-        self.date = date
-        self.sourceRaw = source.rawValue
-        self.amount = amount
-    }
-
-    var source: XPSource { XPSource(rawValue: sourceRaw) ?? .workout }
-}
-
-@Model
 final class PersonalRecord {
     var date: Date = Date()
     var exerciseSlug: String = ""
@@ -241,27 +222,9 @@ final class PersonalRecord {
     var kind: PRKind { PRKind(rawValue: kindRaw) ?? .weight }
 }
 
-@Model
-final class PowerLevelSnapshot {
-    var date: Date = Date()
-    var total: Int = 0
-    var strength: Int = 0
-    var consistency: Int = 0
-    var conditioning: Int = 0
-    var formulaVersion: Int = PowerLevelCalculator.formulaVersion
-
-    init(date: Date = Date(), result: PowerLevelResult) {
-        self.date = date
-        self.total = result.total
-        self.strength = result.strength
-        self.consistency = result.consistency
-        self.conditioning = result.conditioning
-    }
-}
-
 enum AppSchema {
     static var models: [any PersistentModel.Type] { [
         UserProfile.self, Exercise.self, Workout.self, WorkoutExercise.self, SetEntry.self,
-        BodyWeightEntry.self, XPEvent.self, PersonalRecord.self, PowerLevelSnapshot.self,
+        BodyWeightEntry.self, PersonalRecord.self,
     ] }
 }

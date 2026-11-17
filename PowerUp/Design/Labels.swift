@@ -35,16 +35,6 @@ extension Goal {
     }
 }
 
-extension Experience {
-    var title: String {
-        switch self {
-        case .beginner: String(localized: "Beginner")
-        case .intermediate: String(localized: "Gevorderd")
-        case .advanced: String(localized: "Ervaren")
-        }
-    }
-}
-
 extension Equipment {
     var title: String {
         switch self {
@@ -61,30 +51,6 @@ extension StarterPlan {
         case .fullBody: "Full Body"
         case .upperLower: "Upper/Lower"
         case .pushPullLegs: "Push/Pull/Legs"
-        }
-    }
-}
-
-extension Stage {
-    var title: String {
-        switch self {
-        case .rookie: "Rookie"
-        case .kindled: "Kindled"
-        case .awakened: "Awakened"
-        case .ascended: "Ascended"
-        case .stormforged: "Stormforged"
-        case .limitBreaker: "Limit Breaker"
-        case .mythic: "Mythic"
-        }
-    }
-}
-
-extension MentorTone {
-    var title: String {
-        switch self {
-        case .hype: String(localized: "Hype")
-        case .strict: String(localized: "Streng")
-        case .calm: String(localized: "Rustig")
         }
     }
 }
@@ -138,19 +104,6 @@ extension PRKind {
     }
 }
 
-extension XPSource {
-    var title: String {
-        switch self {
-        case .workout: String(localized: "Training")
-        case .personalRecord: String(localized: "Persoonlijk record")
-        case .weighIn: String(localized: "Weging")
-        case .proteinGoal: String(localized: "Eiwitdoel")
-        case .sleep: String(localized: "Slaap")
-        case .quest: String(localized: "Quest")
-        }
-    }
-}
-
 enum GearLabel {
     static let all = ["barbell", "dumbbell", "machine", "cable", "bodyweight", "kettlebell", "band", "cardio"]
 
@@ -168,26 +121,48 @@ enum GearLabel {
     }
 }
 
-/// Sensei Kaido: korte teksten per toon. Origineel personage; illustratie volgt later.
-enum Mentor {
-    enum Moment { case greeting, workoutDone, restDay, record }
+extension StrengthLevel {
+    var title: String {
+        switch self {
+        case .beginner: String(localized: "Beginner")
+        case .novice: String(localized: "Gevorderde beginner")
+        case .intermediate: String(localized: "Gevorderd")
+        case .advanced: String(localized: "Ver gevorderd")
+        case .elite: String(localized: "Elite")
+        }
+    }
+}
 
-    static let name = "Sensei Kaido"
+extension MainLift {
+    var title: String {
+        switch self {
+        case .squat: String(localized: "Squat")
+        case .bench: String(localized: "Bankdrukken")
+        case .deadlift: String(localized: "Deadlift")
+        case .overheadPress: String(localized: "Overhead press")
+        case .row: String(localized: "Barbell row")
+        }
+    }
+}
 
-    static func line(_ moment: Moment, tone: MentorTone) -> String {
-        switch (moment, tone) {
-        case (.greeting, .hype): String(localized: "Vandaag wordt je kracht zichtbaar. Laat die aura branden!")
-        case (.greeting, .strict): String(localized: "Het plan ligt klaar. Uitvoeren, geen excuses.")
-        case (.greeting, .calm): String(localized: "Eén stap vandaag. Rustig en gericht.")
-        case (.workoutDone, .hype): String(localized: "Geweldig! Je power level stijgt. Zo bouw je een legende.")
-        case (.workoutDone, .strict): String(localized: "Gedaan. Morgen herstel je, daarna weer scherp.")
-        case (.workoutDone, .calm): String(localized: "Goed werk. Eet, slaap en laat het werk zijn effect hebben.")
-        case (.restDay, .hype): String(localized: "Rustdag! Hier groeit je kracht echt.")
-        case (.restDay, .strict): String(localized: "Rust is onderdeel van het plan. Houd je eraan.")
-        case (.restDay, .calm): String(localized: "Vandaag herstel je. Dat telt net zo zwaar als trainen.")
-        case (.record, .hype): String(localized: "NIEUW RECORD! Je grens is zojuist verlegd!")
-        case (.record, .strict): String(localized: "Record. Verdiend door consistent werk.")
-        case (.record, .calm): String(localized: "Een nieuw record. Geniet er even van.")
+extension Appearance {
+    var title: String {
+        switch self {
+        case .system: String(localized: "Systeem")
+        case .light: String(localized: "Licht")
+        case .dark: String(localized: "Donker")
+        }
+    }
+}
+
+extension MuscleGroup {
+    var symbol: String {
+        switch self {
+        case .chest, .back, .shoulders: "figure.strengthtraining.traditional"
+        case .biceps, .triceps, .forearms: "figure.arms.open"
+        case .quads, .hamstrings, .glutes, .calves: "figure.strengthtraining.functional"
+        case .core: "figure.core.training"
+        case .cardio: "figure.run"
         }
     }
 }

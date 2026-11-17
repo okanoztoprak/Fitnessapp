@@ -52,8 +52,8 @@ struct ExerciseList<Row: View>: View {
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(selected ? Theme.accent : Color(.tertiarySystemFill), in: Capsule())
-                .foregroundStyle(selected ? Color.black : Color.primary)
+                .background(selected ? Theme.accent : Theme.raised, in: Capsule())
+                .foregroundStyle(selected ? Theme.onAccent : Color.primary)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
@@ -193,10 +193,10 @@ struct ExerciseDetailView: View {
                         Chart(series) { point in
                             LineMark(x: .value("Datum", point.date),
                                      y: .value("e1RM", profile.units.displayWeight(point.value)))
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.accentText)
                             PointMark(x: .value("Datum", point.date),
                                       y: .value("e1RM", profile.units.displayWeight(point.value)))
-                                .foregroundStyle(Theme.accent)
+                                .foregroundStyle(Theme.accentText)
                         }
                         .chartYScale(domain: .automatic(includesZero: false))
                         .frame(height: 180)

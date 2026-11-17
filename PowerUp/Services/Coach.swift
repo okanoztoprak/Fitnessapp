@@ -1,6 +1,15 @@
 import Foundation
 import PowerCore
 import SwiftData
+import SwiftUI
+
+/// Een voorstel voor een training dat de gebruiker eerst kan bekijken.
+struct WorkoutProposal: Identifiable {
+    let id = UUID()
+    let title: String
+    let caption: String
+    let exercises: [Exercise]
+}
 
 /// Trainingsaanbevelingen. De regels staan in PowerCore; dit verzamelt de data en maakt de teksten.
 @MainActor
@@ -22,7 +31,8 @@ enum Coach {
     struct MuscleStatus: Identifiable {
         let muscle: MuscleGroup
         let lastTrained: Date?
-        let status: RecoveryStatus
+        /// 0 = net getraind, 1 = volledig hersteld.
+        let recovery: Double
         var id: String { muscle.rawValue }
     }
 
@@ -48,7 +58,7 @@ enum Coach {
     }
 
     static func headline(_ recommendation: Recommendation) -> String {
-        if recommendation.isRest { return String(localized: "Rustdag aanbevolen") }
+        if recommendation.isRest { return String(localized: "Rustdag") }
         return recommendation.day?.name ?? String(localized: "Vrije training")
     }
 
@@ -65,7 +75,7 @@ enum Coach {
         case .trainedToday:
             return String(localized: "Je hebt vandaag al getraind. Herstel hoort bij het plan.")
         case .weeklyGoalReached:
-            return String(localized: "Weekdoel gehaald: \(done) van \(planned). Extra trainen levert geen extra XP op; herstel wel.")
+            return String(localized: "Weekdoel gehaald: \(done) van \(planned). Meer trainen levert nu weinig op; herstel wel.")
         case .consecutiveDays:
             return String(localized: "Je hebt twee dagen achter elkaar getraind. Een rustdag houdt je volgende sessie scherp.")
         }
@@ -83,32 +93,144 @@ enum Coach {
         }
     }
 
-    // MARK: Spiergroepen
+    // MARK: Herstel en gereedheid
 
     static func muscleStatuses(finished: [Workout], now: Date = Date()) -> [MuscleStatus] {
-        var last: [MuscleGroup: Date] = [:]
+        var last: [MuscleGroup: (date: Date, sets: Int)] = [:]
         for workout in finished {
+            let date = workout.endedAt ?? workout.startedAt
+            var perMuscle: [MuscleGroup: Int] = [:]
             for item in workout.exercises ?? [] {
-                guard let exercise = item.exercise, !exercise.isCardio,
-                      (item.sets ?? []).contains(where: { $0.isDone && $0.kind != .warmup }) else { continue }
-                let date = workout.endedAt ?? workout.startedAt
-                if date > (last[exercise.primaryMuscle] ?? .distantPast) { last[exercise.primaryMuscle] = date }
+                guard let exercise = item.exercise, !exercise.isCardio else { continue }
+                let sets = (item.sets ?? []).filter { $0.isDone && $0.kind != .warmup }.count
+                if sets > 0 { perMuscle[exercise.primaryMuscle, default: 0] += sets }
+            }
+            for (muscle, sets) in perMuscle where date > (last[muscle]?.date ?? .distantPast) {
+                last[muscle] = (date, sets)
             }
         }
         return MuscleGroup.allCases.filter { $0 != .cardio && $0 != .forearms }.map { muscle in
-            let date = last[muscle]
-            let hours = date.map { now.timeIntervalSince($0) / 3600 }
-            return MuscleStatus(muscle: muscle, lastTrained: date, status: .status(hoursSinceTrained: hours))
+            let entry = last[muscle]
+            let hours = entry.map { now.timeIntervalSince($0.date) / 3600 }
+            return MuscleStatus(muscle: muscle, lastTrained: entry?.date,
+                                recovery: MuscleRecovery.fraction(hoursSinceTrained: hours, sets: entry?.sets ?? 0))
         }
     }
 
     static func statusText(_ status: MuscleStatus) -> String {
-        switch status.status {
-        case .untrained: String(localized: "Nog niet getraind")
-        case .recovering: String(localized: "Herstelt nog")
-        case .ready: String(localized: "Hersteld")
-        case .overdue: String(localized: "Lang geleden")
+        if status.lastTrained == nil { return String(localized: "Fris") }
+        if status.recovery >= 1 { return String(localized: "Hersteld") }
+        return String(localized: "Herstelt")
+    }
+
+    static func color(forRecovery fraction: Double) -> Color {
+        fraction >= 0.8 ? Theme.good : (fraction >= 0.4 ? Theme.warn : Theme.bad)
+    }
+
+    static func readiness(finished: [Workout], now: Date = Date()) -> Readiness {
+        guard !finished.isEmpty else { return Readiness(score: 100) }
+        return ReadinessCalculator.readiness(
+            muscleRecovery: muscleStatuses(finished: finished, now: now).map(\.recovery),
+            loadRatio: Insights.loadRatio(finished: finished, now: now))
+    }
+
+    static func color(for band: Readiness.Band) -> Color {
+        switch band {
+        case .high: Theme.good
+        case .moderate: Theme.warn
+        case .low: Theme.bad
         }
+    }
+
+    static func trainedToday(_ finished: [Workout], now: Date = Date()) -> Bool {
+        finished.contains { Calendar.current.isDate($0.startedAt, inSameDayAs: now) }
+    }
+
+    /// Spiergroepen die minstens 80% hersteld zijn.
+    static func freshMuscleCount(finished: [Workout], now: Date = Date()) -> (fresh: Int, total: Int) {
+        let statuses = muscleStatuses(finished: finished, now: now)
+        return (statuses.filter { $0.recovery >= 0.8 }.count, statuses.count)
+    }
+
+    static func title(for readiness: Readiness, hasHistory: Bool, trainedToday: Bool = false) -> String {
+        guard hasHistory else { return String(localized: "Fris aan de start") }
+        if trainedToday { return String(localized: "Vandaag getraind") }
+        switch readiness.band {
+        case .high: return String(localized: "Klaar om te trainen")
+        case .moderate: return String(localized: "Deels hersteld")
+        case .low: return String(localized: "Herstel eerst")
+        }
+    }
+
+    static func advice(for readiness: Readiness, hasHistory: Bool, finished: [Workout] = []) -> String {
+        guard hasHistory else {
+            return String(localized: "Na je eerste training zie je hier hoe hersteld je bent.")
+        }
+        if trainedToday(finished) {
+            let count = freshMuscleCount(finished: finished)
+            return String(localized: "Goed bezig. \(count.fresh) van \(count.total) spiergroepen zijn fris voor je volgende sessie.")
+        }
+        switch readiness.band {
+        case .high: return String(localized: "Je spieren zijn hersteld. Een goed moment voor een zware sessie.")
+        case .moderate: return String(localized: "Trainen kan prima. Kies spiergroepen die al fris zijn.")
+        case .low: return String(localized: "Je hebt recent zwaar getraind. Rust of een lichte sessie levert nu meer op.")
+        }
+    }
+
+    static func loadText(_ status: TrainingLoad.Status) -> String {
+        switch status {
+        case .building: String(localized: "Opbouw")
+        case .low: String(localized: "Laag")
+        case .steady: String(localized: "Stabiel")
+        case .high: String(localized: "Hoog")
+        }
+    }
+
+    // MARK: Voorstellen
+
+    static func exercises(slugs: [String], in context: ModelContext) -> [Exercise] {
+        let all = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
+        let bySlug = Dictionary(all.map { ($0.slug, $0) }, uniquingKeysWith: { first, _ in first })
+        return slugs.compactMap { bySlug[$0] }
+    }
+
+    static func proposal(for day: TemplateDay, caption: String, in context: ModelContext) -> WorkoutProposal {
+        WorkoutProposal(title: day.name, caption: caption, exercises: exercises(slugs: day.slugs, in: context))
+    }
+
+    static func focusProposal(for muscle: MuscleGroup, equipment: Equipment, in context: ModelContext) -> WorkoutProposal {
+        WorkoutProposal(title: String(localized: "Focus: \(muscle.title)"),
+                        caption: String(localized: "Vier oefeningen voor één spiergroep, passend bij je materiaal."),
+                        exercises: focusExercises(for: muscle, equipment: equipment, in: context))
+    }
+
+    /// Stelt een training samen uit de spiergroepen die het best hersteld zijn.
+    static func smartProposal(profile: UserProfile, finished: [Workout], in context: ModelContext) -> WorkoutProposal {
+        // Grote spiergroepen eerst bij gelijk herstel.
+        let priority: [MuscleGroup] = [.quads, .chest, .back, .hamstrings, .shoulders, .glutes, .triceps, .biceps, .core, .calves]
+        let statuses = muscleStatuses(finished: finished).sorted { lhs, rhs in
+            if abs(lhs.recovery - rhs.recovery) > 0.05 { return lhs.recovery > rhs.recovery }
+            let left = lhs.lastTrained ?? .distantPast, right = rhs.lastTrained ?? .distantPast
+            if left != right { return left < right }
+            return (priority.firstIndex(of: lhs.muscle) ?? 99) < (priority.firstIndex(of: rhs.muscle) ?? 99)
+        }
+        var chosen: [Exercise] = []
+        for status in statuses where chosen.count < 6 {
+            let candidates = focusExercises(for: status.muscle, equipment: profile.equipment, in: context)
+            if let pick = candidates.first(where: { candidate in !chosen.contains { $0 === candidate } }) {
+                chosen.append(pick)
+            }
+        }
+        // Zware samengestelde oefeningen vooraan.
+        chosen.sort { ($0.mainLift == nil ? 1 : 0) < ($1.mainLift == nil ? 1 : 0) }
+        return WorkoutProposal(title: String(localized: "Slimme training"),
+                               caption: String(localized: "Samengesteld uit de spiergroepen die nu het best hersteld zijn."),
+                               exercises: chosen)
+    }
+
+    static func estimatedMinutes(exerciseCount: Int, restSeconds: Int) -> Int {
+        // Drie sets per oefening, ongeveer 45 seconden per set plus rust.
+        Int((Double(exerciseCount * 3 * (restSeconds + 45)) / 60 / 5).rounded() * 5)
     }
 
     /// Vier oefeningen voor één spiergroep, passend bij het beschikbare materiaal.
@@ -129,8 +251,7 @@ enum Coach {
         }
         var result = pick(all.filter { $0.primaryMuscle == muscle })
         if result.count < 3 {
-            let extra = pick(all.filter { $0.secondaryMuscles.contains(muscle) && $0.primaryMuscle != muscle })
-            result += extra
+            result += pick(all.filter { $0.secondaryMuscles.contains(muscle) && $0.primaryMuscle != muscle })
         }
         // Wissel materiaal af zodat het niet vier keer dezelfde beweging wordt.
         var chosen: [Exercise] = []

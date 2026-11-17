@@ -6,13 +6,13 @@
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht en slaap uit Apple Health om je verbruik, doelen en gereedheid te berekenen."
+            "value": "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht, slaap en stappen uit Apple Health om je verbruik, doelen en dagelijkse activiteit te tonen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "POWER UP reads your nutrition (including from MyFitnessPal), weight and sleep from Apple Health to calculate your expenditure, targets and readiness."
+            "value": "POWER UP reads your nutrition (including from MyFitnessPal), weight, sleep and steps from Apple Health to show your expenditure, targets and daily activity."
           }
         }
       }

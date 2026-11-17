@@ -131,7 +131,7 @@ struct ProfileView: View {
         let volume = finished.reduce(0) { $0 + $1.volumeKg }
         return HStack {
             StatTile(value: "\(finished.count)", label: String(localized: "Trainingen"), symbol: "checkmark.circle.fill")
-            StatTile(value: hours < 1 ? "\(Int((hours * 60).rounded())) min" : "\(UnitFormatter.number(hours, digits: 1)) u",
+            StatTile(value: hours < 1 ? "\(Int((hours * 60).rounded())) min" : String(localized: "\(UnitFormatter.number(hours, digits: 1)) u"),
                      label: String(localized: "Getraind"), symbol: "clock.fill", tint: Theme.cool)
             StatTile(value: profile.units.weightText(volume, digits: 0), label: String(localized: "Totaal volume"),
                      symbol: "scalemass.fill", tint: Theme.violet)

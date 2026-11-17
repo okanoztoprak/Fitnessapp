@@ -12,8 +12,7 @@ struct TodayView: View {
     @Query(sort: \NutritionEntry.date) private var nutrition: [NutritionEntry]
     @Query private var programs: [TrainingProgram]
     @State private var showWeightSheet = false
-    @State private var showReadiness = false
-    @Environment(\.dynamicTypeSize) private var typeSize
+    @State private var celebration: String?
 
     private var workouts: [Workout] {
         allWorkouts.filter { $0.persistentModelID != router.discardedWorkoutID }
@@ -26,7 +25,13 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     header
-                    readinessCard
+                    MotivationQuery(profile: profile) { data in
+                        if let week = data.pendingRecapWeek {
+                            RecapBanner(data: data, weekStart: week)
+                        }
+                    }
+                    StepsCard(profile: profile, weekStreak: Insights.weekStreak(finished: finished),
+                              workoutCount: finished.count)
                     if let active {
                         ActiveWorkoutCard(workout: active)
                     } else {
@@ -35,6 +40,18 @@ struct TodayView: View {
                                                                              program: status),
                                         profile: profile)
                         quickActions
+                    }
+                    MotivationQuery(profile: profile) { data in
+                        ChallengesCard(data: data)
+                            .task(id: data.finished.count + data.records.count + data.weights.count + data.nutrition.count) {
+                                let done = ChallengeTracker.newlyCompleted(data: data, in: context)
+                                if let first = done.first {
+                                    Haptics.success()
+                                    withAnimation(.spring(duration: 0.4)) {
+                                        celebration = MotivationText.title(first.kind, target: first.target, period: first.period)
+                                    }
+                                }
+                            }
                     }
                     weightCard
                     nutritionCard
@@ -45,8 +62,21 @@ struct TodayView: View {
             .screenBackground()
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showWeightSheet) { LogWeightSheet(profile: profile) }
-            .sheet(isPresented: $showReadiness) {
-                ReadinessSheet(finished: finished, sleepHours: profile.sleepHoursToday)
+            .overlay(alignment: .top) {
+                if let celebration {
+                    RecordToast(title: String(localized: "Uitdaging voltooid"), detail: celebration)
+                        .padding(.top, 8)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .onTapGesture { withAnimation { self.celebration = nil } }
+                }
+            }
+            .overlay {
+                if celebration != nil { ConfettiView().id(celebration) }
+            }
+            .task(id: celebration) {
+                guard celebration != nil else { return }
+                try? await Task.sleep(for: .seconds(3))
+                if !Task.isCancelled { withAnimation { celebration = nil } }
             }
         }
     }
@@ -73,95 +103,6 @@ struct TodayView: View {
         case 12..<18: String(localized: "Goedemiddag")
         default: String(localized: "Goedenavond")
         }
-    }
-
-    // MARK: Gereedheid
-
-    private var readinessCard: some View {
-        let sleep = profile.sleepHoursToday
-        let readiness = Coach.readiness(finished: finished, sleepHours: sleep)
-        let hasHistory = !finished.isEmpty
-        let color = Coach.color(for: readiness.band)
-        let load = TrainingLoad.status(ratio: Insights.loadRatio(finished: finished))
-        let streak = Insights.weekStreak(finished: finished)
-        return Button {
-            showReadiness = true
-        } label: {
-            let stacked = typeSize.isAccessibilitySize
-            let mainLayout = stacked ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-                : AnyLayout(HStackLayout(spacing: 18))
-            let statsLayout = stacked ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
-                : AnyLayout(HStackLayout(spacing: 0))
-            VStack(spacing: 18) {
-                mainLayout {
-                    ZStack {
-                        Ring(progress: Double(readiness.score) / 100, lineWidth: 13, color: color)
-                        VStack(spacing: -2) {
-                            CountUp(value: readiness.score)
-                                .font(Theme.number(.largeTitle))
-                            Text("van 100").font(.caption2).foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(width: 124, height: 124)
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 4) {
-                            Text("Gereedheid")
-                                .font(.caption.weight(.bold))
-                                .textCase(.uppercase)
-                                .tracking(0.8)
-                                .foregroundStyle(.secondary)
-                            Image(systemName: "chevron.right")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.tertiary)
-                        }
-                        Text(Coach.title(for: readiness, hasHistory: hasHistory,
-                                         trainedToday: Coach.trainedToday(finished)))
-                            .font(.title3.weight(.bold))
-                        Text(Coach.advice(for: readiness, hasHistory: hasHistory, finished: finished))
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.leading)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                statsLayout {
-                    miniStat(value: "\(streak)", label: String(localized: "Weken op rij"), symbol: "flame.fill",
-                             tint: streak > 0 ? Theme.warn : .secondary)
-                    if !stacked { Divider().frame(height: 34) }
-                    miniStat(value: Coach.loadText(load), label: String(localized: "Belasting"),
-                             symbol: "waveform.path.ecg", tint: load == .high ? Theme.bad : Theme.cool)
-                    if !stacked { Divider().frame(height: 34) }
-                    if let sleep {
-                        miniStat(value: "\(UnitFormatter.number(sleep, digits: 1)) u", label: String(localized: "Slaap"),
-                                 symbol: "bed.double.fill", tint: sleep < 7 ? Theme.warn : Theme.violet)
-                    } else {
-                        miniStat(value: "\(finished.count)", label: String(localized: "Trainingen"),
-                                 symbol: "checkmark.circle.fill", tint: Theme.accentText)
-                    }
-                }
-            }
-            .card()
-        }
-        .buttonStyle(PressableStyle())
-        .accessibilityElement(children: .combine)
-        .accessibilityHint("Toont het herstel per spiergroep")
-    }
-
-    private func miniStat(value: String, label: String, symbol: String, tint: Color) -> some View {
-        let stacked = typeSize.isAccessibilitySize
-        return VStack(alignment: stacked ? .leading : .center, spacing: 3) {
-            HStack(spacing: 5) {
-                Image(systemName: symbol).font(.caption).foregroundStyle(tint).accessibilityHidden(true)
-                Text(value)
-                    .font(Theme.number(.headline))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
-            Text(label).font(.caption2).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: stacked ? .leading : .center)
     }
 
     // MARK: Snelle acties
@@ -324,74 +265,6 @@ struct MacroBar: View {
                 }
             }
         }
-    }
-}
-
-/// Uitleg bij de gereedheidsscore met het herstel per spiergroep.
-struct ReadinessSheet: View {
-    let finished: [Workout]
-    var sleepHours: Double?
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        let statuses = Coach.muscleStatuses(finished: finished).sorted { $0.recovery < $1.recovery }
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Gereedheid schat hoe hersteld je bent: het herstel per spiergroep, hoe zwaar deze week is vergeleken met je eigen gemiddelde, en je slaap uit Apple Health als die er is.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    if let sleepHours {
-                        HStack(spacing: 12) {
-                            Image(systemName: "bed.double.fill")
-                                .foregroundStyle(Theme.violet)
-                                .accessibilityHidden(true)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Slaap afgelopen nacht: \(UnitFormatter.number(sleepHours, digits: 1)) uur")
-                                    .font(.subheadline.weight(.semibold))
-                                Text(sleepHours < 7
-                                     ? String(localized: "Minder dan 7 uur kost \(Int(ReadinessCalculator.sleepPenalty(hours: sleepHours).rounded())) punten.")
-                                     : String(localized: "Genoeg slaap; dat telt niet negatief mee."))
-                                    .font(.caption).foregroundStyle(.secondary)
-                            }
-                            Spacer(minLength: 0)
-                        }
-                        .card(padding: 14)
-                    }
-                    VStack(spacing: 14) {
-                        ForEach(statuses) { status in
-                            VStack(spacing: 6) {
-                                HStack {
-                                    Text(status.muscle.title).font(.subheadline.weight(.semibold))
-                                    Spacer()
-                                    Text("\(Int((status.recovery * 100).rounded()))%")
-                                        .font(Theme.number(.subheadline))
-                                        .monospacedDigit()
-                                }
-                                ProgressBar(fraction: status.recovery, color: Coach.color(forRecovery: status.recovery))
-                                HStack {
-                                    Text(Coach.statusText(status))
-                                    Spacer()
-                                    if status.lastTrained != nil { Text(Coach.relativeDay(status.lastTrained)) }
-                                }
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            }
-                            .accessibilityElement(children: .combine)
-                        }
-                    }
-                    .card()
-                }
-                .padding()
-            }
-            .screenBackground()
-            .navigationTitle("Gereedheid")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) { Button("Sluit") { dismiss() } }
-            }
-        }
-        .presentationDetents([.large])
     }
 }
 

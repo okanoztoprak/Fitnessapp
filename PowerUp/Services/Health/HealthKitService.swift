@@ -2,7 +2,7 @@ import Foundation
 import HealthKit
 import PowerCore
 
-/// Apple Health: voeding (ook wat MyFitnessPal daar neerzet), lichaamsgewicht en slaap. Alleen lezen.
+/// Apple Health: voeding (ook wat MyFitnessPal daar neerzet), lichaamsgewicht, slaap en stappen. Alleen lezen.
 final class HealthKitService: NutritionSource {
     static let shared = HealthKitService()
 
@@ -23,12 +23,21 @@ final class HealthKitService: NutritionSource {
         var types = Set<HKObjectType>(Self.nutritionTypes.map { HKQuantityType($0.0) })
         types.insert(HKQuantityType(.bodyMass))
         types.insert(HKCategoryType(.sleepAnalysis))
+        types.insert(HKQuantityType(.stepCount))
         return types
     }
 
     func requestAccess() async throws {
         guard isAvailable else { throw HealthError.unavailable }
         try await store.requestAuthorization(toShare: [], read: readTypes)
+    }
+
+    /// Vraagt alleen opnieuw als er sinds de koppeling soorten bij zijn gekomen (zoals stappen).
+    func requestAccessIfNeeded() async throws {
+        guard isAvailable else { throw HealthError.unavailable }
+        if try await store.statusForAuthorizationRequest(toShare: [], read: readTypes) == .shouldRequest {
+            try await store.requestAuthorization(toShare: [], read: readTypes)
+        }
     }
 
     // MARK: Voeding
@@ -69,6 +78,15 @@ final class HealthKitService: NutritionSource {
             }
         }
         return result
+    }
+
+    // MARK: Stappen
+
+    /// Stappen per dag; Health telt iPhone en Apple Watch samen zonder dubbeltelling.
+    func dailySteps(from start: Date, to end: Date) async throws -> [DailySteps] {
+        try await dailySums(.stepCount, unit: .count(), from: start, to: end, calendar: .current)
+            .map { DailySteps(date: $0.key, count: Int($0.value.rounded())) }
+            .sorted { $0.date < $1.date }
     }
 
     // MARK: Gewicht
@@ -152,6 +170,28 @@ extension HealthKitService {
             samples.append(HKCategorySample(type: HKCategoryType(.sleepAnalysis),
                                             value: HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
                                             start: bedtime, end: wake))
+        }
+        try await store.save(samples)
+    }
+
+    /// Alleen voor testen in de simulator: een week voorbeeldstappen, vandaag tot nu.
+    func writeSampleSteps(now: Date = Date()) async throws {
+        let type = HKQuantityType(.stepCount)
+        try await store.requestAuthorization(toShare: [type], read: readTypes)
+        let calendar = Calendar.current
+        let counts = [9_420, 6_180, 11_050, 8_310, 4_870, 10_240]
+        var samples: [HKSample] = []
+        for (index, count) in counts.enumerated() {
+            guard let day = calendar.date(byAdding: .day, value: index - counts.count, to: calendar.startOfDay(for: now)),
+                  let start = calendar.date(byAdding: .hour, value: 9, to: day),
+                  let end = calendar.date(byAdding: .hour, value: 19, to: day) else { continue }
+            samples.append(HKQuantitySample(type: type, quantity: HKQuantity(unit: .count(), doubleValue: Double(count)),
+                                            start: start, end: end))
+        }
+        let morning = calendar.date(byAdding: .hour, value: 7, to: calendar.startOfDay(for: now)) ?? now
+        if morning < now {
+            samples.append(HKQuantitySample(type: type, quantity: HKQuantity(unit: .count(), doubleValue: 5_640),
+                                            start: morning, end: now))
         }
         try await store.save(samples)
     }

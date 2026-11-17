@@ -21,12 +21,42 @@
         }
       }
     },
+    "%@ boven je doel. Lekker bezig.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ over your goal. Nice work."
+          }
+        }
+      }
+    },
     "%@ staat stil": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%@ has stalled"
+          }
+        }
+      }
+    },
+    "%@ u": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ h"
+          }
+        }
+      }
+    },
+    "%@ van %@ stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ of %@ steps"
           }
         }
       }
@@ -41,6 +71,16 @@
         }
       }
     },
+    "%@%lld%% volume ten opzichte van de week ervoor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@%2$lld%% volume compared with the week before"
+          }
+        }
+      }
+    },
     "%@: %@ sets, doel %lld tot %lld": {
       "localizations": {
         "en": {
@@ -51,12 +91,12 @@
         }
       }
     },
-    "%@: %lld%% hersteld": {
+    "%lld behaald": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@: %2$lld%% recovered"
+            "value": "%lld earned"
           }
         }
       }
@@ -71,6 +111,46 @@
         }
       }
     },
+    "%lld dagen je eiwitdoel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hit your protein %lld days"
+          }
+        }
+      }
+    },
+    "%lld dagen je eiwitdoel gehaald": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hit your protein target %lld days"
+          }
+        }
+      }
+    },
+    "%lld dagen je eten loggen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log your food %lld days"
+          }
+        }
+      }
+    },
+    "%lld dagen op rij gehaald. Houd de reeks vast.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hit %lld days in a row. Keep the streak going."
+          }
+        }
+      }
+    },
     "%lld dagen per week": {
       "localizations": {
         "en": {
@@ -81,12 +161,32 @@
         }
       }
     },
+    "%lld harde sets": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld hard sets"
+          }
+        }
+      }
+    },
     "%lld kcal · formule %lld kcal": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld kcal · formula %2$lld kcal"
+          }
+        }
+      }
+    },
+    "%lld nieuwe records": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld new records"
           }
         }
       }
@@ -137,6 +237,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld sets per exercise. End each set with %2$lld reps left in the tank."
+          }
+        }
+      }
+    },
+    "%lld trainingen deze maand": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld workouts this month"
           }
         }
       }
@@ -221,6 +331,16 @@
         }
       }
     },
+    "%lld%% meer volume dan de week ervoor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld%% more volume than the week before"
+          }
+        }
+      }
+    },
     "%lld%% van je calorieën": {
       "localizations": {
         "en": {
@@ -231,12 +351,32 @@
         }
       }
     },
+    "%lld× wegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weigh in %lld×"
+          }
+        }
+      }
+    },
     "+%lld%% volume": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "+%lld%% volume"
+          }
+        }
+      }
+    },
+    "1 nieuw record": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 new record"
           }
         }
       }
@@ -431,6 +571,16 @@
         }
       }
     },
+    "Alle geplande trainingen gedaan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All planned workouts done"
+          }
+        }
+      }
+    },
     "Alle sets haalden %lld reps. Tijd voor meer gewicht.": {
       "localizations": {
         "en": {
@@ -451,6 +601,16 @@
         }
       }
     },
+    "Alleen de meldingen die je hier aanzet. Ze blijven op je toestel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the notifications you turn on here. They stay on your device."
+          }
+        }
+      }
+    },
     "Alleen de stang": {
       "localizations": {
         "en": {
@@ -467,6 +627,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "All"
+          }
+        }
+      }
+    },
+    "Alles op schema. Houd dit ritme vast.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything on track. Keep this rhythm."
           }
         }
       }
@@ -521,6 +691,16 @@
         }
       }
     },
+    "Badges": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Badges"
+          }
+        }
+      }
+    },
     "Bankdrukken": {
       "localizations": {
         "en": {
@@ -551,6 +731,16 @@
         }
       }
     },
+    "Bekijk je score en je focus voor deze week.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See your score and your focus for this week."
+          }
+        }
+      }
+    },
     "Bekijk je week en je nieuwe caloriedoel.": {
       "localizations": {
         "en": {
@@ -567,16 +757,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "View workout"
-          }
-        }
-      }
-    },
-    "Belasting": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Load"
           }
         }
       }
@@ -841,22 +1021,22 @@
         }
       }
     },
+    "Deel je week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share your week"
+          }
+        }
+      }
+    },
     "Deel samenvatting": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Share summary"
-          }
-        }
-      }
-    },
-    "Deels hersteld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partly recovered"
           }
         }
       }
@@ -921,6 +1101,16 @@
         }
       }
     },
+    "Deze maand": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This month"
+          }
+        }
+      }
+    },
     "Deze week": {
       "localizations": {
         "en": {
@@ -961,6 +1151,16 @@
         }
       }
     },
+    "Doel gehaald": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal reached"
+          }
+        }
+      }
+    },
     "Doel ingevuld": {
       "localizations": {
         "en": {
@@ -977,6 +1177,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Today's target: %@"
+          }
+        }
+      }
+    },
+    "Doel: %@ per dag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal: %@ a day"
           }
         }
       }
@@ -1131,6 +1341,16 @@
         }
       }
     },
+    "Eiwitdagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protein days"
+          }
+        }
+      }
+    },
     "Elke dag een gereedheidsscore": {
       "localizations": {
         "en": {
@@ -1161,32 +1381,42 @@
         }
       }
     },
+    "Er ontbrak 1 training. Zet je trainingen deze week vast in je agenda.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 workout was missing. Put your workouts in your calendar this week."
+          }
+        }
+      }
+    },
+    "Er ontbraken %lld trainingen. Zet je trainingen deze week vast in je agenda.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld workouts were missing. Put your workouts in your calendar this week."
+          }
+        }
+      }
+    },
+    "Focus volgende week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus next week"
+          }
+        }
+      }
+    },
     "Formule": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Formula"
-          }
-        }
-      }
-    },
-    "Fris": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fresh"
-          }
-        }
-      }
-    },
-    "Fris aan de start": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fresh at the start"
           }
         }
       }
@@ -1241,6 +1471,16 @@
         }
       }
     },
+    "Geen stappen gevonden. Controleer in de Gezondheid-app of POWER UP stappen mag lezen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No steps found. Check in the Health app that POWER UP is allowed to read steps."
+          }
+        }
+      }
+    },
     "Gem. %lld kcal": {
       "localizations": {
         "en": {
@@ -1261,6 +1501,16 @@
         }
       }
     },
+    "Gemiddeld %@ per dag de afgelopen week.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Averaging %@ a day over the past week."
+          }
+        }
+      }
+    },
     "Gemiddeld actief": {
       "localizations": {
         "en": {
@@ -1271,42 +1521,12 @@
         }
       }
     },
-    "Genoeg slaap; dat telt niet negatief mee.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enough sleep; it does not count against you."
-          }
-        }
-      }
-    },
     "Gereed": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Done"
-          }
-        }
-      }
-    },
-    "Gereedheid": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Readiness"
-          }
-        }
-      }
-    },
-    "Gereedheid schat hoe hersteld je bent: het herstel per spiergroep, hoe zwaar deze week is vergeleken met je eigen gemiddelde, en je slaap uit Apple Health als die er is.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Readiness estimates how recovered you are: recovery per muscle group, how heavy this week is compared with your own average, and your sleep from Apple Health when available."
           }
         }
       }
@@ -1471,12 +1691,12 @@
         }
       }
     },
-    "Goed bezig. %lld van %lld spiergroepen zijn fris voor je volgende sessie.": {
+    "Goede week": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nice work. %1$lld of %2$lld muscle groups are fresh for your next session."
+            "value": "Good week"
           }
         }
       }
@@ -1531,6 +1751,16 @@
         }
       }
     },
+    "Harde sets": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hard sets"
+          }
+        }
+      }
+    },
     "Harde sets per spiergroep sinds maandag; een oefening telt half mee voor de spieren die meehelpen. In het streefbereik groei je het best. Tik op een spiergroep voor een focus-training.": {
       "localizations": {
         "en": {
@@ -1541,52 +1771,22 @@
         }
       }
     },
+    "Herinneringen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reminders"
+          }
+        }
+      }
+    },
     "Herstel": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Recovery"
-          }
-        }
-      }
-    },
-    "Herstel eerst": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recover first"
-          }
-        }
-      }
-    },
-    "Herstel per spiergroep": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recovery by muscle group"
-          }
-        }
-      }
-    },
-    "Hersteld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recovered"
-          }
-        }
-      }
-    },
-    "Herstelt": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recovering"
           }
         }
       }
@@ -1611,12 +1811,12 @@
         }
       }
     },
-    "Hoog": {
+    "Hoogtepunten": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "High"
+            "value": "Highlights"
           }
         }
       }
@@ -1641,12 +1841,32 @@
         }
       }
     },
+    "In onderzoek vlakt de gezondheidswinst bij volwassenen af rond 8.000 tot 10.000 stappen per dag, bij 60-plussers rond 6.000 tot 8.000. Kies een doel dat je op de meeste dagen haalt; verhogen kan altijd.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Research shows the health benefits for adults level off around 8,000 to 10,000 steps a day, and around 6,000 to 8,000 for people over 60. Pick a goal you hit on most days; you can always raise it."
+          }
+        }
+      }
+    },
     "Instellingen": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "Je doel is %@ stappen per dag.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your goal is %@ steps a day."
           }
         }
       }
@@ -1721,22 +1941,22 @@
         }
       }
     },
+    "Je haalde je eiwitdoel op minder dan 4 dagen. Een eiwitrijk ontbijt maakt het verschil.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You hit your protein target on fewer than 4 days. A protein-rich breakfast makes the difference."
+          }
+        }
+      }
+    },
     "Je hebt alle %lld weken afgerond. Start een nieuw blok; je gewichten gaan mee.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "You completed all %lld weeks. Start a new block; your weights carry over."
-          }
-        }
-      }
-    },
-    "Je hebt recent zwaar getraind. Rust of een lichte sessie levert nu meer op.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You trained hard recently. Rest or a light session will do more for you now."
           }
         }
       }
@@ -1811,12 +2031,12 @@
         }
       }
     },
-    "Je spieren zijn hersteld. Een goed moment voor een zware sessie.": {
+    "Je stappen komen uit Apple Health. Koppelen doe je op het tabblad Vandaag of Voeding.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your muscles have recovered. A good moment for a heavy session."
+            "value": "Your steps come from Apple Health. Connect it on the Today or Nutrition tab."
           }
         }
       }
@@ -1921,6 +2141,36 @@
         }
       }
     },
+    "Je volgende training staat klaar. Even kijken?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your next workout is ready. Take a look?"
+          }
+        }
+      }
+    },
+    "Je week in cijfers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your week in numbers"
+          }
+        }
+      }
+    },
+    "Je weekoverzicht staat klaar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your weekly recap is ready"
+          }
+        }
+      }
+    },
     "Je werk en dagelijks leven, zonder je trainingen.": {
       "localizations": {
         "en": {
@@ -1967,16 +2217,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Finish"
-          }
-        }
-      }
-    },
-    "Klaar om te trainen": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ready to train"
           }
         }
       }
@@ -2031,6 +2271,16 @@
         }
       }
     },
+    "Koppel Apple Health om je stappen van vandaag en de afgelopen week hier te zien.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect Apple Health to see today's steps and the past week here."
+          }
+        }
+      }
+    },
     "Kracht": {
       "localizations": {
         "en": {
@@ -2067,16 +2317,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Calves"
-          }
-        }
-      }
-    },
-    "Laag": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Low"
           }
         }
       }
@@ -2201,6 +2441,16 @@
         }
       }
     },
+    "Log je eten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log your food"
+          }
+        }
+      }
+    },
     "Log je eten een week lang; daarna stellen we je doel bij.": {
       "localizations": {
         "en": {
@@ -2251,6 +2501,26 @@
         }
       }
     },
+    "Meer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
+          }
+        }
+      }
+    },
+    "Meer eiwit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More protein"
+          }
+        }
+      }
+    },
     "Meer opties": {
       "localizations": {
         "en": {
@@ -2271,6 +2541,26 @@
         }
       }
     },
+    "Meldingen staan uit voor POWER UP. Zet ze aan in de Instellingen-app van iOS.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications are off for POWER UP. Turn them on in the iOS Settings app."
+          }
+        }
+      }
+    },
+    "Met minstens 5 gelogde dagen wordt je verbruik en je caloriedoel een stuk nauwkeuriger.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "With at least 5 logged days, your expenditure and calorie target become much more accurate."
+          }
+        }
+      }
+    },
     "Mijlpalen": {
       "localizations": {
         "en": {
@@ -2281,12 +2571,12 @@
         }
       }
     },
-    "Minder dan 7 uur kost %lld punten.": {
+    "Minder": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Less than 7 hours costs %lld points."
+            "value": "Less"
           }
         }
       }
@@ -2297,16 +2587,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Minimize"
-          }
-        }
-      }
-    },
-    "Na je eerste training zie je hier hoe hersteld je bent.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "After your first workout you will see how recovered you are here."
           }
         }
       }
@@ -2371,6 +2651,16 @@
         }
       }
     },
+    "Nieuwe kansen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fresh start"
+          }
+        }
+      }
+    },
     "Nieuwe oefening": {
       "localizations": {
         "en": {
@@ -2387,6 +2677,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "New records"
+          }
+        }
+      }
+    },
+    "Nog %@ stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ steps to go"
           }
         }
       }
@@ -2427,6 +2727,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No finished workouts yet."
+          }
+        }
+      }
+    },
+    "Nog geen stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No steps yet"
           }
         }
       }
@@ -2591,12 +2901,22 @@
         }
       }
     },
-    "Opbouw": {
+    "Op doel": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Building up"
+            "value": "On target"
+          }
+        }
+      }
+    },
+    "Op weg": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Getting there"
           }
         }
       }
@@ -2651,6 +2971,16 @@
         }
       }
     },
+    "Pas je stappendoel aan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust your step goal"
+          }
+        }
+      }
+    },
     "Past het best: %@": {
       "localizations": {
         "en": {
@@ -2667,6 +2997,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Per side"
+          }
+        }
+      }
+    },
+    "Plan je trainingen in": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schedule your workouts"
+          }
+        }
+      }
+    },
+    "Precies je doel. Lekker bezig.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right on your goal. Nice work."
           }
         }
       }
@@ -2931,16 +3281,6 @@
         }
       }
     },
-    "Slaap afgelopen nacht: %@ uur": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sleep last night: %@ hours"
-          }
-        }
-      }
-    },
     "Slimme training": {
       "localizations": {
         "en": {
@@ -3061,16 +3401,6 @@
         }
       }
     },
-    "Stabiel": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Steady"
-          }
-        }
-      }
-    },
     "Standaard herstellen": {
       "localizations": {
         "en": {
@@ -3111,6 +3441,56 @@
         }
       }
     },
+    "Stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps"
+          }
+        }
+      }
+    },
+    "Stappen ophalen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading steps"
+          }
+        }
+      }
+    },
+    "Stappen per dag, afgelopen week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps per day, past week"
+          }
+        }
+      }
+    },
+    "Stappendoel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step goal"
+          }
+        }
+      }
+    },
+    "Stappendoel: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step goal: %@"
+          }
+        }
+      }
+    },
     "Start deloadweek": {
       "localizations": {
         "en": {
@@ -3147,6 +3527,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start workout"
+          }
+        }
+      }
+    },
+    "Sterke week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strong week"
           }
         }
       }
@@ -3231,6 +3621,26 @@
         }
       }
     },
+    "Tijd": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        }
+      }
+    },
+    "Tijd om te trainen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time to train"
+          }
+        }
+      }
+    },
     "Tijd voor een deload": {
       "localizations": {
         "en": {
@@ -3241,32 +3651,12 @@
         }
       }
     },
-    "Tik op een spiergroep voor een focus-training.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap a muscle group for a focus workout."
-          }
-        }
-      }
-    },
     "Toch trainen: %@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Train anyway: %@"
-          }
-        }
-      }
-    },
-    "Toont het herstel per spiergroep": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shows recovery per muscle group"
           }
         }
       }
@@ -3291,6 +3681,16 @@
         }
       }
     },
+    "Train %lld× deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Train %lld× this week"
+          }
+        }
+      }
+    },
     "Train een paar keer om te zien welke spiergroepen je het meest belast.": {
       "localizations": {
         "en": {
@@ -3307,16 +3707,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Train smarter."
-          }
-        }
-      }
-    },
-    "Trainen kan prima. Kies spiergroepen die al fris zijn.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Training is fine. Pick muscle groups that are already fresh."
           }
         }
       }
@@ -3391,12 +3781,72 @@
         }
       }
     },
+    "Trainingsherinnering": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workout reminder"
+          }
+        }
+      }
+    },
     "Trendgewicht per week": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Trend weight per week"
+          }
+        }
+      }
+    },
+    "Trendgewicht: %@%@ %@ deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trend weight: %1$@%2$@ %3$@ this week"
+          }
+        }
+      }
+    },
+    "Twee tot drie wegingen per week maken je gewichtstrend betrouwbaar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two to three weigh-ins per week make your weight trend reliable."
+          }
+        }
+      }
+    },
+    "Uitdaging voltooid": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Challenge complete"
+          }
+        }
+      }
+    },
+    "Uitdagingen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Challenges"
+          }
+        }
+      }
+    },
+    "Uitdagingen belonen wat je al van plan was: nooit meer trainingen dan je schema, en volume hooguit 10% meer dan normaal.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Challenges reward what you were already planning: never more workouts than your program, and at most 10% more volume than usual."
           }
         }
       }
@@ -3431,16 +3881,6 @@
         }
       }
     },
-    "Vandaag getraind": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trained today"
-          }
-        }
-      }
-    },
     "Ver gevorderd": {
       "localizations": {
         "en": {
@@ -3457,6 +3897,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hide numbers if you notice they are not good for you. Logging and your trend keep working in the background."
+          }
+        }
+      }
+    },
+    "Verbeter een record": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat a record"
           }
         }
       }
@@ -3691,12 +4141,12 @@
         }
       }
     },
-    "Voor MyFitnessPal, je weegschaal en je slaap": {
+    "Voor MyFitnessPal, je weegschaal, je slaap en je stappen": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "For MyFitnessPal, your scale and your sleep"
+            "value": "For MyFitnessPal, your scale, your sleep and your steps"
           }
         }
       }
@@ -3707,6 +4157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Write sample data to Apple Health"
+          }
+        }
+      }
+    },
+    "Voorbeeldstappen in Apple Health zetten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write sample steps to Apple Health"
           }
         }
       }
@@ -3871,6 +4331,16 @@
         }
       }
     },
+    "Weeg je vaker": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weigh in more often"
+          }
+        }
+      }
+    },
     "Week %lld van %lld · Deload": {
       "localizations": {
         "en": {
@@ -3891,12 +4361,42 @@
         }
       }
     },
+    "Week %lld · %@ – %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week %1$lld · %2$@ – %3$@"
+          }
+        }
+      }
+    },
     "Weekdoel gehaald: %lld van %lld. Meer trainen levert nu weinig op; herstel wel.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Weekly goal reached: %1$lld of %2$lld. More training adds little now; recovery does."
+          }
+        }
+      }
+    },
+    "Weekoverzicht op maandag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly recap on Monday"
+          }
+        }
+      }
+    },
+    "Weekoverzichten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly recaps"
           }
         }
       }
@@ -3927,6 +4427,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Know whether to go all out or recover."
+          }
+        }
+      }
+    },
+    "Wegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weigh-ins"
           }
         }
       }
@@ -4051,6 +4561,16 @@
         }
       }
     },
+    "Zo doorgaan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep going"
+          }
+        }
+      }
+    },
     "Zo loopt het blok": {
       "localizations": {
         "en": {
@@ -4111,12 +4631,32 @@
         }
       }
     },
-    "van 100": {
+    "stappen per dag": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "of 100"
+            "value": "steps a day"
+          }
+        }
+      }
+    },
+    "van %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "of %@"
+          }
+        }
+      }
+    },
+    "weekscore": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "week score"
           }
         }
       }

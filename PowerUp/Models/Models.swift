@@ -32,7 +32,7 @@ final class UserProfile {
     var proteinPerKg: Double?
     /// Deel van de calorieën uit vet.
     var fatShare: Double = 0.25
-    /// Voeding, gewicht en slaap uit Apple Health halen.
+    /// Voeding, gewicht, slaap en stappen uit Apple Health halen.
     var healthSyncEnabled: Bool = false
     var lastHealthSync: Date?
     /// Slaap van de laatste nacht uit Apple Health, met de dag waarop die gemeten is.
@@ -40,6 +40,17 @@ final class UserProfile {
     var lastSleepDate: Date?
     /// Losse deloadweek buiten een programma, tot deze datum.
     var deloadUntil: Date?
+    /// Wanneer het weekoverzicht voor het laatst is bekeken.
+    var lastRecapSeen: Date?
+    /// Trainingsherinnering op gekozen weekdagen (1 = zondag, zoals `Calendar`).
+    var reminderEnabled: Bool = false
+    var reminderHour: Int = 18
+    var reminderMinute: Int = 0
+    var reminderWeekdaysRaw: String = "2,4,6"
+    /// Melding op maandagochtend dat het weekoverzicht klaarstaat.
+    var recapReminderEnabled: Bool = false
+    /// Dagelijks stappendoel; de stappen zelf komen uit Apple Health.
+    var stepGoal: Int = 8_000
 
     init() {}
 
@@ -75,9 +86,14 @@ final class UserProfile {
         Calendar.current.dateComponents([.year], from: birthDate, to: Date()).year ?? 30
     }
 
-    /// Slaap van afgelopen nacht, alleen als die vandaag is opgehaald.
+    var reminderWeekdays: Set<Int> {
+        get { Set(reminderWeekdaysRaw.split(separator: ",").compactMap { Int($0) }) }
+        set { reminderWeekdaysRaw = newValue.sorted().map(String.init).joined(separator: ",") }
+    }
+
     var isDeloading: Bool { (deloadUntil ?? .distantPast) > Date() }
 
+    /// Slaap van afgelopen nacht, alleen als die vandaag is opgehaald.
     var sleepHoursToday: Double? {
         guard let date = lastSleepDate, Calendar.current.isDateInToday(date) else { return nil }
         return lastSleepHours
@@ -305,6 +321,27 @@ final class TrainingProgram {
     var isActive: Bool { endedAt == nil }
 }
 
+/// Een voltooide uitdaging; samen vormen ze de badges.
+@Model
+final class ChallengeRecord {
+    var challengeID: String = ""
+    var kindRaw: String = ChallengeKind.workouts.rawValue
+    var periodRaw: String = ChallengePeriod.week.rawValue
+    var target: Int = 0
+    var completedAt: Date = Date()
+
+    init(definition: ChallengeDefinition, completedAt: Date = Date()) {
+        self.challengeID = definition.id
+        self.kindRaw = definition.kind.rawValue
+        self.periodRaw = definition.period.rawValue
+        self.target = definition.target
+        self.completedAt = completedAt
+    }
+
+    var kind: ChallengeKind { ChallengeKind(rawValue: kindRaw) ?? .workouts }
+    var period: ChallengePeriod { ChallengePeriod(rawValue: periodRaw) ?? .week }
+}
+
 /// Resultaat van een wekelijkse check-in.
 @Model
 final class CheckIn {
@@ -334,6 +371,6 @@ final class CheckIn {
 enum AppSchema {
     static var models: [any PersistentModel.Type] { [
         UserProfile.self, Exercise.self, Workout.self, WorkoutExercise.self, SetEntry.self,
-        BodyWeightEntry.self, PersonalRecord.self, NutritionEntry.self, CheckIn.self, TrainingProgram.self,
+        BodyWeightEntry.self, PersonalRecord.self, NutritionEntry.self, CheckIn.self, TrainingProgram.self, ChallengeRecord.self,
     ] }
 }

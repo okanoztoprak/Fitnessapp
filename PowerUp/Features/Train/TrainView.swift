@@ -15,7 +15,6 @@ struct TrainView: View {
     private var active: Workout? { workouts.first { $0.endedAt == nil } }
     private var finished: [Workout] { workouts.filter { $0.endedAt != nil } }
     private var plan: StarterPlan { Coach.plan(for: profile) }
-    @ScaledMetric(relativeTo: .footnote) private var tileWidth = 104.0
 
     var body: some View {
         NavigationStack {
@@ -43,7 +42,6 @@ struct TrainView: View {
                     WeeklyVolumeCard(volumes: ProgramCoach.weeklyVolume(finished: finished, plan: status?.weekPlan)) { muscle in
                         openFocus(muscle)
                     }
-                    recoverySection
                     librarySection
                     historySection
                 }
@@ -110,24 +108,6 @@ struct TrainView: View {
         var proposal = Coach.focusProposal(for: muscle, equipment: profile.equipment, in: context)
         proposal.training = ProgramCoach.freeContext(profile: profile)
         router.proposal = proposal
-    }
-
-    // MARK: Herstel
-
-    @ViewBuilder
-    private var recoverySection: some View {
-        SectionTitle(String(localized: "Herstel per spiergroep"),
-                     caption: String(localized: "Tik op een spiergroep voor een focus-training."))
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: tileWidth), spacing: 10)], spacing: 10) {
-            ForEach(Coach.muscleStatuses(finished: finished)) { status in
-                Button {
-                    openFocus(status.muscle)
-                } label: {
-                    MuscleTile(status: status)
-                }
-                .buttonStyle(PressableStyle())
-            }
-        }
     }
 
     // MARK: Bibliotheek en geschiedenis
@@ -214,41 +194,6 @@ private struct DayCard: View {
             }
         }
         .accessibilityElement(children: .combine)
-    }
-}
-
-/// Herstel van één spiergroep als ring met percentage.
-struct MuscleTile: View {
-    let status: Coach.MuscleStatus
-    @ScaledMetric(relativeTo: .footnote) private var ringSize = 52.0
-
-    var body: some View {
-        let percent = Int((status.recovery * 100).rounded())
-        VStack(spacing: 8) {
-            ZStack {
-                Ring(progress: status.recovery, lineWidth: 6, color: Coach.color(forRecovery: status.recovery))
-                Text("\(percent)")
-                    .font(Theme.number(.footnote))
-                    .monospacedDigit()
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .padding(ringSize * 0.16)
-            }
-            .frame(width: ringSize, height: ringSize)
-            Text(status.muscle.title)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.primary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-            Text(Coach.statusText(status))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .card(padding: 12)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(status.muscle.title): \(percent)% hersteld")
     }
 }
 

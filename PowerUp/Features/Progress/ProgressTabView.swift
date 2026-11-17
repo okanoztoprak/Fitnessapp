@@ -17,6 +17,7 @@ struct ProgressTabView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     monthSummary
+                    MotivationQuery(profile: profile) { data in RecapHistoryCard(data: data) }
                     consistencyCard
                     weightCard
                     volumeCard

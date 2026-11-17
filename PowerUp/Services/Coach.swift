@@ -99,8 +99,9 @@ enum Coach {
         }
     }
 
-    // MARK: Herstel en gereedheid
+    // MARK: Herstel
 
+    /// Herstel per spiergroep; stuurt de slimme training naar spiergroepen die fris zijn.
     static func muscleStatuses(finished: [Workout], now: Date = Date()) -> [MuscleStatus] {
         var last: [MuscleGroup: (date: Date, sets: Int)] = [:]
         for workout in finished {
@@ -120,75 +121,6 @@ enum Coach {
             let hours = entry.map { now.timeIntervalSince($0.date) / 3600 }
             return MuscleStatus(muscle: muscle, lastTrained: entry?.date,
                                 recovery: MuscleRecovery.fraction(hoursSinceTrained: hours, sets: entry?.sets ?? 0))
-        }
-    }
-
-    static func statusText(_ status: MuscleStatus) -> String {
-        if status.lastTrained == nil { return String(localized: "Fris") }
-        if status.recovery >= 1 { return String(localized: "Hersteld") }
-        return String(localized: "Herstelt")
-    }
-
-    static func color(forRecovery fraction: Double) -> Color {
-        fraction >= 0.8 ? Theme.good : (fraction >= 0.4 ? Theme.warn : Theme.bad)
-    }
-
-    static func readiness(finished: [Workout], sleepHours: Double? = nil, now: Date = Date()) -> Readiness {
-        ReadinessCalculator.readiness(
-            muscleRecovery: finished.isEmpty ? [] : muscleStatuses(finished: finished, now: now).map(\.recovery),
-            loadRatio: Insights.loadRatio(finished: finished, now: now),
-            sleepHours: sleepHours)
-    }
-
-    static func color(for band: Readiness.Band) -> Color {
-        switch band {
-        case .high: Theme.good
-        case .moderate: Theme.warn
-        case .low: Theme.bad
-        }
-    }
-
-    static func trainedToday(_ finished: [Workout], now: Date = Date()) -> Bool {
-        finished.contains { Calendar.current.isDate($0.startedAt, inSameDayAs: now) }
-    }
-
-    /// Spiergroepen die minstens 80% hersteld zijn.
-    static func freshMuscleCount(finished: [Workout], now: Date = Date()) -> (fresh: Int, total: Int) {
-        let statuses = muscleStatuses(finished: finished, now: now)
-        return (statuses.filter { $0.recovery >= 0.8 }.count, statuses.count)
-    }
-
-    static func title(for readiness: Readiness, hasHistory: Bool, trainedToday: Bool = false) -> String {
-        guard hasHistory else { return String(localized: "Fris aan de start") }
-        if trainedToday { return String(localized: "Vandaag getraind") }
-        switch readiness.band {
-        case .high: return String(localized: "Klaar om te trainen")
-        case .moderate: return String(localized: "Deels hersteld")
-        case .low: return String(localized: "Herstel eerst")
-        }
-    }
-
-    static func advice(for readiness: Readiness, hasHistory: Bool, finished: [Workout] = []) -> String {
-        guard hasHistory else {
-            return String(localized: "Na je eerste training zie je hier hoe hersteld je bent.")
-        }
-        if trainedToday(finished) {
-            let count = freshMuscleCount(finished: finished)
-            return String(localized: "Goed bezig. \(count.fresh) van \(count.total) spiergroepen zijn fris voor je volgende sessie.")
-        }
-        switch readiness.band {
-        case .high: return String(localized: "Je spieren zijn hersteld. Een goed moment voor een zware sessie.")
-        case .moderate: return String(localized: "Trainen kan prima. Kies spiergroepen die al fris zijn.")
-        case .low: return String(localized: "Je hebt recent zwaar getraind. Rust of een lichte sessie levert nu meer op.")
-        }
-    }
-
-    static func loadText(_ status: TrainingLoad.Status) -> String {
-        switch status {
-        case .building: String(localized: "Opbouw")
-        case .low: String(localized: "Laag")
-        case .steady: String(localized: "Stabiel")
-        case .high: String(localized: "Hoog")
         }
     }
 

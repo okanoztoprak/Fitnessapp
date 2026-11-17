@@ -670,3 +670,143 @@ private let start = Date(timeIntervalSince1970: 1_700_000_000)
         #expect(DeloadAdvisor.deloadWeight(0, increment: 2.5) == 0)
     }
 }
+
+@Suite struct WeeklyReviewTests {
+    @Test func perfectWeekWithNutrition() {
+        let week = WeekSummary(workouts: 3, plannedWorkouts: 3, volumeKg: 11_000, records: 2,
+                               loggedFoodDays: 7, daysOnTarget: 7, proteinDays: 7, weighIns: 4)
+        let review = WeeklyReviewer.review(current: week, previous: WeekSummary(volumeKg: 10_000),
+                                           streakWeeks: 3, tracksNutrition: true)
+        #expect(review.score == 100)
+        #expect(review.highlights == [.planCompleted, .moreVolume(percent: 10), .records(2), .streak(weeks: 3), .proteinDays(7)])
+        #expect(review.focus == .keepGoing)
+    }
+
+    @Test func extraWorkoutsDoNotRaiseTheScore() {
+        let planned = WeekSummary(workouts: 3, plannedWorkouts: 3, weighIns: 3)
+        let extra = WeekSummary(workouts: 6, plannedWorkouts: 3, weighIns: 3)
+        let a = WeeklyReviewer.review(current: planned, previous: nil, streakWeeks: 1, tracksNutrition: false)
+        let b = WeeklyReviewer.review(current: extra, previous: nil, streakWeeks: 1, tracksNutrition: false)
+        #expect(a.score == b.score)
+        #expect(a.score == 100)
+    }
+
+    @Test func focusPicksTheFirstGap() {
+        let missing = WeekSummary(workouts: 1, plannedWorkouts: 3)
+        #expect(WeeklyReviewer.review(current: missing, previous: nil, streakWeeks: 0, tracksNutrition: true).focus
+                == .trainMore(missing: 2))
+        let noFood = WeekSummary(workouts: 3, plannedWorkouts: 3, loggedFoodDays: 2)
+        #expect(WeeklyReviewer.review(current: noFood, previous: nil, streakWeeks: 0, tracksNutrition: true).focus == .logFood)
+        let lowProtein = WeekSummary(workouts: 3, plannedWorkouts: 3, loggedFoodDays: 6, proteinDays: 2)
+        #expect(WeeklyReviewer.review(current: lowProtein, previous: nil, streakWeeks: 0, tracksNutrition: true).focus == .hitProtein)
+        let noScale = WeekSummary(workouts: 3, plannedWorkouts: 3, weighIns: 0)
+        #expect(WeeklyReviewer.review(current: noScale, previous: nil, streakWeeks: 0, tracksNutrition: false).focus == .weighIn)
+    }
+
+    @Test func scoreWeighsTrainingMost() {
+        let half = WeekSummary(workouts: 1, plannedWorkouts: 2, weighIns: 0)
+        #expect(WeeklyReviewer.review(current: half, previous: nil, streakWeeks: 0, tracksNutrition: false).score == 35)
+        #expect(WeekSummary().isEmpty)
+    }
+}
+
+@Suite struct ChallengeTests {
+    private let start = Date(timeIntervalSince1970: 1_700_000_000)
+
+    @Test func workoutChallengeNeverExceedsThePlan() {
+        let challenges = ChallengeGenerator.weekly(weekStart: start, weekNumber: 46, plannedPerWeek: 4,
+                                                   tracksNutrition: false, averageWeeklySets: nil)
+        #expect(challenges.first == ChallengeDefinition(kind: .workouts, period: .week, target: 4, start: start))
+        #expect(challenges.count == 3)
+    }
+
+    @Test func rotationChangesPerWeek() {
+        let a = ChallengeGenerator.weekly(weekStart: start, weekNumber: 1, plannedPerWeek: 3, tracksNutrition: true,
+                                          averageWeeklySets: 20)
+        let b = ChallengeGenerator.weekly(weekStart: start, weekNumber: 2, plannedPerWeek: 3, tracksNutrition: true,
+                                          averageWeeklySets: 20)
+        #expect(a.map(\.kind) != b.map(\.kind))
+        #expect(Set(a.map(\.id)).count == 3)
+    }
+
+    @Test func volumeChallengeIsTenPercentMore() {
+        // Pool: weighIns, records, proteinDays, foodLogDays, hardSets. Week 4 begint bij hardSets.
+        let challenges = ChallengeGenerator.weekly(weekStart: start, weekNumber: 4, plannedPerWeek: 3,
+                                                   tracksNutrition: true, averageWeeklySets: 30)
+        #expect(challenges.contains { $0.kind == .hardSets && $0.target == 33 })
+    }
+
+    @Test func monthlyTargetFollowsThePlan() {
+        #expect(ChallengeGenerator.monthly(monthStart: start, plannedPerWeek: 3, daysInMonth: 30).target == 12)
+        #expect(ChallengeGenerator.monthly(monthStart: start, plannedPerWeek: 4, daysInMonth: 28).target == 16)
+    }
+
+    @Test func fractionIsBounded() {
+        #expect(ChallengeGenerator.fraction(value: 5, target: 3) == 1)
+        #expect(ChallengeGenerator.fraction(value: 1, target: 4) == 0.25)
+    }
+}
+
+@Suite struct StepTests {
+    private let calendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Amsterdam") ?? .current
+        return calendar
+    }()
+    private var today: Date { calendar.date(from: DateComponents(year: 2026, month: 11, day: 17, hour: 15)) ?? Date() }
+
+    private func dayAt(_ offset: Int, hour: Int = 12) -> Date {
+        let start = calendar.startOfDay(for: today)
+        return calendar.date(byAdding: .hour, value: offset * 24 + hour, to: start) ?? start
+    }
+
+    private func week(_ counts: [Int], goal: Int = 8_000) -> StepWeek {
+        // counts: oudste eerst, de laatste is vandaag.
+        let samples = counts.enumerated().map { DailySteps(date: dayAt($0.offset - (counts.count - 1)), count: $0.element) }
+        return StepGoal.week(samples, goal: goal, today: today, calendar: calendar)
+    }
+
+    @Test func fillsSevenDaysEndingToday() {
+        let result = StepGoal.week([DailySteps(date: dayAt(0), count: 4_000)], goal: 8_000, today: today, calendar: calendar)
+        #expect(result.days.count == 7)
+        #expect(result.days.last?.date == calendar.startOfDay(for: today))
+        #expect(result.days.dropLast().allSatisfy { $0.count == 0 })
+        #expect(result.today == 4_000)
+        #expect(result.remaining == 4_000)
+        #expect(result.progress == 0.5)
+    }
+
+    @Test func samplesOnTheSameDayAddUp() {
+        let samples = [DailySteps(date: dayAt(0, hour: 8), count: 1_500), DailySteps(date: dayAt(0, hour: 14), count: 2_500)]
+        #expect(StepGoal.week(samples, goal: 8_000, today: today, calendar: calendar).today == 4_000)
+    }
+
+    @Test func averageSkipsTodayAndEmptyDays() {
+        let result = week([10_000, 0, 6_000, 8_000, 0, 0, 1_000])
+        #expect(result.average == 8_000)
+        #expect(week([0, 0, 0, 0, 0, 0, 3_000]).average == nil)
+    }
+
+    @Test func streakCountsBackFromYesterday() {
+        // Vandaag nog niet gehaald: de reeks van gisteren blijft staan.
+        #expect(week([4_000, 9_000, 8_000, 3_000, 8_500, 9_100, 2_000]).streak == 2)
+        // Vandaag gehaald: telt mee.
+        #expect(week([4_000, 9_000, 8_000, 3_000, 8_500, 9_100, 8_000]).streak == 3)
+        #expect(week([9_000, 9_000, 9_000, 9_000, 9_000, 1_000, 2_000]).streak == 0)
+    }
+
+    @Test func goalReachedAndDaysHit() {
+        let result = week([8_000, 7_999, 12_000, 0, 0, 0, 8_100])
+        #expect(result.goalReached)
+        #expect(result.remaining == 0)
+        #expect(result.daysHit == 3)
+        #expect(result.hasData)
+        #expect(!week([0, 0, 0, 0, 0, 0, 0]).hasData)
+    }
+
+    @Test func goalIsClamped() {
+        #expect(StepGoal.clamp(500) == 2_000)
+        #expect(StepGoal.clamp(50_000) == 30_000)
+        #expect(StepGoal.clamp(9_500) == 9_500)
+    }
+}

@@ -477,7 +477,7 @@ struct HealthConnectCard: View {
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Koppel Apple Health").font(.headline)
-                    Text("Voor MyFitnessPal, je weegschaal en je slaap")
+                    Text("Voor MyFitnessPal, je weegschaal, je slaap en je stappen")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }

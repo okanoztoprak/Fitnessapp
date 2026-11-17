@@ -4,6 +4,57 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var profile: UserProfile
+    @State private var notificationsDenied = false
+
+    private var reminderTime: Binding<Date> {
+        Binding(get: {
+            Calendar.current.date(bySettingHour: profile.reminderHour, minute: profile.reminderMinute, second: 0, of: Date()) ?? Date()
+        }, set: { date in
+            let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+            profile.reminderHour = parts.hour ?? 18
+            profile.reminderMinute = parts.minute ?? 0
+            updateReminders()
+        })
+    }
+
+    /// Maandag tot en met zondag, met de korte namen van de taal van het toestel.
+    private var weekdayPicker: some View {
+        let symbols = Calendar.current.veryShortStandaloneWeekdaySymbols
+        return HStack(spacing: 6) {
+            ForEach([2, 3, 4, 5, 6, 7, 1], id: \.self) { weekday in
+                let isOn = profile.reminderWeekdays.contains(weekday)
+                Button {
+                    var days = profile.reminderWeekdays
+                    if isOn { days.remove(weekday) } else { days.insert(weekday) }
+                    profile.reminderWeekdays = days
+                    updateReminders()
+                } label: {
+                    Text(symbols[weekday - 1])
+                        .font(.subheadline.weight(.bold))
+                        .frame(maxWidth: .infinity, minHeight: 36)
+                        .background(isOn ? Theme.accent : Theme.raised, in: Circle())
+                        .foregroundStyle(isOn ? Theme.onAccent : Color.primary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Calendar.current.standaloneWeekdaySymbols[weekday - 1])
+                .accessibilityAddTraits(isOn ? .isSelected : [])
+            }
+        }
+    }
+
+    private func updateReminders() {
+        Task {
+            if profile.reminderEnabled || profile.recapReminderEnabled {
+                let allowed = await ReminderService.ensurePermission()
+                notificationsDenied = !allowed
+                if !allowed {
+                    profile.reminderEnabled = false
+                    profile.recapReminderEnabled = false
+                }
+            }
+            await ReminderService.reschedule(profile: profile)
+        }
+    }
 
     var body: some View {
         Form {
@@ -36,6 +87,36 @@ struct SettingsView: View {
                     Text("Brzycki").tag(OneRepMax.Formula.brzycki)
                 }
                 Toggle("Records vieren", isOn: $profile.celebratePRs)
+            }
+            Section {
+                Stepper("Stappendoel: \(profile.stepGoal.formatted())", value: $profile.stepGoal,
+                        in: StepGoal.range, step: StepGoal.step)
+            } header: {
+                Text("Activiteit")
+            } footer: {
+                Text("Je stappen komen uit Apple Health. Koppelen doe je op het tabblad Vandaag of Voeding.")
+            }
+            Section {
+                Toggle("Trainingsherinnering", isOn: Binding(get: { profile.reminderEnabled }, set: { value in
+                    profile.reminderEnabled = value
+                    updateReminders()
+                }))
+                if profile.reminderEnabled {
+                    DatePicker("Tijd", selection: reminderTime, displayedComponents: .hourAndMinute)
+                    weekdayPicker
+                }
+                Toggle("Weekoverzicht op maandag", isOn: Binding(get: { profile.recapReminderEnabled }, set: { value in
+                    profile.recapReminderEnabled = value
+                    updateReminders()
+                }))
+            } header: {
+                Text("Herinneringen")
+            } footer: {
+                if notificationsDenied {
+                    Text("Meldingen staan uit voor POWER UP. Zet ze aan in de Instellingen-app van iOS.")
+                } else {
+                    Text("Alleen de meldingen die je hier aanzet. Ze blijven op je toestel.")
+                }
             }
             Section {
                 Toggle("Calorieën verbergen", isOn: $profile.hideCalories)

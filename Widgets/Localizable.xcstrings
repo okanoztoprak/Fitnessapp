@@ -1,0 +1,136 @@
+{
+  "sourceLanguage": "nl",
+  "version": "1.0",
+  "strings": {
+    "%@ van %@ stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ of %@ steps"
+          }
+        }
+      }
+    },
+    "%lld weken op rij": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld weeks in a row"
+          }
+        }
+      }
+    },
+    "1 van 3 trainingen deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 of 3 workouts this week"
+          }
+        }
+      }
+    },
+    "1 week op rij": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 week in a row"
+          }
+        }
+      }
+    },
+    "Je stappen van vandaag tegenover je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's steps against your goal."
+          }
+        }
+      }
+    },
+    "Open POWER UP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open POWER UP"
+          }
+        }
+      }
+    },
+    "Rust": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest"
+          }
+        }
+      }
+    },
+    "Rust voorbij": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest over"
+          }
+        }
+      }
+    },
+    "Stappen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps"
+          }
+        }
+      }
+    },
+    "Stappen, je volgende training en je reeks.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps, your next workout and your streak."
+          }
+        }
+      }
+    },
+    "Vandaag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        }
+      }
+    },
+    "Volgende training": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next workout"
+          }
+        }
+      }
+    },
+    "van %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "of %@"
+          }
+        }
+      }
+    }
+  }
+}

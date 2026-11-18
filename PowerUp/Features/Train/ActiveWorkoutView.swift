@@ -169,7 +169,7 @@ struct ActiveWorkoutView: View {
         set.isDone = true
         set.completedAt = Date()
         Haptics.tap()
-        router.restTimer.start(seconds: profile.restSeconds)
+        router.restTimer.start(seconds: profile.restSeconds, workoutName: workout.name)
 
         guard let exercise = item.exercise, !exercise.isCardio, set.kind != .warmup,
               History.hasFinishedHistory(exercise) else { return }

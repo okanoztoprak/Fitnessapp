@@ -25,6 +25,10 @@ struct PowerUpApp: App {
 @MainActor
 @Observable
 final class AppRouter {
+    /// Eén router voor de hele app, zodat Siri-opdrachten er ook bij kunnen.
+    static let shared = AppRouter()
+    /// Gezet door de Siri-opdracht "Start een training".
+    var intentStartWorkout = false
     var presentedWorkout: Workout?
     /// Training die net is weggegooid en zo wordt verwijderd; telt nergens meer mee.
     var discardedWorkoutID: PersistentIdentifier?
@@ -43,7 +47,7 @@ final class AppRouter {
 struct RootView: View {
     @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
-    @State private var router = AppRouter()
+    @State private var router = AppRouter.shared
 
     private var colorScheme: ColorScheme? {
         switch profiles.first?.appearance ?? .dark {
@@ -103,6 +107,7 @@ struct MainTabView: View {
             guard scenePhase == .active else { return }
             await syncHealthIfStale()
         }
+        .task(id: router.intentStartWorkout) { startFromIntent() }
     }
 
     /// Haalt Apple Health op bij het openen van de app, hooguit eens per kwartier.
@@ -110,6 +115,17 @@ struct MainTabView: View {
         guard profile.healthSyncEnabled else { return }
         if let last = profile.lastHealthSync, Date().timeIntervalSince(last) < 15 * 60 { return }
         _ = try? await HealthSync.run(profile: profile, context: context)
+    }
+
+    /// Siri vroeg om een training: toon het voorstel, tenzij er al een training loopt.
+    private func startFromIntent() {
+        guard router.intentStartWorkout else { return }
+        router.intentStartWorkout = false
+        guard router.presentedWorkout == nil else { return }
+        let finished = (try? context.fetch(FetchDescriptor<Workout>(predicate: #Predicate { $0.endedAt != nil }))) ?? []
+        var proposal = Coach.smartProposal(profile: profile, finished: finished, in: context)
+        proposal.training = ProgramCoach.freeContext(profile: profile)
+        router.proposal = proposal
     }
 
     /// Start pas als de sheet weg is; twee presentaties tegelijk botsen.

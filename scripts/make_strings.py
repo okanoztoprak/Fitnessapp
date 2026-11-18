@@ -471,6 +471,19 @@ EN = {
     "stappen per dag": "steps a day",
     "van %@": "of %@",
     "%@ u": "%@ h",
+    "1 van 3 trainingen deze week": "1 of 3 workouts this week",
+    "Daarna: %@": "Next: %@",
+    "Je hebt vandaag %@ stappen gezet. Je doel van %@ is gehaald.": "You've taken %@ steps today. Your goal of %@ is done.",
+    "Je hebt vandaag %@ stappen gezet. Nog %@ tot je doel.": "You've taken %@ steps today. %@ more to reach your goal.",
+    "Je stappen van vandaag tegenover je doel.": "Today's steps against your goal.",
+    "Open POWER UP": "Open POWER UP",
+    "Opent POWER UP met een voorstel voor je training van vandaag.": "Opens POWER UP with a suggestion for today's workout.",
+    "Rust voorbij": "Rest over",
+    "Stappen van vandaag": "Today's steps",
+    "Stappen, je volgende training en je reeks.": "Steps, your next workout and your streak.",
+    "Start een training": "Start a workout",
+    "Volgende training": "Next workout",
+    "Zegt hoeveel stappen je vandaag hebt gezet en hoeveel je nog nodig hebt voor je doel.": "Tells you how many steps you've taken today and how many you still need for your goal.",
 }
 
 strings = {
@@ -481,6 +494,22 @@ catalog = {"sourceLanguage": "nl", "strings": strings, "version": "1.0"}
 path = pathlib.Path(__file__).resolve().parent.parent / "PowerUp" / "Localizable.xcstrings"
 path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(f"{len(strings)} strings -> {path}")
+
+# Widgets: eigen catalogus, alleen de teksten die de widget-extensie gebruikt.
+WIDGET_KEYS = [
+    "Stappen", "Vandaag", "Rust", "Rust voorbij", "Volgende training", "Open POWER UP", "van %@",
+    "%@ van %@ stappen", "1 week op rij", "%lld weken op rij", "1 van 3 trainingen deze week",
+    "Je stappen van vandaag tegenover je doel.", "Stappen, je volgende training en je reeks.",
+]
+missing = [key for key in WIDGET_KEYS if key not in EN]
+assert not missing, f"Widgetteksten zonder vertaling: {missing}"
+widget_catalog = {"sourceLanguage": "nl", "version": "1.0", "strings": {
+    key: {"localizations": {"en": {"stringUnit": {"state": "translated", "value": EN[key]}}}}
+    for key in sorted(WIDGET_KEYS)
+}}
+widget_path = pathlib.Path(__file__).resolve().parent.parent / "Widgets" / "Localizable.xcstrings"
+widget_path.write_text(json.dumps(widget_catalog, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+print(f"{len(WIDGET_KEYS)} strings -> {widget_path}")
 
 # Info.plist-teksten (toestemmingsvragen). Nederlands staat ook in project.yml.
 INFO_PLIST = {

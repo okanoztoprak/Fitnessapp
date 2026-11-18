@@ -36,6 +36,7 @@ struct StepsCard: View {
             }
         }
         .sheet(isPresented: $showGoal) { StepGoalSheet(profile: profile) }
+        .onChange(of: profile.stepGoal) { _, goal in WidgetBridge.updateGoal(goal) }
     }
 
     // MARK: Gekoppeld
@@ -258,6 +259,7 @@ struct StepsCard: View {
         do {
             try await HealthKitService.shared.requestAccessIfNeeded()
             samples = try await HealthKitService.shared.dailySteps(from: start, to: end)
+            WidgetBridge.updateSteps(week.today, goal: profile.stepGoal)
             error = nil
         } catch {
             self.error = error.localizedDescription

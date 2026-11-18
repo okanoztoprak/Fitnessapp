@@ -26,6 +26,9 @@ Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en vo
 | Weekoverzicht | Elke maandag een score voor de vorige week (training, voeding, wegen), hoogtepunten, één focuspunt en een deelbare kaart | WHOOP, MacroFactor |
 | Uitdagingen | Drie weekdoelen en een maanddoel die passen bij je eigen schema, met badges; nooit meer trainingen dan gepland | Apple Fitness, Strava |
 | Herinneringen | Trainingsherinnering op gekozen dagen en tijd, en een melding als het weekoverzicht klaarstaat; alles lokaal | Strong, Fitbod |
+| Widgets | Stappen (beginscherm en toegangsscherm) en Vandaag: stappen, volgende training en reeks | Apple Fitness, Gentler Streak |
+| Rusttimer als Live Activity | Aftellen met voortgangsbalk op het toegangsscherm en in het Dynamic Island | Strong, Hevy |
+| Siri en Opdrachten | "Start een training in POWER UP" en "Hoeveel stappen heb ik in POWER UP" | Streaks |
 
 ## Bouwen
 
@@ -62,15 +65,17 @@ swift test --package-path Packages/PowerCore
 | `PowerUp/Services` | Oefenbibliotheek, startschema's, historie, aanbevelingen (`Coach`), programma's en volume (`ProgramCoach`), statistieken (`Insights`), voedingsplan en sync (`NutritionPlan`, `HealthSync`), weekoverzicht en uitdagingen (`MotivationService`), meldingen (`ReminderService`), rusttimer |
 | `PowerUp/Services/Health` | `NutritionSource`-protocol en de Apple Health-koppeling |
 | `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
+| `Widgets` | Widget-extensie: stappen- en Vandaag-widget en de Live Activity van de rusttimer |
+| `Shared` | Code die app en widgets delen: de gegevens voor de widgets (via de app-group) en de Live Activity |
 | `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus motivatie (weekoverzicht, uitdagingen), onboarding en instellingen |
-| `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings` en `PowerUp/InfoPlist.xcstrings` |
+| `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings`, `PowerUp/InfoPlist.xcstrings` en `Widgets/Localizable.xcstrings` |
 
 ## Fases
 
 1. **MVP**: onboarding, trainingen loggen, oefenbibliotheek, aanbevelingen, gereedheid en herstel, records, samenvatting, voortgang, krachtniveau, gewichtstrend, TDEE-calculator
 2. **Voeding**: Apple Health/MyFitnessPal-sync achter `NutritionSource`, snel toevoegen, instelbare macrodoelen, adaptieve TDEE, wekelijkse check-in, gewicht en slaap uit Health (slaap telt mee in de gereedheid). Nog niet: hartslagvariabiliteit, een directe MyFitnessPal-koppeling zonder Health
 3. **Coach**: programma's met mesocyclus en deloadweek, doel en RIR per oefening per week, volume per spiergroep, deload-advies, stilstand per oefening, oefening vervangen. Nog niet: eigen programma's samenstellen per oefening, automatisch sets bijstellen op basis van gemelde RIR
-4. **Motivatie** (deze stand): weekoverzicht met score, hoogtepunten en focus, deelbare weekkaart, week- en maanduitdagingen met badges, lokale herinneringen, stappen met eigen stappendoel. De gereedheidskaart op Vandaag en het herstelraster op Training zijn vervangen door stappen; herstel stuurt alleen nog de slimme training. Nog niet: een sociale feed met vrienden, want die vraagt een server en accounts
-5. Polish: widgets, Live Activities voor de rusttimer, Siri, CloudKit, Watch-app
+4. **Motivatie**: weekoverzicht met score, hoogtepunten en focus, deelbare weekkaart, week- en maanduitdagingen met badges, lokale herinneringen, stappen met eigen stappendoel. De gereedheidskaart op Vandaag en het herstelraster op Training zijn vervangen door stappen; herstel stuurt alleen nog de slimme training. Nog niet: een sociale feed met vrienden, want die vraagt een server en accounts
+5. **Polish** (deze stand): stappen- en Vandaag-widget, rusttimer als Live Activity met Dynamic Island, Siri-opdrachten. Nog niet: CloudKit-sync (vraagt een betaald developer-account en iCloud-container), een Watch-app, Engelse Siri-zinnen
 
 De app geeft geen medisch advies.

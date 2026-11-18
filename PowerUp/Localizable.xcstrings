@@ -381,6 +381,16 @@
         }
       }
     },
+    "1 van 3 trainingen deze week": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 of 3 workouts this week"
+          }
+        }
+      }
+    },
     "1 week op rij": {
       "localizations": {
         "en": {
@@ -927,6 +937,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Consistency"
+          }
+        }
+      }
+    },
+    "Daarna: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next: %@"
           }
         }
       }
@@ -1971,6 +1991,26 @@
         }
       }
     },
+    "Je hebt vandaag %@ stappen gezet. Je doel van %@ is gehaald.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've taken %@ steps today. Your goal of %@ is done."
+          }
+        }
+      }
+    },
+    "Je hebt vandaag %@ stappen gezet. Nog %@ tot je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've taken %@ steps today. %@ more to reach your goal."
+          }
+        }
+      }
+    },
     "Je hebt vandaag al getraind. Herstel hoort bij het plan.": {
       "localizations": {
         "en": {
@@ -2037,6 +2077,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your steps come from Apple Health. Connect it on the Today or Nutrition tab."
+          }
+        }
+      }
+    },
+    "Je stappen van vandaag tegenover je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's steps against your goal."
           }
         }
       }
@@ -2921,6 +2971,26 @@
         }
       }
     },
+    "Open POWER UP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open POWER UP"
+          }
+        }
+      }
+    },
+    "Opent POWER UP met een voorstel voor je training van vandaag.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens POWER UP with a suggestion for today's workout."
+          }
+        }
+      }
+    },
     "Opties voor %@": {
       "localizations": {
         "en": {
@@ -3127,6 +3197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest"
+          }
+        }
+      }
+    },
+    "Rust voorbij": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest over"
           }
         }
       }
@@ -3471,6 +3551,26 @@
         }
       }
     },
+    "Stappen van vandaag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's steps"
+          }
+        }
+      }
+    },
+    "Stappen, je volgende training en je reeks.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps, your next workout and your streak."
+          }
+        }
+      }
+    },
     "Stappendoel": {
       "localizations": {
         "en": {
@@ -3507,6 +3607,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start a program"
+          }
+        }
+      }
+    },
+    "Start een training": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a workout"
           }
         }
       }
@@ -4111,6 +4221,16 @@
         }
       }
     },
+    "Volgende training": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next workout"
+          }
+        }
+      }
+    },
     "Volgens formule": {
       "localizations": {
         "en": {
@@ -4517,6 +4637,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Very active"
+          }
+        }
+      }
+    },
+    "Zegt hoeveel stappen je vandaag hebt gezet en hoeveel je nog nodig hebt voor je doel.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tells you how many steps you've taken today and how many you still need for your goal."
           }
         }
       }

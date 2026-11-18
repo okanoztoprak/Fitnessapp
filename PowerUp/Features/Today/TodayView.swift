@@ -36,9 +36,9 @@ struct TodayView: View {
                         ActiveWorkoutCard(workout: active)
                     } else {
                         let status = ProgramStatus.active(programs).map { ProgramStatus(program: $0, finished: finished) }
-                        NextWorkoutCard(recommendation: Coach.recommendation(profile: profile, finished: finished,
-                                                                             program: status),
-                                        profile: profile)
+                        let recommendation = Coach.recommendation(profile: profile, finished: finished, program: status)
+                        NextWorkoutCard(recommendation: recommendation, profile: profile)
+                            .task(id: finished.count) { publishToWidgets(recommendation) }
                         quickActions
                     }
                     MotivationQuery(profile: profile) { data in
@@ -79,6 +79,17 @@ struct TodayView: View {
                 if !Task.isCancelled { withAnimation { celebration = nil } }
             }
         }
+    }
+
+    /// Volgende training en reeks voor de widgets op het beginscherm.
+    private func publishToWidgets(_ recommendation: Coach.Recommendation) {
+        let done = recommendation.advice.sessionsThisWeek
+        let detail = recommendation.isRest
+            ? recommendation.day.map { String(localized: "Daarna: \($0.name)") }
+            : String(localized: "\(done) van \(recommendation.plannedPerWeek) trainingen deze week")
+        WidgetBridge.updateToday(nextWorkout: Coach.headline(recommendation), detail: detail,
+                                 weekStreak: Insights.weekStreak(finished: finished),
+                                 trainedToday: finished.contains { Calendar.current.isDateInToday($0.startedAt) })
     }
 
     // MARK: Kop

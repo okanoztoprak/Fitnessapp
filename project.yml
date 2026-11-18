@@ -1,4 +1,7 @@
 name: PowerUp
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
@@ -25,7 +28,7 @@ targets:
       - target: PowerUpWidgets
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.powerup
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_BASE)
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: POWER UP
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -51,7 +54,7 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.powerup.widgets
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_BASE).widgets
         CODE_SIGN_ENTITLEMENTS: Widgets/Widgets.entitlements
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_EMIT_LOC_STRINGS: YES

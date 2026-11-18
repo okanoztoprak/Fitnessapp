@@ -2,7 +2,12 @@ import Foundation
 
 /// Wat de widgets van de app nodig hebben. De app schrijft dit weg, de widgets lezen het.
 struct WidgetSnapshot: Codable, Equatable {
-    static let appGroup = "group.com.example.powerup"
+    /// "group." + de bundle-ID van de app; de widget-extensie heeft dezelfde ID met ".widgets" erachter.
+    static let appGroup: String = {
+        let id = Bundle.main.bundleIdentifier ?? "com.example.powerup"
+        let base = id.hasSuffix(".widgets") ? String(id.dropLast(".widgets".count)) : id
+        return "group.\(base)"
+    }()
     private static let key = "widgetSnapshot"
 
     var stepsDate: Date?

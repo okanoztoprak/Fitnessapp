@@ -1,0 +1,7 @@
+// Ondertekening. De standaardwaarden werken voor de simulator en CI.
+// Voor je eigen iPhone: draai scripts/setup_iphone.sh; dat schrijft Signing.local.xcconfig (staat niet in git).
+BUNDLE_ID_BASE = com.example.powerup
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+
+#include? "Signing.local.xcconfig"

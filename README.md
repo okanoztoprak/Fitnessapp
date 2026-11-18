@@ -48,7 +48,15 @@ xcodebuild build -project PowerUp.xcodeproj -scheme PowerUp \
   -derivedDataPath build-signed CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=
 ```
 
-In testversies staat onder Voeding → Apple Health een knop die drie weken voorbeeldvoeding, -gewicht en -slaap in Health zet, en op Vandaag (zolang er geen stappen zijn) een knop voor een week voorbeeldstappen. Voor een echt toestel zijn een eigen bundle-ID en een ontwikkelaarsteam nodig.
+In testversies staat onder Voeding → Apple Health een knop die drie weken voorbeeldvoeding, -gewicht en -slaap in Health zet, en op Vandaag (zolang er geen stappen zijn) een knop voor een week voorbeeldstappen.
+
+### Op je eigen iPhone
+
+1. Xcode → Settings → Accounts: voeg je Apple ID toe. Een gratis account werkt; de app verloopt dan na 7 dagen en installeer je opnieuw vanuit Xcode.
+2. Zoek je team-ID op (10 tekens, in Accounts bij je team) en kies een eigen bundle-ID, bijvoorbeeld `nl.jouwnaam.powerup`.
+3. Draai `scripts/setup_iphone.sh TEAM_ID nl.jouwnaam.powerup`. Dat schrijft `Config/Signing.local.xcconfig` (niet in git) en genereert het project; widget-ID en app-group volgen automatisch.
+4. Sluit je iPhone aan, tik op Vertrouw en zet Ontwikkelaarsmodus aan (Instellingen → Privacy en beveiliging).
+5. Open `PowerUp.xcodeproj`, kies je iPhone en druk op Run. Eerste keer: vertrouw je profiel onder Instellingen → Algemeen → VPN en apparaatbeheer.
 
 Tests van de rekenlaag:
 
@@ -66,6 +74,7 @@ swift test --package-path Packages/PowerCore
 | `PowerUp/Services/Health` | `NutritionSource`-protocol en de Apple Health-koppeling |
 | `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
 | `Widgets` | Widget-extensie: stappen- en Vandaag-widget en de Live Activity van de rusttimer |
+| `Config` | Ondertekening: standaard-bundle-ID voor simulator en CI, met een lokaal bestand voor je eigen team |
 | `Shared` | Code die app en widgets delen: de gegevens voor de widgets (via de app-group) en de Live Activity |
 | `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus motivatie (weekoverzicht, uitdagingen), onboarding en instellingen |
 | `scripts/make_strings.py` | Genereert de Engelse vertalingen in `PowerUp/Localizable.xcstrings`, `PowerUp/InfoPlist.xcstrings` en `Widgets/Localizable.xcstrings` |

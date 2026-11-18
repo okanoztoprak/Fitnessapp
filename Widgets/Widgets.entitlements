@@ -8,7 +8,7 @@
 	<array/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.example.powerup</string>
+		<string>group.$(BUNDLE_ID_BASE)</string>
 	</array>
 </dict>
 </plist>

@@ -62,7 +62,7 @@ struct StepsCard: View {
                                 .tracking(0.8)
                                 .foregroundStyle(.secondary)
                             Image(systemName: "chevron.right")
-                                .font(.caption2.weight(.bold))
+                                .font(.caption.weight(.bold))
                                 .foregroundStyle(.tertiary)
                         }
                         Text(title(week))
@@ -118,7 +118,7 @@ struct StepsCard: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                 Text("van \(profile.stepGoal.formatted())")
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
@@ -206,7 +206,7 @@ struct StepsCard: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
-            Text(label).font(.caption2).foregroundStyle(.secondary)
+            Text(label).font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: stacked ? .leading : .center)
     }
@@ -218,7 +218,7 @@ struct StepsCard: View {
             HStack(spacing: 12) {
                 Image(systemName: "figure.walk")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.onSignal)
                     .frame(width: 36, height: 36)
                     .background(Theme.cool, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                     .accessibilityHidden(true)

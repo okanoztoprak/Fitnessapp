@@ -13,11 +13,33 @@ enum Theme {
     static let card = dynamic(dark: (0.105, 0.105, 0.125), light: (1, 1, 1))
     static let raised = dynamic(dark: (0.17, 0.17, 0.195), light: (0.92, 0.92, 0.945))
 
-    static let good = Color(red: 0.20, green: 0.80, blue: 0.50)
-    static let warn = Color(red: 1.0, green: 0.66, blue: 0.15)
-    static let bad = Color(red: 1.0, green: 0.36, blue: 0.38)
-    static let cool = Color(red: 0.32, green: 0.66, blue: 1.0)
-    static let violet = Color(red: 0.62, green: 0.48, blue: 1.0)
+    /// Signaalkleuren voor tekst, iconen, ringen en balken. In lichte modus dieper,
+    /// zodat tekst minstens 4,5:1 haalt op een witte kaart.
+    static let good = dynamic(dark: (0.20, 0.80, 0.50), light: (0.04, 0.48, 0.26))
+    static let warn = dynamic(dark: (1.0, 0.66, 0.15), light: (0.66, 0.36, 0.0))
+    static let bad = dynamic(dark: (1.0, 0.36, 0.38), light: (0.76, 0.12, 0.16))
+    static let cool = dynamic(dark: (0.32, 0.66, 1.0), light: (0.0, 0.40, 0.78))
+    static let violet = dynamic(dark: (0.62, 0.48, 1.0), light: (0.40, 0.24, 0.84))
+
+    /// Felle vlakken met zwarte tekst erop (`onAccent`), in beide modi gelijk.
+    enum Fill {
+        static let good = Color(red: 0.20, green: 0.80, blue: 0.50)
+        static let warn = Color(red: 1.0, green: 0.66, blue: 0.15)
+        static let cool = Color(red: 0.32, green: 0.66, blue: 1.0)
+        static let violet = Color(red: 0.62, green: 0.48, blue: 1.0)
+    }
+
+    /// Wit symbool op een gekleurde icoontegel.
+    static let onSignal = Color.white
+
+    /// Deelkaarten worden als afbeelding gedeeld en zijn altijd donker, los van de modus van het toestel.
+    enum Share {
+        static let background = LinearGradient(colors: [Color(red: 0.10, green: 0.12, blue: 0.08),
+                                                        Color(red: 0.03, green: 0.03, blue: 0.04)],
+                                               startPoint: .topLeading, endPoint: .bottomTrailing)
+        static let text = Color.white
+        static let muted = Color.white.opacity(0.6)
+    }
 
     static let corner: CGFloat = 24
 

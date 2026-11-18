@@ -423,7 +423,7 @@ private struct SummaryStep: View {
         }
         .card()
         VStack(alignment: .leading, spacing: 14) {
-            Tag(text: String(localized: "Dagdoel"), color: Theme.cool, filled: true)
+            Tag(text: String(localized: "Dagdoel"), color: Theme.Fill.cool, filled: true)
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 CountUp(value: Int(target.kcal.rounded())).font(Theme.number(.largeTitle))
                 Text("kcal").font(.title3).foregroundStyle(.secondary)

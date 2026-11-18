@@ -171,7 +171,7 @@ struct NutritionView: View {
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 4]))
                     .foregroundStyle(Color.primary.opacity(0.5))
                     .annotation(position: .top, alignment: .trailing) {
-                        Text("Doel").font(.caption2).foregroundStyle(.secondary)
+                        Text("Doel").font(.caption).foregroundStyle(.secondary)
                     }
             }
             .chartXAxis {
@@ -201,7 +201,7 @@ struct NutritionView: View {
                 Text("Je verbruik").font(.headline)
                 Spacer()
                 Tag(text: estimate.confidence > 0 ? String(localized: "Adaptief") : String(localized: "Formule"),
-                    color: estimate.confidence > 0 ? Theme.accent : Theme.cool, filled: true)
+                    color: estimate.confidence > 0 ? Theme.accent : Theme.Fill.cool, filled: true)
             }
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 CountUp(value: Int(estimate.kcal.rounded())).font(Theme.number(.largeTitle))
@@ -364,7 +364,7 @@ struct NutritionView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
                 Image(systemName: "heart.fill")
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.onSignal)
                     .frame(width: 36, height: 36)
                     .background(Theme.bad, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                     .accessibilityHidden(true)
@@ -421,7 +421,7 @@ struct TodayIntakeCard: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                         Text(remaining >= 0 ? "kcal over" : "kcal te veel")
-                            .font(.caption2).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(.secondary)
                     }
                     .padding(compact ? 14 : 18)
                 }
@@ -471,7 +471,7 @@ struct HealthConnectCard: View {
             HStack(spacing: 12) {
                 Image(systemName: "heart.fill")
                     .font(.title3)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.onSignal)
                     .frame(width: 44, height: 44)
                     .background(Theme.bad, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
                     .accessibilityHidden(true)

@@ -381,6 +381,16 @@
         }
       }
     },
+    "1 set afgevinkt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 set checked off"
+          }
+        }
+      }
+    },
     "1 van 3 trainingen deze week": {
       "localizations": {
         "en": {
@@ -3757,6 +3767,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Time for a deload"
+          }
+        }
+      }
+    },
+    "Tik om te sluiten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to dismiss"
           }
         }
       }

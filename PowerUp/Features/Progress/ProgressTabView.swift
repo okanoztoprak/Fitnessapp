@@ -277,7 +277,7 @@ struct RadarChart: View {
                     .stroke(Theme.accentText, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
                 ForEach(Array(axes.enumerated()), id: \.element.id) { index, axis in
                     Text(axis.label)
-                        .font(.caption2.weight(.semibold))
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .fixedSize()
                         .position(point(center: center, radius: radius + 22, index: index))

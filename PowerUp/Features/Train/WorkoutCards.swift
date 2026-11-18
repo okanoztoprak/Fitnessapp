@@ -15,7 +15,7 @@ struct NextWorkoutCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Tag(text: rest ? String(localized: "Herstel") : String(localized: "Aanbevolen"),
-                    color: rest ? Theme.cool : Theme.accent, filled: true)
+                    color: rest ? Theme.Fill.cool : Theme.accent, filled: true)
                 Spacer()
                 WeekDots(done: recommendation.advice.sessionsThisWeek, planned: recommendation.plannedPerWeek)
             }
@@ -89,7 +89,7 @@ struct ActiveWorkoutCard: View {
             }
             Text(workout.name)
                 .font(.title.weight(.bold))
-            Text("\(workout.doneSets.count) sets afgevinkt")
+            Text(workout.doneSets.count == 1 ? String(localized: "1 set afgevinkt") : String(localized: "\(workout.doneSets.count) sets afgevinkt"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Button("Ga verder") { router.presentedWorkout = workout }
@@ -184,7 +184,7 @@ struct WorkoutPreviewSheet: View {
                                         Text(target.text)
                                             .font(.footnote.weight(.bold))
                                             .foregroundStyle(Theme.accentText)
-                                        Text("Doel").font(.caption2).foregroundStyle(.secondary)
+                                        Text("Doel").font(.caption).foregroundStyle(.secondary)
                                     }
                                 }
                             }

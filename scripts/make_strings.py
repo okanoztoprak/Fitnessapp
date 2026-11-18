@@ -484,6 +484,8 @@ EN = {
     "Start een training": "Start a workout",
     "Volgende training": "Next workout",
     "Zegt hoeveel stappen je vandaag hebt gezet en hoeveel je nog nodig hebt voor je doel.": "Tells you how many steps you've taken today and how many you still need for your goal.",
+    "Tik om te sluiten": "Tap to dismiss",
+    "1 set afgevinkt": "1 set checked off",
 }
 
 strings = {

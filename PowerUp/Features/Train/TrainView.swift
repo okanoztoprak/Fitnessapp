@@ -207,7 +207,7 @@ private struct HistoryRow: View {
                 Text(workout.startedAt, format: .dateTime.day())
                     .font(Theme.number(.title3))
                 Text(workout.startedAt, format: .dateTime.month(.abbreviated))
-                    .font(.caption2.weight(.semibold))
+                    .font(.caption.weight(.semibold))
                     .textCase(.uppercase)
                     .foregroundStyle(.secondary)
             }

@@ -160,12 +160,12 @@ private struct ShareCard: View {
                     .foregroundStyle(Theme.accent)
                 Spacer()
                 Text(date, format: .dateTime.day().month(.wide).year())
-                    .font(.caption).foregroundStyle(.white.opacity(0.6))
+                    .font(.caption).foregroundStyle(Theme.Share.muted)
             }
             Spacer()
             Text(name)
                 .font(.system(size: 40, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.Share.text)
             HStack(spacing: 22) {
                 stat("\(minutes) min", String(localized: "Duur"))
                 stat(volume, String(localized: "Volume"))
@@ -176,16 +176,15 @@ private struct ShareCard: View {
         .padding(28)
         .frame(width: 360, height: 420)
         .background(
-            LinearGradient(colors: [Color(red: 0.10, green: 0.12, blue: 0.08), Color(red: 0.03, green: 0.03, blue: 0.04)],
-                           startPoint: .topLeading, endPoint: .bottomTrailing))
+            Theme.Share.background)
     }
 
     private func stat(_ value: String, _ label: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-            Text(label).font(.caption2).foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(Theme.Share.text)
+            Text(label).font(.caption).foregroundStyle(Theme.Share.muted)
         }
     }
 }

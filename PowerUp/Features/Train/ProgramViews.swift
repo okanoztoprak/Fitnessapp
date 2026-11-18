@@ -69,13 +69,13 @@ struct WeekTimeline: View {
                             .fill(isCurrent ? Theme.accent : (isPast ? Theme.accentText.opacity(0.45) : Theme.raised))
                         if plan.isDeload {
                             Image(systemName: "moon.fill")
-                                .font(.caption2)
+                                .font(.caption)
                                 .foregroundStyle(isCurrent ? Theme.onAccent : Theme.cool)
                         }
                     }
                     .frame(height: 22)
                     Text("W\(week)")
-                        .font(.caption2.weight(isCurrent ? .bold : .regular))
+                        .font(.caption.weight(isCurrent ? .bold : .regular))
                         .foregroundStyle(isCurrent ? .primary : .secondary)
                 }
                 .frame(maxWidth: .infinity)

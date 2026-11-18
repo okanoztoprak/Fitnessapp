@@ -226,12 +226,12 @@ private struct RecapShareCard: View {
             HStack {
                 Text("POWER UP").font(.caption.weight(.heavy)).tracking(2).foregroundStyle(Theme.accent)
                 Spacer()
-                Text(title).font(.caption).foregroundStyle(.white.opacity(0.6))
+                Text(title).font(.caption).foregroundStyle(Theme.Share.muted)
             }
             Spacer()
             HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Text("\(score)").font(.system(size: 72, weight: .bold, design: .rounded)).foregroundStyle(Theme.accent)
-                Text(label).font(.title2.weight(.bold)).foregroundStyle(.white)
+                Text(label).font(.title2.weight(.bold)).foregroundStyle(Theme.Share.text)
             }
             HStack(spacing: 22) {
                 stat("\(summary.workouts)/\(summary.plannedWorkouts)", String(localized: "Trainingen"))
@@ -242,14 +242,13 @@ private struct RecapShareCard: View {
         }
         .padding(28)
         .frame(width: 360, height: 420)
-        .background(LinearGradient(colors: [Color(red: 0.10, green: 0.12, blue: 0.08), Color(red: 0.03, green: 0.03, blue: 0.04)],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing))
+        .background(Theme.Share.background)
     }
 
     private func stat(_ value: String, _ label: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value).font(.system(size: 20, weight: .bold, design: .rounded)).foregroundStyle(.white)
-            Text(label).font(.caption2).foregroundStyle(.white.opacity(0.6))
+            Text(value).font(.system(size: 20, weight: .bold, design: .rounded)).foregroundStyle(Theme.Share.text)
+            Text(label).font(.caption).foregroundStyle(Theme.Share.muted)
         }
     }
 }
@@ -360,12 +359,12 @@ private struct ChallengeRing: View {
             }
             .frame(width: 52, height: 52)
             Text(MotivationText.title(challenge.kind, target: challenge.target, period: challenge.period))
-                .font(.caption2.weight(.semibold))
+                .font(.caption.weight(.semibold))
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
             Text("\(Int(min(value, Double(challenge.target))))/\(challenge.target)")
-                .font(.caption2.monospacedDigit()).foregroundStyle(.secondary)
+                .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
@@ -424,7 +423,7 @@ struct ChallengesSheet: View {
                                             .frame(width: 52, height: 52)
                                             .background(MotivationText.badgeFill(record.kind), in: Circle())
                                         Text(record.completedAt, format: .dateTime.day().month())
-                                            .font(.caption2).foregroundStyle(.secondary)
+                                            .font(.caption).foregroundStyle(.secondary)
                                     }
                                     .accessibilityElement(children: .ignore)
                                     .accessibilityLabel(MotivationText.title(record.kind, target: record.target, period: record.period))

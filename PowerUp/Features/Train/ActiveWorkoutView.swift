@@ -129,7 +129,7 @@ struct ActiveWorkoutView: View {
                 RecordToast(title: toast.title, detail: toast.detail)
                     .padding(.top, 54)
                     .transition(.move(edge: .top).combined(with: .opacity))
-                    .onTapGesture { withAnimation { self.toast = nil } }
+                    .dismissibleToast { withAnimation { self.toast = nil } }
             }
         }
         .overlay {
@@ -392,7 +392,7 @@ private struct ExerciseSection: View {
 private enum Column {
     static let set: CGFloat = 34
     static let field: CGFloat = 72
-    static let check: CGFloat = 40
+    static let check: CGFloat = 44
 }
 
 private struct ColumnHeader: View {
@@ -407,7 +407,7 @@ private struct ColumnHeader: View {
             Text(isCardio ? "km" : "reps").frame(width: Column.field)
             Image(systemName: "checkmark").frame(width: Column.check)
         }
-        .font(.caption2.weight(.bold))
+        .font(.caption.weight(.bold))
         .textCase(.uppercase)
         .foregroundStyle(.secondary)
         .accessibilityHidden(true)
@@ -429,7 +429,7 @@ private struct TargetRow: View {
                     .font(.subheadline.weight(.bold))
                 if let rir = target.rir {
                     Text("RIR \(rir)")
-                        .font(.caption2.weight(.bold))
+                        .font(.caption.weight(.bold))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(Theme.raised, in: Capsule())
@@ -479,7 +479,8 @@ private struct SetRow: View {
                     .font(.title2)
                     .foregroundStyle(set.isDone ? Theme.good : Color.secondary)
                     .contentTransition(.symbolEffect(.replace))
-                    .frame(width: Column.check, height: 36)
+                    .frame(width: Column.check, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.borderless)
             .accessibilityLabel(set.isDone ? Text("Set afgerond") : Text("Set afvinken"))
@@ -577,7 +578,7 @@ struct RestTimerBar: View {
                     .frame(width: 34, height: 34)
                     .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Rust").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                        Text("Rust").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                         Text(Duration.seconds(remaining), format: .time(pattern: .minuteSecond))
                             .font(Theme.number(.title3))
                             .monospacedDigit()
@@ -585,12 +586,17 @@ struct RestTimerBar: View {
                     }
                     Spacer(minLength: 4)
                     Button("−15") { timer.add(seconds: -15) }
+                        .fixedSize()
                     Button("+15") { timer.add(seconds: 15) }
+                        .fixedSize()
                     Button("Sla over", systemImage: "forward.end.fill") { timer.stop() }
                         .labelStyle(.iconOnly)
+                        .fixedSize()
                 }
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
+                .controlSize(.large)
+                .lineLimit(1)
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)

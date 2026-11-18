@@ -53,7 +53,7 @@ struct CheckInSheet: View {
                         }
                         if abs(proposal.change) >= 10 {
                             Tag(text: "\(proposal.change > 0 ? "+" : "−")\(Int(abs(proposal.change))) kcal",
-                                color: proposal.change > 0 ? Theme.good : Theme.cool, filled: true, uppercase: false)
+                                color: proposal.change > 0 ? Theme.Fill.good : Theme.Fill.cool, filled: true, uppercase: false)
                         }
                         Text(reason(proposal: proposal, estimate: estimate))
                             .font(.footnote).foregroundStyle(.secondary)

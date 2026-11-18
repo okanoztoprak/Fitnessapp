@@ -67,7 +67,7 @@ struct TodayView: View {
                     RecordToast(title: String(localized: "Uitdaging voltooid"), detail: celebration)
                         .padding(.top, 8)
                         .transition(.move(edge: .top).combined(with: .opacity))
-                        .onTapGesture { withAnimation { self.celebration = nil } }
+                        .dismissibleToast { withAnimation { self.celebration = nil } }
                 }
             }
             .overlay {
@@ -268,7 +268,7 @@ struct MacroBar: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("\(Int(part.grams.rounded())) g")
                                 .font(Theme.number(.subheadline))
-                            Text(part.label).font(.caption2).foregroundStyle(.secondary)
+                            Text(part.label).font(.caption).foregroundStyle(.secondary)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

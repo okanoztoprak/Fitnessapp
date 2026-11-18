@@ -173,9 +173,9 @@ enum MotivationText {
     static func badgeFill(_ kind: ChallengeKind) -> Color {
         switch kind {
         case .workouts, .hardSets: Theme.accent
-        case .proteinDays, .foodLogDays: Theme.cool
-        case .weighIns: Theme.violet
-        case .records: Theme.warn
+        case .proteinDays, .foodLogDays: Theme.Fill.cool
+        case .weighIns: Theme.Fill.violet
+        case .records: Theme.Fill.warn
         }
     }
 

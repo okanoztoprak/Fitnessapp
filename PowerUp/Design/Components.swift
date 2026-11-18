@@ -82,7 +82,7 @@ struct Tag: View {
 
     var body: some View {
         Text(text)
-            .font(.caption2.weight(.bold))
+            .font(.caption.weight(.bold))
             .textCase(uppercase ? .uppercase : nil)
             .tracking(uppercase ? 0.6 : 0)
             .padding(.horizontal, 9)
@@ -210,5 +210,17 @@ struct RecordToast: View {
         .shadow(color: .black.opacity(0.25), radius: 18, y: 8)
         .padding(.horizontal)
         .accessibilityElement(children: .combine)
+        // VoiceOver leest de melding meteen voor, ook als de focus ergens anders staat.
+        .onAppear { AccessibilityNotification.Announcement("\(title). \(detail)").post() }
+    }
+}
+
+extension View {
+    /// Melding die je met een tik sluit; ook voor VoiceOver een knop met uitleg.
+    func dismissibleToast(_ dismiss: @escaping () -> Void) -> some View {
+        onTapGesture(perform: dismiss)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityHint(Text("Tik om te sluiten"))
+            .accessibilityAction(.default, dismiss)
     }
 }

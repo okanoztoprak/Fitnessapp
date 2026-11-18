@@ -47,7 +47,7 @@ Apple Health testen in de simulator: de app heeft de HealthKit-entitlement nodig
 ```sh
 xcodebuild build -project PowerUp.xcodeproj -scheme PowerUp \
   -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
-  -derivedDataPath build-signed CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=
+  -derivedDataPath build-signed CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= BUNDLE_ID_BASE=com.example.powerup
 ```
 
 In testversies staat onder Voeding → Apple Health een knop die drie weken voorbeeldvoeding, -gewicht en -slaap in Health zet, en op Vandaag (zolang er geen stappen zijn) een knop voor een week voorbeeldstappen.

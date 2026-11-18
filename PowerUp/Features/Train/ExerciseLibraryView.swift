@@ -262,6 +262,11 @@ struct ExerciseGuideSection: View {
 
     var body: some View {
         Section("Uitvoering") {
+            if let pattern = MovementPattern.pattern(for: exercise.slug) {
+                ExerciseAnimation(pattern: pattern)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
             ForEach(Array(guide.steps.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .firstTextBaseline, spacing: 12) {
                     Text("\(index + 1)")

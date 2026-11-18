@@ -74,6 +74,7 @@ swift test --package-path Packages/PowerCore
 | `PowerUp/Services/Health` | `NutritionSource`-protocol en de Apple Health-koppeling |
 | `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
 | `Widgets` | Widget-extensie: stappen- en Vandaag-widget en de Live Activity van de rusttimer |
+| `Brand` | App-icoon (`make_icon.swift` tekent het opnieuw) en de huisstijlpagina |
 | `Config` | Ondertekening: standaard-bundle-ID voor simulator en CI, met een lokaal bestand voor je eigen team |
 | `Shared` | Code die app en widgets delen: de gegevens voor de widgets (via de app-group) en de Live Activity |
 | `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus motivatie (weekoverzicht, uitdagingen), onboarding en instellingen |

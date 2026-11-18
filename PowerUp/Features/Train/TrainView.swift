@@ -50,6 +50,7 @@ struct TrainView: View {
             }
             .screenBackground()
             .navigationTitle("Training")
+            .brandToolbar()
         }
     }
 

@@ -47,6 +47,7 @@ struct ProfileView: View {
             }
             .screenBackground()
             .navigationTitle("Profiel")
+            .brandToolbar()
             .toolbar {
                 NavigationLink {
                     SettingsView(profile: profile)

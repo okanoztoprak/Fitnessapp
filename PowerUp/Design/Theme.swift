@@ -37,6 +37,9 @@ enum Theme {
         static let violet = Color(red: 0.62, green: 0.48, blue: 1.0)
     }
 
+    /// Woordmerk: bosgroen op licht, warm wit op donker.
+    static let ink = dynamic(dark: (0.961, 0.957, 0.937), light: (0.078, 0.145, 0.133))
+
     /// Wit symbool op een gekleurde icoontegel.
     static let onSignal = Color.white
 
@@ -68,10 +71,42 @@ private struct CardStyle: ViewModifier {
     var fill: Color
 
     func body(content: Content) -> some View {
-        content
+        let shape = RoundedRectangle(cornerRadius: Theme.corner, style: .continuous)
+        let base = content
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(fill, in: RoundedRectangle(cornerRadius: Theme.corner, style: .continuous))
+        if #available(iOS 26.0, *) {
+            // Liquid Glass zoals iOS het zelf gebruikt, licht getint met de kaartkleur zodat tekst leesbaar blijft.
+            base.glassEffect(.regular.tint(fill.opacity(0.55)), in: shape)
+        } else {
+            base
+                .background(fill.opacity(0.7), in: shape)
+                .background(.ultraThinMaterial, in: shape)
+        }
+    }
+}
+
+/// Zachte merkkleuren achter de inhoud; het glas van de kaarten breekt dit licht.
+private struct BrandBackdrop: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let size = proxy.size
+            ZStack {
+                Theme.background
+                Circle().fill(Theme.accent.opacity(0.22))
+                    .frame(width: size.width * 0.9).blur(radius: 90)
+                    .offset(x: -size.width * 0.35, y: -size.height * 0.32)
+                Circle().fill(Theme.Fill.cool.opacity(0.18))
+                    .frame(width: size.width * 0.8).blur(radius: 100)
+                    .offset(x: size.width * 0.4, y: size.height * 0.05)
+                Circle().fill(Theme.Fill.coral.opacity(0.12))
+                    .frame(width: size.width * 0.7).blur(radius: 110)
+                    .offset(x: -size.width * 0.2, y: size.height * 0.4)
+            }
+            .frame(width: size.width, height: size.height)
+        }
+        .ignoresSafeArea()
+        .accessibilityHidden(true)
     }
 }
 
@@ -82,7 +117,7 @@ extension View {
 
     /// Standaardachtergrond voor een scrollend scherm met kaarten.
     func screenBackground() -> some View {
-        background(Theme.background.ignoresSafeArea())
+        background(BrandBackdrop())
     }
 }
 

@@ -224,3 +224,42 @@ extension View {
             .accessibilityAction(.default, dismiss)
     }
 }
+
+/// RIVO-logo: het R-symbool met het woordmerk "rivo".
+struct BrandLogo: View {
+    var height: CGFloat = 22
+
+    var body: some View {
+        HStack(spacing: height * 0.32) {
+            Image("RivoSymbol")
+                .resizable()
+                .scaledToFit()
+                .frame(height: height)
+            Text(verbatim: "rivo")
+                .font(.system(size: height * 1.22, weight: .heavy, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .baselineOffset(-height * 0.04)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "RIVO"))
+    }
+}
+
+extension View {
+    /// Logo linksboven in de navigatiebalk van een tabblad.
+    func brandToolbar() -> some View {
+        toolbar {
+            // Zonder glazen knopvorm: het logo is geen knop en mag zijn volle breedte houden.
+            if #available(iOS 26.0, *) {
+                ToolbarItem(placement: .topBarLeading) {
+                    BrandLogo(height: 18).fixedSize()
+                }
+                .sharedBackgroundVisibility(.hidden)
+            } else {
+                ToolbarItem(placement: .topBarLeading) {
+                    BrandLogo(height: 18).fixedSize()
+                }
+            }
+        }
+    }
+}

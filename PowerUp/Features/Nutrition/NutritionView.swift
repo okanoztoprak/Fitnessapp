@@ -39,6 +39,7 @@ struct NutritionView: View {
             .refreshable { await sync() }
             .screenBackground()
             .navigationTitle("Voeding")
+            .brandToolbar()
             .sheet(isPresented: $showQuickAdd) { QuickAddSheet() }
             .sheet(isPresented: $showMacros) { MacroSettingsSheet(profile: profile, plan: plan) }
             .sheet(isPresented: $showCheckIn) { CheckInSheet(profile: profile, plan: plan) }

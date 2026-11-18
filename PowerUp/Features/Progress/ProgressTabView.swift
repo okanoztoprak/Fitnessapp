@@ -29,6 +29,7 @@ struct ProgressTabView: View {
             }
             .screenBackground()
             .navigationTitle("Voortgang")
+            .brandToolbar()
             .toolbar {
                 Button("Weeg in", systemImage: "scalemass.fill") { showWeightSheet = true }
             }

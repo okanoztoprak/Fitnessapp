@@ -96,6 +96,8 @@ struct TodayView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 2) {
+            BrandLogo(height: 22)
+                .padding(.bottom, 14)
             Text(Date(), format: .dateTime.weekday(.wide).day().month(.wide))
                 .font(.footnote.weight(.semibold))
                 .textCase(.uppercase)

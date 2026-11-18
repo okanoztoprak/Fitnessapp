@@ -179,7 +179,7 @@ struct StepsCard: View {
 
     private var noDataHint: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Geen stappen gevonden. Controleer in de Gezondheid-app of POWER UP stappen mag lezen.")
+            Text("Geen stappen gevonden. Controleer in de Gezondheid-app of RIVO stappen mag lezen.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

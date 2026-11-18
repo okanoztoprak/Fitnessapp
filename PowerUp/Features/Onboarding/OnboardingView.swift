@@ -150,23 +150,23 @@ private struct WelcomeStep: View {
     @Bindable var model: OnboardingModel
 
     var body: some View {
-        ZStack {
-            Ring(progress: 0.82, lineWidth: 16, color: Theme.accent)
-            Ring(progress: 0.64, lineWidth: 16, color: Theme.cool).padding(22)
-            Ring(progress: 0.46, lineWidth: 16, color: Theme.violet).padding(44)
-        }
-        .frame(width: 190, height: 190)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        Image("RivoMark")
+            .resizable()
+            .interpolation(.high)
+            .frame(width: 132, height: 132)
+            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .accessibilityHidden(true)
 
-        StepTitle(title: String(localized: "Train slimmer."),
-                  subtitle: String(localized: "POWER UP volgt je herstel, stelt je volgende training voor en laat zien dat je sterker wordt."))
+        StepTitle(title: String(localized: "Elke dag in beweging."),
+                  subtitle: String(localized: "RIVO helpt je bewegen, eten en herstellen in je eigen ritme."))
 
         VStack(alignment: .leading, spacing: 16) {
-            feature("gauge.with.needle.fill", String(localized: "Elke dag een gereedheidsscore"),
-                    String(localized: "Weet of je vol gas kunt of beter herstelt."))
+            feature("figure.walk", String(localized: "Stappen en je dagdoel"),
+                    String(localized: "Zie in één oogopslag hoe ver je vandaag bent."))
             feature("sparkles", String(localized: "Trainingen die zich aanpassen"),
-                    String(localized: "Een doel per oefening en workouts op basis van je herstel."))
+                    String(localized: "Een doel per oefening en een schema dat met je meegroeit."))
             feature("chart.xyaxis.line", String(localized: "Voortgang die je ziet"),
                     String(localized: "Krachtniveau, records, volume en je gewichtstrend."))
         }

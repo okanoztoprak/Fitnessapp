@@ -86,7 +86,7 @@ EN = {
     "Onderhoud": "Maintain",
     "Over": "About",
     "Over jou": "About you",
-    "POWER UP geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.": "POWER UP does not give medical advice. If in doubt, in pain or living with a medical condition, talk to a doctor.",
+    "RIVO geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.": "RIVO does not give medical advice. If in doubt, in pain or living with a medical condition, talk to a doctor.",
     "Per kant": "Per side",
     "Primair": "Primary",
     "Recente records": "Recent records",
@@ -183,10 +183,8 @@ EN = {
     "Deel samenvatting": "Share summary",
     "Donker": "Dark",
     "Dumbbells en een bankje": "Dumbbells and a bench",
-    "Een doel per oefening en workouts op basis van je herstel.": "A target per exercise and workouts based on your recovery.",
     "Eerste record": "First record",
     "Eerste training": "First workout",
-    "Elke dag een gereedheidsscore": "A readiness score every day",
     "Elke kolom is een week; hoe voller het vakje, hoe meer sets die dag.": "Each column is a week; the fuller the square, the more sets that day.",
     "Geen materiaal nodig": "No equipment needed",
     "Geen passende oefeningen gevonden voor je materiaal.": "No matching exercises found for your equipment.",
@@ -215,7 +213,6 @@ EN = {
     "Nog niet gelogd": "Not logged yet",
     "Nog onbekend": "Not known yet",
     "Opties voor %@": "Options for %@",
-    "POWER UP volgt je herstel, stelt je volgende training voor en laat zien dat je sterker wordt.": "POWER UP tracks your recovery, suggests your next workout and shows you getting stronger.",
     "Past het best: %@": "Best fit: %@",
     "Profiel": "Profile",
     "RIR: geen": "RIR: none",
@@ -234,7 +231,6 @@ EN = {
     "Systeem": "System",
     "Totaal volume": "Total volume",
     "Train een paar keer om te zien welke spiergroepen je het meest belast.": "Train a few times to see which muscle groups you load the most.",
-    "Train slimmer.": "Train smarter.",
     "Training verwijderen?": "Delete workout?",
     "Training voltooid": "Workout complete",
     "Trainingen": "Workouts",
@@ -251,7 +247,6 @@ EN = {
     "Weeg je een paar keer per week; de trend filtert dagelijkse schommelingen eruit.": "Weigh in a few times a week; the trend filters out daily swings.",
     "Weekdoel gehaald: %lld van %lld. Meer trainen levert nu weinig op; herstel wel.": "Weekly goal reached: %1$lld of %2$lld. More training adds little now; recovery does.",
     "Weergave": "Appearance",
-    "Weet of je vol gas kunt of beter herstelt.": "Know whether to go all out or recover.",
     "Weken op rij": "Weeks in a row",
     "1 week op rij": "1 week in a row",
     "Getraind": "Trained",
@@ -420,7 +415,7 @@ EN = {
     "Je weekoverzicht staat klaar": "Your weekly recap is ready",
     "Log je eten": "Log your food",
     "Meer eiwit": "More protein",
-    "Meldingen staan uit voor POWER UP. Zet ze aan in de Instellingen-app van iOS.": "Notifications are off for POWER UP. Turn them on in the iOS Settings app.",
+    "Meldingen staan uit voor RIVO. Zet ze aan in de Instellingen-app van iOS.": "Notifications are off for RIVO. Turn them on in the iOS Settings app.",
     "Met minstens 5 gelogde dagen wordt je verbruik en je caloriedoel een stuk nauwkeuriger.": "With at least 5 logged days, your expenditure and calorie target become much more accurate.",
     "Nieuwe kansen": "Fresh start",
     "Op doel": "On target",
@@ -449,7 +444,7 @@ EN = {
     "%lld dagen op rij gehaald. Houd de reeks vast.": "Hit %lld days in a row. Keep the streak going.",
     "Doel gehaald": "Goal reached",
     "Doel: %@ per dag": "Goal: %@ a day",
-    "Geen stappen gevonden. Controleer in de Gezondheid-app of POWER UP stappen mag lezen.": "No steps found. Check in the Health app that POWER UP is allowed to read steps.",
+    "Geen stappen gevonden. Controleer in de Gezondheid-app of RIVO stappen mag lezen.": "No steps found. Check in the Health app that RIVO is allowed to read steps.",
     "Gemiddeld %@ per dag de afgelopen week.": "Averaging %@ a day over the past week.",
     "In onderzoek vlakt de gezondheidswinst bij volwassenen af rond 8.000 tot 10.000 stappen per dag, bij 60-plussers rond 6.000 tot 8.000. Kies een doel dat je op de meeste dagen haalt; verhogen kan altijd.": "Research shows the health benefits for adults level off around 8,000 to 10,000 steps a day, and around 6,000 to 8,000 for people over 60. Pick a goal you hit on most days; you can always raise it.",
     "Je doel is %@ stappen per dag.": "Your goal is %@ steps a day.",
@@ -476,8 +471,8 @@ EN = {
     "Je hebt vandaag %@ stappen gezet. Je doel van %@ is gehaald.": "You've taken %@ steps today. Your goal of %@ is done.",
     "Je hebt vandaag %@ stappen gezet. Nog %@ tot je doel.": "You've taken %@ steps today. %@ more to reach your goal.",
     "Je stappen van vandaag tegenover je doel.": "Today's steps against your goal.",
-    "Open POWER UP": "Open POWER UP",
-    "Opent POWER UP met een voorstel voor je training van vandaag.": "Opens POWER UP with a suggestion for today's workout.",
+    "Open RIVO": "Open RIVO",
+    "Opent RIVO met een voorstel voor je training van vandaag.": "Opens RIVO with a suggestion for today's workout.",
     "Rust voorbij": "Rest over",
     "Stappen van vandaag": "Today's steps",
     "Stappen, je volgende training en je reeks.": "Steps, your next workout and your streak.",
@@ -486,6 +481,11 @@ EN = {
     "Zegt hoeveel stappen je vandaag hebt gezet en hoeveel je nog nodig hebt voor je doel.": "Tells you how many steps you've taken today and how many you still need for your goal.",
     "Tik om te sluiten": "Tap to dismiss",
     "1 set afgevinkt": "1 set checked off",
+    "Elke dag in beweging.": "Moving every day.",
+    "RIVO helpt je bewegen, eten en herstellen in je eigen ritme.": "RIVO helps you move, eat and recover at your own pace.",
+    "Stappen en je dagdoel": "Steps and your daily goal",
+    "Zie in één oogopslag hoe ver je vandaag bent.": "See at a glance how far you've come today.",
+    "Een doel per oefening en een schema dat met je meegroeit.": "A target per exercise and a plan that grows with you.",
 }
 
 strings = {
@@ -499,7 +499,7 @@ print(f"{len(strings)} strings -> {path}")
 
 # Widgets: eigen catalogus, alleen de teksten die de widget-extensie gebruikt.
 WIDGET_KEYS = [
-    "Stappen", "Vandaag", "Rust", "Rust voorbij", "Volgende training", "Open POWER UP", "van %@",
+    "Stappen", "Vandaag", "Rust", "Rust voorbij", "Volgende training", "Open RIVO", "van %@",
     "%@ van %@ stappen", "1 week op rij", "%lld weken op rij", "1 van 3 trainingen deze week",
     "Je stappen van vandaag tegenover je doel.", "Stappen, je volgende training en je reeks.",
 ]
@@ -516,12 +516,12 @@ print(f"{len(WIDGET_KEYS)} strings -> {widget_path}")
 # Info.plist-teksten (toestemmingsvragen). Nederlands staat ook in project.yml.
 INFO_PLIST = {
     "NSHealthShareUsageDescription": (
-        "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht, slaap en stappen uit Apple Health om je verbruik, doelen en dagelijkse activiteit te tonen.",
-        "POWER UP reads your nutrition (including from MyFitnessPal), weight, sleep and steps from Apple Health to show your expenditure, targets and daily activity.",
+        "RIVO leest je voeding (ook uit MyFitnessPal), gewicht, slaap en stappen uit Apple Health om je verbruik, doelen en dagelijkse activiteit te tonen.",
+        "RIVO reads your nutrition (including from MyFitnessPal), weight, sleep and steps from Apple Health to show your expenditure, targets and daily activity.",
     ),
     "NSHealthUpdateUsageDescription": (
-        "Alleen in testversies: POWER UP zet voorbeelddata in Apple Health.",
-        "Test builds only: POWER UP writes sample data to Apple Health.",
+        "Alleen in testversies: RIVO zet voorbeelddata in Apple Health.",
+        "Test builds only: RIVO writes sample data to Apple Health.",
     ),
 }
 info = {

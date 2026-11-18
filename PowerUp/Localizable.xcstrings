@@ -1291,12 +1291,12 @@
         }
       }
     },
-    "Een doel per oefening en workouts op basis van je herstel.": {
+    "Een doel per oefening en een schema dat met je meegroeit.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A target per exercise and workouts based on your recovery."
+            "value": "A target per exercise and a plan that grows with you."
           }
         }
       }
@@ -1381,12 +1381,12 @@
         }
       }
     },
-    "Elke dag een gereedheidsscore": {
+    "Elke dag in beweging.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A readiness score every day"
+            "value": "Moving every day."
           }
         }
       }
@@ -1501,12 +1501,12 @@
         }
       }
     },
-    "Geen stappen gevonden. Controleer in de Gezondheid-app of POWER UP stappen mag lezen.": {
+    "Geen stappen gevonden. Controleer in de Gezondheid-app of RIVO stappen mag lezen.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No steps found. Check in the Health app that POWER UP is allowed to read steps."
+            "value": "No steps found. Check in the Health app that RIVO is allowed to read steps."
           }
         }
       }
@@ -2601,12 +2601,12 @@
         }
       }
     },
-    "Meldingen staan uit voor POWER UP. Zet ze aan in de Instellingen-app van iOS.": {
+    "Meldingen staan uit voor RIVO. Zet ze aan in de Instellingen-app van iOS.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notifications are off for POWER UP. Turn them on in the iOS Settings app."
+            "value": "Notifications are off for RIVO. Turn them on in the iOS Settings app."
           }
         }
       }
@@ -2981,22 +2981,22 @@
         }
       }
     },
-    "Open POWER UP": {
+    "Open RIVO": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open POWER UP"
+            "value": "Open RIVO"
           }
         }
       }
     },
-    "Opent POWER UP met een voorstel voor je training van vandaag.": {
+    "Opent RIVO met een voorstel voor je training van vandaag.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Opens POWER UP with a suggestion for today's workout."
+            "value": "Opens RIVO with a suggestion for today's workout."
           }
         }
       }
@@ -3027,26 +3027,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "About you"
-          }
-        }
-      }
-    },
-    "POWER UP geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "POWER UP does not give medical advice. If in doubt, in pain or living with a medical condition, talk to a doctor."
-          }
-        }
-      }
-    },
-    "POWER UP volgt je herstel, stelt je volgende training voor en laat zien dat je sterker wordt.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "POWER UP tracks your recovery, suggests your next workout and shows you getting stronger."
           }
         }
       }
@@ -3157,6 +3137,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "RIR: none"
+          }
+        }
+      }
+    },
+    "RIVO geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIVO does not give medical advice. If in doubt, in pain or living with a medical condition, talk to a doctor."
+          }
+        }
+      }
+    },
+    "RIVO helpt je bewegen, eten en herstellen in je eigen ritme.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIVO helps you move, eat and recover at your own pace."
           }
         }
       }
@@ -3541,6 +3541,16 @@
         }
       }
     },
+    "Stappen en je dagdoel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps and your daily goal"
+          }
+        }
+      }
+    },
     "Stappen ophalen": {
       "localizations": {
         "en": {
@@ -3827,16 +3837,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Train a few times to see which muscle groups you load the most."
-          }
-        }
-      }
-    },
-    "Train slimmer.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Train smarter."
           }
         }
       }
@@ -4561,16 +4561,6 @@
         }
       }
     },
-    "Weet of je vol gas kunt of beter herstelt.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Know whether to go all out or recover."
-          }
-        }
-      }
-    },
     "Wegen": {
       "localizations": {
         "en": {
@@ -4697,6 +4687,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Same muscle group: %@"
+          }
+        }
+      }
+    },
+    "Zie in één oogopslag hoe ver je vandaag bent.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See at a glance how far you've come today."
           }
         }
       }

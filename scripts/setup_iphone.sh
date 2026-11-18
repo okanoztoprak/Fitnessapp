@@ -1,5 +1,5 @@
 #!/bin/sh
-# Zet POWER UP klaar voor je eigen iPhone.
+# Zet RIVO klaar voor je eigen iPhone.
 # Gebruik: scripts/setup_iphone.sh TEAM_ID eigen.bundle.id
 # TEAM_ID: Xcode → Settings → Accounts → je team (10 tekens), of Signing & Capabilities.
 set -e

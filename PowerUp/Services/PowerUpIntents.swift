@@ -4,7 +4,7 @@ import Foundation
 /// Opent de app met een voorstel voor de slimme training van vandaag.
 struct StartWorkoutIntent: AppIntent {
     static let title: LocalizedStringResource = "Start een training"
-    static let description = IntentDescription("Opent POWER UP met een voorstel voor je training van vandaag.")
+    static let description = IntentDescription("Opent RIVO met een voorstel voor je training van vandaag.")
     static let openAppWhenRun = true
 
     @MainActor

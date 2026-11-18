@@ -6,13 +6,13 @@
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "POWER UP leest je voeding (ook uit MyFitnessPal), gewicht, slaap en stappen uit Apple Health om je verbruik, doelen en dagelijkse activiteit te tonen."
+            "value": "RIVO leest je voeding (ook uit MyFitnessPal), gewicht, slaap en stappen uit Apple Health om je verbruik, doelen en dagelijkse activiteit te tonen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "POWER UP reads your nutrition (including from MyFitnessPal), weight, sleep and steps from Apple Health to show your expenditure, targets and daily activity."
+            "value": "RIVO reads your nutrition (including from MyFitnessPal), weight, sleep and steps from Apple Health to show your expenditure, targets and daily activity."
           }
         }
       }
@@ -22,13 +22,13 @@
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alleen in testversies: POWER UP zet voorbeelddata in Apple Health."
+            "value": "Alleen in testversies: RIVO zet voorbeelddata in Apple Health."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Test builds only: POWER UP writes sample data to Apple Health."
+            "value": "Test builds only: RIVO writes sample data to Apple Health."
           }
         }
       }

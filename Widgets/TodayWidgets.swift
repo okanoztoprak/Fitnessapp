@@ -181,7 +181,7 @@ struct TodayWidgetView: View {
                     .font(.caption.weight(.bold))
                     .textCase(.uppercase)
                     .foregroundStyle(.secondary)
-                Text(entry.nextWorkout ?? String(localized: "Open POWER UP"))
+                Text(entry.nextWorkout ?? String(localized: "Open RIVO"))
                     .font(.headline)
                     .lineLimit(2)
                 if let detail = entry.nextDetail {

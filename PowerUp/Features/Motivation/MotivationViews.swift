@@ -224,7 +224,7 @@ private struct RecapShareCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack {
-                Text("POWER UP").font(.caption.weight(.heavy)).tracking(2).foregroundStyle(Theme.accent)
+                Text("RIVO").font(.caption.weight(.heavy)).tracking(2).foregroundStyle(Theme.accent)
                 Spacer()
                 Text(title).font(.caption).foregroundStyle(Theme.Share.muted)
             }

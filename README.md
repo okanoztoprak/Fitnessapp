@@ -1,4 +1,6 @@
-# POWER UP
+# RIVO
+
+*Elke dag in beweging.*
 
 Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en voeding bij te houden. Modern en donker van opzet, met één felle accentkleur, en gebouwd rond drie vragen: hoeveel beweeg ik vandaag, wat train ik vandaag, en word ik sterker?
 
@@ -28,7 +30,7 @@ Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en vo
 | Herinneringen | Trainingsherinnering op gekozen dagen en tijd, en een melding als het weekoverzicht klaarstaat; alles lokaal | Strong, Fitbod |
 | Widgets | Stappen (beginscherm en toegangsscherm) en Vandaag: stappen, volgende training en reeks | Apple Fitness, Gentler Streak |
 | Rusttimer als Live Activity | Aftellen met voortgangsbalk op het toegangsscherm en in het Dynamic Island | Strong, Hevy |
-| Siri en Opdrachten | "Start een training in POWER UP" en "Hoeveel stappen heb ik in POWER UP" | Streaks |
+| Siri en Opdrachten | "Start een training in RIVO" en "Hoeveel stappen heb ik in RIVO" | Streaks |
 
 ## Bouwen
 
@@ -74,7 +76,7 @@ swift test --package-path Packages/PowerCore
 | `PowerUp/Services/Health` | `NutritionSource`-protocol en de Apple Health-koppeling |
 | `PowerUp/Design` | Thema en gedeelde componenten (ringen, kaarten, knoppen, confetti) |
 | `Widgets` | Widget-extensie: stappen- en Vandaag-widget en de Live Activity van de rusttimer |
-| `Brand` | App-icoon (`make_icon.swift` tekent het opnieuw) en de huisstijlpagina |
+| `Brand` | RIVO-huisstijl: logo, app-icoon, `rivo-huisstijl.md` en de huisstijlpagina |
 | `Config` | Ondertekening: standaard-bundle-ID voor simulator en CI, met een lokaal bestand voor je eigen team |
 | `Shared` | Code die app en widgets delen: de gegevens voor de widgets (via de app-group) en de Live Activity |
 | `PowerUp/Features` | Schermen per tab: Vandaag, Training, Voortgang, Voeding, Profiel, plus motivatie (weekoverzicht, uitdagingen), onboarding en instellingen |

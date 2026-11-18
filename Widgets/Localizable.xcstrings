@@ -52,12 +52,12 @@
         }
       }
     },
-    "Open POWER UP": {
+    "Open RIVO": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open POWER UP"
+            "value": "Open RIVO"
           }
         }
       }

@@ -113,7 +113,7 @@ struct SettingsView: View {
                 Text("Herinneringen")
             } footer: {
                 if notificationsDenied {
-                    Text("Meldingen staan uit voor POWER UP. Zet ze aan in de Instellingen-app van iOS.")
+                    Text("Meldingen staan uit voor RIVO. Zet ze aan in de Instellingen-app van iOS.")
                 } else {
                     Text("Alleen de meldingen die je hier aanzet. Ze blijven op je toestel.")
                 }
@@ -127,7 +127,7 @@ struct SettingsView: View {
                 Text("Verberg getallen als je merkt dat ze je geen goed doen. Loggen en je trend blijven op de achtergrond werken.")
             }
             Section("Over") {
-                Text("POWER UP geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.")
+                Text("RIVO geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.")
                     .font(.footnote)
                 LabeledContent("Versie",
                                value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")

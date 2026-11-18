@@ -1,31 +1,39 @@
 import SwiftUI
 import UIKit
 
-/// Designsysteem: donker als standaard, één felle accentkleur, zachte kaarten, grote ronde cijfers.
+/// RIVO-huisstijl: diep bosgroen, warm wit en fris lime voor de belangrijkste actie. Zachte kaarten, grote ronde cijfers.
 enum Theme {
     /// Accent voor vlakken (knoppen, ringen). Tekst erop is altijd `onAccent`.
-    static let accent = Color(red: 0.80, green: 0.98, blue: 0.27)
-    static let onAccent = Color.black
+    /// Fris lime #C5F264.
+    static let accent = Color(red: 0.773, green: 0.949, blue: 0.392)
+    /// Diep bosgroen #142522: donkere tekst op lime.
+    static let onAccent = Color(red: 0.078, green: 0.145, blue: 0.133)
     /// Accent voor tekst en iconen; in lichte modus donkerder voor contrast.
-    static let accentText = dynamic(dark: (0.80, 0.98, 0.27), light: (0.22, 0.40, 0.02))
+    static let accentText = dynamic(dark: (0.773, 0.949, 0.392), light: (0.22, 0.40, 0.02))
 
-    static let background = dynamic(dark: (0.035, 0.035, 0.045), light: (0.95, 0.95, 0.97))
-    static let card = dynamic(dark: (0.105, 0.105, 0.125), light: (1, 1, 1))
-    static let raised = dynamic(dark: (0.17, 0.17, 0.195), light: (0.92, 0.92, 0.945))
+    /// Donker: bosgroen (#0C1714, kaarten #142522). Licht: warm wit #F5F4EF met witte kaarten.
+    static let background = dynamic(dark: (0.047, 0.090, 0.078), light: (0.961, 0.957, 0.937))
+    static let card = dynamic(dark: (0.078, 0.145, 0.133), light: (1, 1, 1))
+    /// Velden en rustige vlakken; licht is het zachte grijs #DCE3DC.
+    static let raised = dynamic(dark: (0.122, 0.200, 0.184), light: (0.863, 0.890, 0.863))
 
     /// Signaalkleuren voor tekst, iconen, ringen en balken. In lichte modus dieper,
     /// zodat tekst minstens 4,5:1 haalt op een witte kaart.
     static let good = dynamic(dark: (0.20, 0.80, 0.50), light: (0.04, 0.48, 0.26))
     static let warn = dynamic(dark: (1.0, 0.66, 0.15), light: (0.66, 0.36, 0.0))
     static let bad = dynamic(dark: (1.0, 0.36, 0.38), light: (0.76, 0.12, 0.16))
-    static let cool = dynamic(dark: (0.32, 0.66, 1.0), light: (0.0, 0.40, 0.78))
+    /// Hemelsblauw #8BC9E8: water en herstel.
+    static let cool = dynamic(dark: (0.545, 0.788, 0.910), light: (0.039, 0.416, 0.600))
+    /// Koraal #F28B74: kleine accenten voor voeding.
+    static let coral = dynamic(dark: (0.949, 0.545, 0.455), light: (0.710, 0.263, 0.169))
     static let violet = dynamic(dark: (0.62, 0.48, 1.0), light: (0.40, 0.24, 0.84))
 
     /// Felle vlakken met zwarte tekst erop (`onAccent`), in beide modi gelijk.
     enum Fill {
         static let good = Color(red: 0.20, green: 0.80, blue: 0.50)
         static let warn = Color(red: 1.0, green: 0.66, blue: 0.15)
-        static let cool = Color(red: 0.32, green: 0.66, blue: 1.0)
+        static let cool = Color(red: 0.545, green: 0.788, blue: 0.910)
+        static let coral = Color(red: 0.949, green: 0.545, blue: 0.455)
         static let violet = Color(red: 0.62, green: 0.48, blue: 1.0)
     }
 
@@ -34,8 +42,8 @@ enum Theme {
 
     /// Deelkaarten worden als afbeelding gedeeld en zijn altijd donker, los van de modus van het toestel.
     enum Share {
-        static let background = LinearGradient(colors: [Color(red: 0.10, green: 0.12, blue: 0.08),
-                                                        Color(red: 0.03, green: 0.03, blue: 0.04)],
+        static let background = LinearGradient(colors: [Color(red: 0.106, green: 0.188, blue: 0.169),
+                                                        Color(red: 0.047, green: 0.090, blue: 0.078)],
                                                startPoint: .topLeading, endPoint: .bottomTrailing)
         static let text = Color.white
         static let muted = Color.white.opacity(0.6)

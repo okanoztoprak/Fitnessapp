@@ -232,7 +232,7 @@ struct QuickAction: View {
             .frame(maxWidth: .infinity, minHeight: 72)
             .padding(.vertical, 12)
             .padding(.horizontal, 6)
-            .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .glassSurface(cornerRadius: 20)
         }
         .buttonStyle(PressableStyle())
     }

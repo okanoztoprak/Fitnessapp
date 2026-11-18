@@ -14,8 +14,9 @@ enum Theme {
     /// Donker: bosgroen (#0C1714, kaarten #142522). Licht: warm wit #F5F4EF met witte kaarten.
     static let background = dynamic(dark: (0.047, 0.090, 0.078), light: (0.961, 0.957, 0.937))
     static let card = dynamic(dark: (0.078, 0.145, 0.133), light: (1, 1, 1))
-    /// Velden en rustige vlakken; licht is het zachte grijs #DCE3DC.
-    static let raised = dynamic(dark: (0.122, 0.200, 0.184), light: (0.863, 0.890, 0.863))
+    /// Velden, chips en zachte knoppen; licht is het zachte grijs #DCE3DC. In donker lichter dan het glas,
+    /// anders vallen ze weg in het groen.
+    static let raised = dynamic(dark: (0.176, 0.282, 0.259), light: (0.863, 0.890, 0.863))
 
     /// Signaalkleuren voor tekst, iconen, ringen en balken. In lichte modus dieper,
     /// zodat tekst minstens 4,5:1 haalt op een witte kaart.
@@ -71,15 +72,24 @@ private struct CardStyle: ViewModifier {
     var fill: Color
 
     func body(content: Content) -> some View {
-        let shape = RoundedRectangle(cornerRadius: Theme.corner, style: .continuous)
-        let base = content
+        content
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .glassSurface(fill: fill, cornerRadius: Theme.corner)
+    }
+}
+
+private struct GlassSurface: ViewModifier {
+    var fill: Color
+    var cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         if #available(iOS 26.0, *) {
             // Liquid Glass zoals iOS het zelf gebruikt, licht getint met de kaartkleur zodat tekst leesbaar blijft.
-            base.glassEffect(.regular.tint(fill.opacity(0.55)), in: shape)
+            content.glassEffect(.regular.tint(fill.opacity(0.55)), in: shape)
         } else {
-            base
+            content
                 .background(fill.opacity(0.7), in: shape)
                 .background(.ultraThinMaterial, in: shape)
         }
@@ -111,6 +121,11 @@ private struct BrandBackdrop: View {
 }
 
 extension View {
+    /// Glazen ondergrond met afgeronde hoeken, voor kaarten en tegels.
+    func glassSurface(fill: Color = Theme.card, cornerRadius: CGFloat = Theme.corner) -> some View {
+        modifier(GlassSurface(fill: fill, cornerRadius: cornerRadius))
+    }
+
     func card(padding: CGFloat = 18, fill: Color = Theme.card) -> some View {
         modifier(CardStyle(padding: padding, fill: fill))
     }
@@ -142,11 +157,14 @@ struct SoftButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.primary)
+            .foregroundStyle(Theme.accentText)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 13)
             .padding(.horizontal, 14)
-            .background(Theme.raised, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            // Lime waas en een dunne rand: leest als knop, ook op een groene glazen kaart.
+            .background(Theme.accent.opacity(0.16), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Theme.accentText.opacity(0.35), lineWidth: 1))
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.snappy(duration: 0.15), value: configuration.isPressed)
     }

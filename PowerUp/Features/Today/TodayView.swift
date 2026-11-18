@@ -292,11 +292,16 @@ struct LogWeightSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                LabeledContent("Gewicht (\(profile.units.weightUnit))") {
-                    NumberField(value: $value).frame(width: 100)
+                Group {
+                    LabeledContent("Gewicht (\(profile.units.weightUnit))") {
+                        NumberField(value: $value).frame(width: 100)
+                    }
+                    DatePicker("Datum", selection: $date, in: ...Date(), displayedComponents: .date)
                 }
-                DatePicker("Datum", selection: $date, in: ...Date(), displayedComponents: .date)
+                .listRowBackground(Theme.card)
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .navigationTitle("Weging")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

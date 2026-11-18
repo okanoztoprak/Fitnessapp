@@ -531,24 +531,29 @@ struct QuickAddSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    TextField("Omschrijving (optioneel)", text: $note)
-                    // De placeholder toont wat uit de macro's volgt; zo verspringt het formulier niet tijdens het typen.
-                    LabeledContent("Calorieën (kcal)") {
-                        NumberField(value: $kcal, placeholder: macroKcal > 0 ? "\(Int(macroKcal.rounded()))" : "0",
-                                    allowsDecimal: false)
-                            .frame(width: 100)
+                Group {
+                    Section {
+                        TextField("Omschrijving (optioneel)", text: $note)
+                        // De placeholder toont wat uit de macro's volgt; zo verspringt het formulier niet tijdens het typen.
+                        LabeledContent("Calorieën (kcal)") {
+                            NumberField(value: $kcal, placeholder: macroKcal > 0 ? "\(Int(macroKcal.rounded()))" : "0",
+                                        allowsDecimal: false)
+                                .frame(width: 100)
+                        }
+                    } footer: {
+                        Text("Laat calorieën leeg om ze uit je macro's te berekenen.")
                     }
-                } footer: {
-                    Text("Laat calorieën leeg om ze uit je macro's te berekenen.")
+                    Section("Macro's") {
+                        row(String(localized: "Eiwit (g)"), value: $protein)
+                        row(String(localized: "Koolhydraten (g)"), value: $carbs)
+                        row(String(localized: "Vet (g)"), value: $fat)
+                    }
+                    DatePicker("Dag", selection: $date, in: ...Date(), displayedComponents: .date)
                 }
-                Section("Macro's") {
-                    row(String(localized: "Eiwit (g)"), value: $protein)
-                    row(String(localized: "Koolhydraten (g)"), value: $carbs)
-                    row(String(localized: "Vet (g)"), value: $fat)
-                }
-                DatePicker("Dag", selection: $date, in: ...Date(), displayedComponents: .date)
+                .listRowBackground(Theme.card)
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .navigationTitle("Snel toevoegen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -596,31 +601,36 @@ struct MacroSettingsSheet: View {
                                               proteinPerKg: proteinPerKg, fatShare: fatPercent / 100)
         NavigationStack {
             Form {
-                Section {
-                    MacroBar(macros: preview)
-                        .padding(.vertical, 6)
-                }
-                Section {
-                    VStack(alignment: .leading) {
-                        LabeledContent("Eiwit", value: "\(UnitFormatter.number(proteinPerKg, digits: 1)) g per kg")
-                        Slider(value: $proteinPerKg, in: 1.2...3.0, step: 0.1)
-                            .accessibilityLabel("Eiwit per kilo lichaamsgewicht")
+                Group {
+                    Section {
+                        MacroBar(macros: preview)
+                            .padding(.vertical, 6)
                     }
-                    VStack(alignment: .leading) {
-                        LabeledContent("Vet", value: String(localized: "\(Int(fatPercent))% van je calorieën"))
-                        Slider(value: $fatPercent, in: 20...40, step: 1)
-                            .accessibilityLabel("Vetpercentage van je calorieën")
+                    Section {
+                        VStack(alignment: .leading) {
+                            LabeledContent("Eiwit", value: "\(UnitFormatter.number(proteinPerKg, digits: 1)) g per kg")
+                            Slider(value: $proteinPerKg, in: 1.2...3.0, step: 0.1)
+                                .accessibilityLabel("Eiwit per kilo lichaamsgewicht")
+                        }
+                        VStack(alignment: .leading) {
+                            LabeledContent("Vet", value: String(localized: "\(Int(fatPercent))% van je calorieën"))
+                            Slider(value: $fatPercent, in: 20...40, step: 1)
+                                .accessibilityLabel("Vetpercentage van je calorieën")
+                        }
+                    } footer: {
+                        Text("Koolhydraten vullen de rest aan. 1,6 tot 2,2 g eiwit per kg helpt spiermassa te behouden en op te bouwen; bij een cut is meer zinvol.")
                     }
-                } footer: {
-                    Text("Koolhydraten vullen de rest aan. 1,6 tot 2,2 g eiwit per kg helpt spiermassa te behouden en op te bouwen; bij een cut is meer zinvol.")
-                }
-                Section {
-                    Button("Standaard herstellen") {
-                        proteinPerKg = EnergyCalculator.defaultProteinPerKg(goal: profile.goal)
-                        fatPercent = 25
+                    Section {
+                        Button("Standaard herstellen") {
+                            proteinPerKg = EnergyCalculator.defaultProteinPerKg(goal: profile.goal)
+                            fatPercent = 25
+                        }
                     }
                 }
+                .listRowBackground(Theme.card)
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .navigationTitle("Macroverdeling")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

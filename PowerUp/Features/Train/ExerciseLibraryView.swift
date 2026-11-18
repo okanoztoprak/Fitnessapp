@@ -23,26 +23,31 @@ struct ExerciseList<Row: View>: View {
 
     var body: some View {
         List {
-            Section {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        chip(String(localized: "Alles"), selected: muscle == nil) { muscle = nil }
-                        ForEach(MuscleGroup.allCases, id: \.self) { group in
-                            chip(group.title, selected: muscle == group) { muscle = group }
+            Group {
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            chip(String(localized: "Alles"), selected: muscle == nil) { muscle = nil }
+                            ForEach(MuscleGroup.allCases, id: \.self) { group in
+                                chip(group.title, selected: muscle == group) { muscle = group }
+                            }
                         }
                     }
+                    .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 0))
                 }
-                .listRowInsets(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 0))
+                Section {
+                    ForEach(filtered) { exercise in
+                        row(exercise)
+                    }
+                    if filtered.isEmpty {
+                        Text("Geen oefeningen gevonden.").foregroundStyle(.secondary)
+                    }
+                }
             }
-            Section {
-                ForEach(filtered) { exercise in
-                    row(exercise)
-                }
-                if filtered.isEmpty {
-                    Text("Geen oefeningen gevonden.").foregroundStyle(.secondary)
-                }
-            }
+            .listRowBackground(Theme.card)
         }
+        .scrollContentBackground(.hidden)
+        .screenBackground()
         .searchable(text: $search, prompt: "Zoek een oefening")
     }
 
@@ -133,18 +138,23 @@ struct NewExerciseSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Naam", text: $name)
-                Picker("Spiergroep", selection: $muscle) {
-                    ForEach(MuscleGroup.allCases, id: \.self) { Text($0.title).tag($0) }
-                }
-                if muscle != .cardio {
-                    Picker("Materiaal", selection: $gear) {
-                        ForEach(GearLabel.all.filter { $0 != "cardio" }, id: \.self) {
-                            Text(GearLabel.title($0)).tag($0)
+                Group {
+                    TextField("Naam", text: $name)
+                    Picker("Spiergroep", selection: $muscle) {
+                        ForEach(MuscleGroup.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                    if muscle != .cardio {
+                        Picker("Materiaal", selection: $gear) {
+                            ForEach(GearLabel.all.filter { $0 != "cardio" }, id: \.self) {
+                                Text(GearLabel.title($0)).tag($0)
+                            }
                         }
                     }
                 }
+                .listRowBackground(Theme.card)
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .navigationTitle("Nieuwe oefening")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -176,62 +186,67 @@ struct ExerciseDetailView: View {
         let series = History.e1rmSeries(for: exercise, formula: profile.e1rmFormula)
         let records = allRecords.filter { $0.exerciseSlug == exercise.slug }
         List {
-            Section {
-                LabeledContent("Primair", value: exercise.primaryMuscle.title)
-                if !exercise.secondaryMuscles.isEmpty {
-                    LabeledContent("Secundair",
-                                   value: exercise.secondaryMuscles.map(\.title).joined(separator: ", "))
-                }
-                LabeledContent("Materiaal", value: GearLabel.title(exercise.gearRaw))
-            }
-            if !exercise.isCardio {
-                Section("Geschatte 1RM") {
-                    if series.count < 2 {
-                        Text("Log deze oefening in minstens twee trainingen om je verloop te zien.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Chart(series) { point in
-                            LineMark(x: .value("Datum", point.date),
-                                     y: .value("e1RM", profile.units.displayWeight(point.value)))
-                                .foregroundStyle(Theme.accentText)
-                            PointMark(x: .value("Datum", point.date),
-                                      y: .value("e1RM", profile.units.displayWeight(point.value)))
-                                .foregroundStyle(Theme.accentText)
-                        }
-                        .chartYScale(domain: .automatic(includesZero: false))
-                        .frame(height: 180)
-                    }
-                    if let best = series.map(\.value).max() {
-                        LabeledContent("Beste e1RM", value: profile.units.weightText(best))
-                    }
-                    if PlateauDetector.isPlateau(series.map(\.value)) {
-                        Label("Drie trainingen zonder vooruitgang. Probeer een ander rep-bereik, vervang de oefening tijdelijk of neem een deload.",
-                              systemImage: "chart.line.flattrend.xyaxis")
-                            .font(.footnote)
-                            .foregroundStyle(Theme.warn)
-                    }
-                }
-            }
-            if !records.isEmpty {
-                Section("Records") {
-                    ForEach(records.prefix(10)) { record in
-                        LabeledContent {
-                            Text(record.date, format: .dateTime.day().month().year())
-                        } label: {
-                            Text("\(record.kind.title): \(profile.units.weightText(record.weightKg, digits: 2)) × \(record.reps)")
-                        }
-                    }
-                }
-            }
-            if exercise.isCustom {
+            Group {
                 Section {
-                    Button("Verwijder oefening", role: .destructive) {
-                        context.delete(exercise)
-                        dismiss()
+                    LabeledContent("Primair", value: exercise.primaryMuscle.title)
+                    if !exercise.secondaryMuscles.isEmpty {
+                        LabeledContent("Secundair",
+                                       value: exercise.secondaryMuscles.map(\.title).joined(separator: ", "))
+                    }
+                    LabeledContent("Materiaal", value: GearLabel.title(exercise.gearRaw))
+                }
+                if !exercise.isCardio {
+                    Section("Geschatte 1RM") {
+                        if series.count < 2 {
+                            Text("Log deze oefening in minstens twee trainingen om je verloop te zien.")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Chart(series) { point in
+                                LineMark(x: .value("Datum", point.date),
+                                         y: .value("e1RM", profile.units.displayWeight(point.value)))
+                                    .foregroundStyle(Theme.accentText)
+                                PointMark(x: .value("Datum", point.date),
+                                          y: .value("e1RM", profile.units.displayWeight(point.value)))
+                                    .foregroundStyle(Theme.accentText)
+                            }
+                            .chartYScale(domain: .automatic(includesZero: false))
+                            .frame(height: 180)
+                        }
+                        if let best = series.map(\.value).max() {
+                            LabeledContent("Beste e1RM", value: profile.units.weightText(best))
+                        }
+                        if PlateauDetector.isPlateau(series.map(\.value)) {
+                            Label("Drie trainingen zonder vooruitgang. Probeer een ander rep-bereik, vervang de oefening tijdelijk of neem een deload.",
+                                  systemImage: "chart.line.flattrend.xyaxis")
+                                .font(.footnote)
+                                .foregroundStyle(Theme.warn)
+                        }
+                    }
+                }
+                if !records.isEmpty {
+                    Section("Records") {
+                        ForEach(records.prefix(10)) { record in
+                            LabeledContent {
+                                Text(record.date, format: .dateTime.day().month().year())
+                            } label: {
+                                Text("\(record.kind.title): \(profile.units.weightText(record.weightKg, digits: 2)) × \(record.reps)")
+                            }
+                        }
+                    }
+                }
+                if exercise.isCustom {
+                    Section {
+                        Button("Verwijder oefening", role: .destructive) {
+                            context.delete(exercise)
+                            dismiss()
+                        }
                     }
                 }
             }
+            .listRowBackground(Theme.card)
         }
+        .scrollContentBackground(.hidden)
+        .screenBackground()
         .navigationTitle(exercise.name)
         .navigationBarTitleDisplayMode(.inline)
     }

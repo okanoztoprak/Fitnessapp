@@ -66,6 +66,7 @@ struct RootView: View {
             }
         }
         .tint(Theme.accentText)
+        .toggleStyle(BrandToggleStyle())
         .environment(router)
         .preferredColorScheme(colorScheme)
         .task { ExerciseSeed.seedIfNeeded(context) }

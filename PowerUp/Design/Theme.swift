@@ -179,3 +179,35 @@ struct PressableStyle: ButtonStyle {
             .animation(.snappy(duration: 0.15), value: configuration.isPressed)
     }
 }
+
+/// Schakelaar in RIVO-stijl: uit is een groene baan in plaats van iOS-grijs, aan blijft de accentkleur.
+struct BrandToggleStyle: ToggleStyle {
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            withAnimation(reduceMotion ? nil : .snappy(duration: 0.22)) { configuration.isOn.toggle() }
+        } label: {
+            HStack(spacing: 12) {
+                configuration.label
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ZStack(alignment: configuration.isOn ? .trailing : .leading) {
+                    Capsule()
+                        .fill(configuration.isOn ? Theme.accentText : Theme.raised)
+                        .overlay(Capsule().strokeBorder(Theme.accentText.opacity(configuration.isOn ? 0 : 0.25), lineWidth: 1))
+                    Circle()
+                        .fill(.white)
+                        .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
+                        .padding(2)
+                }
+                .frame(width: 51, height: 31)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .opacity(isEnabled ? 1 : 0.4)
+        // VoiceOver ziet een gewone schakelaar.
+        .accessibilityRepresentation { Toggle(isOn: configuration.$isOn) { configuration.label } }
+    }
+}

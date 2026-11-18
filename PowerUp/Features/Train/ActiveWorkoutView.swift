@@ -626,26 +626,31 @@ struct PlateCalculatorSheet: View {
         let loadout = PlateCalculator.loadout(target: target, bar: bar, plates: units.plates)
         NavigationStack {
             Form {
-                LabeledContent("Doelgewicht (\(units.weightUnit))") {
-                    NumberField(value: $target).frame(width: 100)
-                }
-                LabeledContent("Stang (\(units.weightUnit))") {
-                    NumberField(value: $bar).frame(width: 100)
-                }
-                Section("Per kant") {
-                    if loadout.perSide.isEmpty {
-                        Text("Alleen de stang").foregroundStyle(.secondary)
-                    } else {
-                        Text(loadout.perSide.map { UnitFormatter.number($0, digits: 2) }.joined(separator: " + "))
-                            .font(Theme.number(.title3))
+                Group {
+                    LabeledContent("Doelgewicht (\(units.weightUnit))") {
+                        NumberField(value: $target).frame(width: 100)
                     }
-                    if loadout.remainder > 0 {
-                        Label("\(UnitFormatter.number(loadout.remainder, digits: 2)) \(units.weightUnit) is niet te laden met deze schijven.",
-                              systemImage: "exclamationmark.triangle")
-                            .font(.footnote)
+                    LabeledContent("Stang (\(units.weightUnit))") {
+                        NumberField(value: $bar).frame(width: 100)
+                    }
+                    Section("Per kant") {
+                        if loadout.perSide.isEmpty {
+                            Text("Alleen de stang").foregroundStyle(.secondary)
+                        } else {
+                            Text(loadout.perSide.map { UnitFormatter.number($0, digits: 2) }.joined(separator: " + "))
+                                .font(Theme.number(.title3))
+                        }
+                        if loadout.remainder > 0 {
+                            Label("\(UnitFormatter.number(loadout.remainder, digits: 2)) \(units.weightUnit) is niet te laden met deze schijven.",
+                                  systemImage: "exclamationmark.triangle")
+                                .font(.footnote)
+                        }
                     }
                 }
+                .listRowBackground(Theme.card)
             }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
             .navigationTitle("Schijvencalculator")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

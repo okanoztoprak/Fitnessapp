@@ -58,80 +58,83 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Weergave") {
-                Picker("Weergave", selection: $profile.appearance) {
-                    ForEach(Appearance.allCases, id: \.self) { Text($0.title).tag($0) }
+            Group {
+                Section("Weergave") {
+                    Picker("Weergave", selection: $profile.appearance) {
+                        ForEach(Appearance.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
-            }
-            Section("Eenheden") {
-                Picker("Eenheden", selection: $profile.usesMetric) {
-                    Text("kg / cm").tag(true)
-                    Text("lb / inch").tag(false)
+                Section("Eenheden") {
+                    Picker("Eenheden", selection: $profile.usesMetric) {
+                        Text("kg / cm").tag(true)
+                        Text("lb / inch").tag(false)
+                    }
+                    .pickerStyle(.segmented)
                 }
-                .pickerStyle(.segmented)
-            }
-            Section("Training") {
-                Stepper("\(profile.trainingDaysPerWeek) dagen per week",
-                        value: $profile.trainingDaysPerWeek, in: 2...6)
-                Picker("Schema", selection: $profile.preferredPlan) {
-                    Text("Automatisch").tag(StarterPlan?.none)
-                    ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag(StarterPlan?.some($0)) }
+                Section("Training") {
+                    Stepper("\(profile.trainingDaysPerWeek) dagen per week",
+                            value: $profile.trainingDaysPerWeek, in: 2...6)
+                    Picker("Schema", selection: $profile.preferredPlan) {
+                        Text("Automatisch").tag(StarterPlan?.none)
+                        ForEach(StarterPlan.allCases, id: \.self) { Text($0.title).tag(StarterPlan?.some($0)) }
+                    }
+                    Picker("Apparatuur", selection: $profile.equipment) {
+                        ForEach(Equipment.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                    Stepper("Rusttijd: \(profile.restSeconds) s", value: $profile.restSeconds, in: 30...600, step: 15)
+                    Picker("1RM-formule", selection: $profile.e1rmFormula) {
+                        Text("Epley").tag(OneRepMax.Formula.epley)
+                        Text("Brzycki").tag(OneRepMax.Formula.brzycki)
+                    }
+                    Toggle("Records vieren", isOn: $profile.celebratePRs)
                 }
-                Picker("Apparatuur", selection: $profile.equipment) {
-                    ForEach(Equipment.allCases, id: \.self) { Text($0.title).tag($0) }
+                Section {
+                    Stepper("Stappendoel: \(profile.stepGoal.formatted())", value: $profile.stepGoal,
+                            in: StepGoal.range, step: StepGoal.step)
+                } header: {
+                    Text("Activiteit")
+                } footer: {
+                    Text("Je stappen komen uit Apple Health. Koppelen doe je op het tabblad Vandaag of Voeding.")
                 }
-                Stepper("Rusttijd: \(profile.restSeconds) s", value: $profile.restSeconds, in: 30...600, step: 15)
-                Picker("1RM-formule", selection: $profile.e1rmFormula) {
-                    Text("Epley").tag(OneRepMax.Formula.epley)
-                    Text("Brzycki").tag(OneRepMax.Formula.brzycki)
+                Section {
+                    Toggle("Trainingsherinnering", isOn: Binding(get: { profile.reminderEnabled }, set: { value in
+                        profile.reminderEnabled = value
+                        updateReminders()
+                    }))
+                    if profile.reminderEnabled {
+                        DatePicker("Tijd", selection: reminderTime, displayedComponents: .hourAndMinute)
+                        weekdayPicker
+                    }
+                    Toggle("Weekoverzicht op maandag", isOn: Binding(get: { profile.recapReminderEnabled }, set: { value in
+                        profile.recapReminderEnabled = value
+                        updateReminders()
+                    }))
+                } header: {
+                    Text("Herinneringen")
+                } footer: {
+                    if notificationsDenied {
+                        Text("Meldingen staan uit voor RIVO. Zet ze aan in de Instellingen-app van iOS.")
+                    } else {
+                        Text("Alleen de meldingen die je hier aanzet. Ze blijven op je toestel.")
+                    }
                 }
-                Toggle("Records vieren", isOn: $profile.celebratePRs)
-            }
-            Section {
-                Stepper("Stappendoel: \(profile.stepGoal.formatted())", value: $profile.stepGoal,
-                        in: StepGoal.range, step: StepGoal.step)
-            } header: {
-                Text("Activiteit")
-            } footer: {
-                Text("Je stappen komen uit Apple Health. Koppelen doe je op het tabblad Vandaag of Voeding.")
-            }
-            Section {
-                Toggle("Trainingsherinnering", isOn: Binding(get: { profile.reminderEnabled }, set: { value in
-                    profile.reminderEnabled = value
-                    updateReminders()
-                }))
-                if profile.reminderEnabled {
-                    DatePicker("Tijd", selection: reminderTime, displayedComponents: .hourAndMinute)
-                    weekdayPicker
+                Section {
+                    Toggle("Calorieën verbergen", isOn: $profile.hideCalories)
+                    Toggle("Gewicht verbergen", isOn: $profile.hideWeight)
+                } header: {
+                    Text("Welzijn")
+                } footer: {
+                    Text("Verberg getallen als je merkt dat ze je geen goed doen. Loggen en je trend blijven op de achtergrond werken.")
                 }
-                Toggle("Weekoverzicht op maandag", isOn: Binding(get: { profile.recapReminderEnabled }, set: { value in
-                    profile.recapReminderEnabled = value
-                    updateReminders()
-                }))
-            } header: {
-                Text("Herinneringen")
-            } footer: {
-                if notificationsDenied {
-                    Text("Meldingen staan uit voor RIVO. Zet ze aan in de Instellingen-app van iOS.")
-                } else {
-                    Text("Alleen de meldingen die je hier aanzet. Ze blijven op je toestel.")
+                Section("Over") {
+                    Text("RIVO geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.")
+                        .font(.footnote)
+                    LabeledContent("Versie",
+                                   value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
                 }
             }
-            Section {
-                Toggle("Calorieën verbergen", isOn: $profile.hideCalories)
-                Toggle("Gewicht verbergen", isOn: $profile.hideWeight)
-            } header: {
-                Text("Welzijn")
-            } footer: {
-                Text("Verberg getallen als je merkt dat ze je geen goed doen. Loggen en je trend blijven op de achtergrond werken.")
-            }
-            Section("Over") {
-                Text("RIVO geeft geen medisch advies. Overleg bij twijfel, klachten of een medische aandoening met een arts.")
-                    .font(.footnote)
-                LabeledContent("Versie",
-                               value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
-            }
+            .listRowBackground(Theme.card)
         }
         .scrollContentBackground(.hidden)
         .screenBackground()

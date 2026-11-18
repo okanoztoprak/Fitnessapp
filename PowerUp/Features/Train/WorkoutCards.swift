@@ -121,12 +121,10 @@ struct MuscleTags: View {
     let muscles: [MuscleGroup]
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                ForEach(muscles, id: \.self) { Tag(text: $0.title) }
-            }
+        // Labels lopen door op een nieuwe regel in plaats van buiten de kaart te schuiven.
+        FlowLayout(spacing: 6) {
+            ForEach(muscles, id: \.self) { Tag(text: $0.title) }
         }
-        .scrollClipDisabled()
     }
 }
 

@@ -216,7 +216,7 @@ private struct HistoryRow: View {
             .background(Theme.raised, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
                 Text(workout.name).font(.headline)
-                Text("\(workout.doneSets.count) sets · \(profile.units.weightText(workout.volumeKg, digits: 0))")
+                Text("\(UnitFormatter.sets(workout.doneSets.count)) · \(profile.units.weightText(workout.volumeKg, digits: 0))")
                     .font(.footnote).foregroundStyle(.secondary)
             }
             Spacer(minLength: 4)

@@ -62,6 +62,16 @@
         }
       }
     },
+    "RIVO Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIVO Pro"
+          }
+        }
+      }
+    },
     "Rust": {
       "localizations": {
         "en": {
@@ -118,6 +128,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Next workout"
+          }
+        }
+      }
+    },
+    "Widgets horen bij RIVO Pro. Open de app om te upgraden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets are part of RIVO Pro. Open the app to upgrade."
           }
         }
       }

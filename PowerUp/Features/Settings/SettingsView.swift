@@ -5,6 +5,9 @@ import SwiftUI
 struct SettingsView: View {
     @Bindable var profile: UserProfile
     @State private var notificationsDenied = false
+    @State private var store = ProStore.shared
+    @State private var showPaywall = false
+    @State private var manageSubscription = false
 
     private var reminderTime: Binding<Date> {
         Binding(get: {
@@ -59,6 +62,24 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Group {
+                Section {
+                    if store.isPro {
+                        Label("RIVO Pro is actief", systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(Theme.accentText)
+                        Button("Beheer abonnement") { manageSubscription = true }
+                    } else {
+                        Button {
+                            showPaywall = true
+                        } label: {
+                            Label("Word RIVO Pro", systemImage: "sparkles")
+                        }
+                        Button("Aankopen herstellen") { Task { await store.restore() } }
+                    }
+                } header: {
+                    Text("RIVO Pro")
+                } footer: {
+                    if let error = store.errorMessage, !store.isPro { Text(error) }
+                }
                 Section("Weergave") {
                     Picker("Weergave", selection: $profile.appearance) {
                         ForEach(Appearance.allCases, id: \.self) { Text($0.title).tag($0) }
@@ -138,6 +159,8 @@ struct SettingsView: View {
         }
         .scrollContentBackground(.hidden)
         .screenBackground()
+        .sheet(isPresented: $showPaywall) { PaywallView() }
+        .manageSubscriptionsSheet(isPresented: $manageSubscription)
         .navigationTitle("Instellingen")
         .navigationBarTitleDisplayMode(.inline)
     }

@@ -30,6 +30,8 @@ Native iPhone-app (SwiftUI, SwiftData, iOS 18+) om krachttraining, gewicht en vo
 | Herinneringen | Trainingsherinnering op gekozen dagen en tijd, en een melding als het weekoverzicht klaarstaat; alles lokaal | Strong, Fitbod |
 | Widgets | Stappen (beginscherm en toegangsscherm) en Vandaag: stappen, volgende training en reeks | Apple Fitness, Gentler Streak |
 | Rusttimer als Live Activity | Aftellen met voortgangsbalk op het toegangsscherm en in het Dynamic Island | Strong, Hevy |
+| RIVO Pro | Maand- of jaarabonnement (jaar met 7 dagen gratis) via StoreKit 2: programma's, wekelijkse check-in, weekoverzicht, widgets en de Live Activity | MacroFactor, Strong |
+| Uitvoering | Engelse oefeningnamen, per oefening stappen, een tip, de meest gemaakte fout en een link naar video's; animatie voor squat en bankdrukken | Fitbod, Hevy |
 | Siri en Opdrachten | "Start een training in RIVO" en "Hoeveel stappen heb ik in RIVO" | Streaks |
 
 ## Bouwen
@@ -59,6 +61,8 @@ In testversies staat onder Voeding → Apple Health een knop die drie weken voor
 3. Draai `scripts/setup_iphone.sh TEAM_ID nl.jouwnaam.powerup`. Dat schrijft `Config/Signing.local.xcconfig` (niet in git) en genereert het project; widget-ID en app-group volgen automatisch.
 4. Sluit je iPhone aan, tik op Vertrouw en zet Ontwikkelaarsmodus aan (Instellingen → Privacy en beveiliging).
 5. Open `PowerUp.xcodeproj`, kies je iPhone en druk op Run. Eerste keer: vertrouw je profiel onder Instellingen → Algemeen → VPN en apparaatbeheer.
+
+Abonnementen testen: start de app vanuit Xcode met Run. Het schema gebruikt `Config/RIVO.storekit`, zodat aankopen, de proefweek en herstellen werken zonder echt geld (Debug → StoreKit → Manage Transactions om ze te bekijken of terug te draaien). Een app die je zonder Xcode start, ziet geen producten.
 
 Tests van de rekenlaag:
 

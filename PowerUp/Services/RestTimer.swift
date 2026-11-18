@@ -71,7 +71,8 @@ final class RestTimer {
             Task { await Self.activity(id)?.update(content) }
             return
         }
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        // De rusttimer op het toegangsscherm hoort bij RIVO Pro.
+        guard ProStore.shared.isPro, ActivityAuthorizationInfo().areActivitiesEnabled else { return }
         activity = try? Activity.request(attributes: RestActivityAttributes(workoutName: workoutName), content: content)
     }
 

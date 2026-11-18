@@ -12,6 +12,7 @@ struct NutritionView: View {
     @State private var showQuickAdd = false
     @State private var showMacros = false
     @State private var showCheckIn = false
+    @State private var paywall: ProFeature?
     @State private var syncing = false
     @State private var syncError: String?
 
@@ -43,6 +44,7 @@ struct NutritionView: View {
             .sheet(isPresented: $showQuickAdd) { QuickAddSheet() }
             .sheet(isPresented: $showMacros) { MacroSettingsSheet(profile: profile, plan: plan) }
             .sheet(isPresented: $showCheckIn) { CheckInSheet(profile: profile, plan: plan) }
+            .paywall(for: $paywall)
             .alert("Synchroniseren mislukt", isPresented: Binding(get: { syncError != nil }, set: { if !$0 { syncError = nil } })) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -97,7 +99,7 @@ struct NutritionView: View {
         let remaining = WeeklyCheckIn.daysUntilDue(lastCheckIn: lastDate, firstLoggedDay: plan.firstLoggedDay, today: Date())
         if remaining == 0 {
             Button {
-                showCheckIn = true
+                if ProStore.shared.isPro { showCheckIn = true } else { paywall = .checkIn }
             } label: {
                 HStack(spacing: 14) {
                     Image(systemName: "checklist.checked")

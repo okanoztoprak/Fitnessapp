@@ -123,6 +123,7 @@ struct MainTabView: View {
             await syncHealthIfStale()
         }
         .task(id: router.intentStartWorkout) { startFromIntent() }
+        .task { await ProStore.shared.load() }
     }
 
     /// Haalt Apple Health op bij het openen van de app, hooguit eens per kwartier.

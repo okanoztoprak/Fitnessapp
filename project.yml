@@ -67,3 +67,4 @@ schemes:
         PowerUp: all
     run:
       config: Debug
+      storeKitConfiguration: Config/RIVO.storekit

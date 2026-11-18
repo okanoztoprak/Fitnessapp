@@ -25,11 +25,12 @@ struct RecapBanner: View {
     let data: MotivationData
     let weekStart: Date
     @State private var showRecap = false
+    @State private var paywall: ProFeature?
 
     var body: some View {
         let review = data.review(weekStart: weekStart).review
         Button {
-            showRecap = true
+            if ProStore.shared.isPro { showRecap = true } else { paywall = .weeklyRecap }
         } label: {
             HStack(spacing: 14) {
                 ZStack {
@@ -56,6 +57,7 @@ struct RecapBanner: View {
         .sheet(isPresented: $showRecap, onDismiss: { data.profile.lastRecapSeen = Date() }) {
             WeeklyRecapView(data: data, weekStart: weekStart)
         }
+        .paywall(for: $paywall)
     }
 }
 
@@ -257,6 +259,7 @@ private struct RecapShareCard: View {
 struct RecapHistoryCard: View {
     let data: MotivationData
     @State private var selected: RecapWeek?
+    @State private var paywall: ProFeature?
 
     struct RecapWeek: Identifiable {
         let start: Date
@@ -271,7 +274,7 @@ struct RecapHistoryCard: View {
                 ForEach(weeks, id: \.self) { start in
                     let review = data.review(weekStart: start).review
                     Button {
-                        selected = RecapWeek(start: start)
+                        if ProStore.shared.isPro { selected = RecapWeek(start: start) } else { paywall = .weeklyRecap }
                     } label: {
                         HStack(spacing: 12) {
                             ZStack {
@@ -293,6 +296,7 @@ struct RecapHistoryCard: View {
             }
             .card()
             .sheet(item: $selected) { week in WeeklyRecapView(data: data, weekStart: week.start) }
+            .paywall(for: $paywall)
         }
     }
 }

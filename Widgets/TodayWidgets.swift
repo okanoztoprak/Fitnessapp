@@ -9,6 +9,7 @@ struct TodayEntry: TimelineEntry {
     let nextWorkout: String?
     let nextDetail: String?
     let weekStreak: Int
+    var isPro = true
 
     var progress: Double { goal > 0 ? min(1, Double(steps) / Double(goal)) : 0 }
     var goalReached: Bool { goal > 0 && steps >= goal }
@@ -44,7 +45,7 @@ struct TodayProvider: TimelineProvider {
         // Health direct lezen als dat mag (alleen met ontgrendeld toestel); anders de laatste stand uit de app.
         if let live = await StepReader.today(now: now) { steps = max(steps, live) }
         return TodayEntry(date: now, steps: steps, goal: snapshot.stepGoal, nextWorkout: snapshot.nextWorkout,
-                          nextDetail: snapshot.nextDetail, weekStreak: snapshot.weekStreak)
+                          nextDetail: snapshot.nextDetail, weekStreak: snapshot.weekStreak, isPro: snapshot.isPro)
     }
 }
 
@@ -86,6 +87,15 @@ struct StepsWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
+        if !entry.isPro {
+            ProLockedWidget()
+        } else {
+            content
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         switch family {
         case .accessoryCircular:
             Gauge(value: entry.progress) {
@@ -173,6 +183,10 @@ struct TodayWidgetView: View {
     let entry: TodayEntry
 
     var body: some View {
+        if entry.isPro { content } else { ProLockedWidget() }
+    }
+
+    private var content: some View {
         HStack(spacing: 16) {
             StepsRing(entry: entry, lineWidth: 10)
                 .frame(width: 112, height: 112)
@@ -203,5 +217,29 @@ struct TodayWidgetView: View {
         }
         .foregroundStyle(.white)
         .containerBackground(WidgetTheme.background, for: .widget)
+    }
+}
+
+/// Getoond zolang er geen RIVO Pro is: widgets horen bij Pro.
+struct ProLockedWidget: View {
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        switch family {
+        case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+            Label("RIVO Pro", systemImage: "lock.fill")
+                .containerBackground(.clear, for: .widget)
+        default:
+            VStack(alignment: .leading, spacing: 6) {
+                Image(systemName: "lock.fill").foregroundStyle(WidgetTheme.accent)
+                Text("RIVO Pro").font(.headline)
+                Text("Widgets horen bij RIVO Pro. Open de app om te upgraden.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .foregroundStyle(.white)
+            .containerBackground(WidgetTheme.background, for: .widget)
+        }
     }
 }

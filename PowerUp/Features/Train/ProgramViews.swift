@@ -89,11 +89,12 @@ struct WeekTimeline: View {
 /// Uitnodiging om een programma te starten.
 struct StartProgramCard: View {
     @State private var showBuilder = false
+    @State private var paywall: ProFeature?
     let profile: UserProfile
 
     var body: some View {
         Button {
-            showBuilder = true
+            if ProStore.shared.isPro { showBuilder = true } else { paywall = .programs }
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: "calendar.badge.plus")
@@ -103,7 +104,10 @@ struct StartProgramCard: View {
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Start een programma").font(.headline)
+                    HStack(spacing: 8) {
+                        Text("Start een programma").font(.headline)
+                        if !ProStore.shared.isPro { Tag(text: String(localized: "Pro"), filled: true) }
+                    }
                     Text("Een blok van 4 tot 6 weken dat elke week iets zwaarder wordt, met een deloadweek aan het eind.")
                         .font(.footnote).foregroundStyle(.secondary)
                         .multilineTextAlignment(.leading)
@@ -117,6 +121,7 @@ struct StartProgramCard: View {
         }
         .buttonStyle(PressableStyle())
         .sheet(isPresented: $showBuilder) { ProgramBuilderSheet(profile: profile) }
+        .paywall(for: $paywall)
     }
 }
 

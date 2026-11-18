@@ -3,6 +3,11 @@ import PowerCore
 
 /// Zet SI-opslagwaarden om naar de eenheden die de gebruiker koos, en terug.
 struct UnitFormatter {
+    /// "1 set" of "3 sets".
+    static func sets(_ count: Int) -> String {
+        count == 1 ? String(localized: "1 set") : String(localized: "\(count) sets")
+    }
+
     let metric: Bool
 
     var weightUnit: String { metric ? "kg" : "lb" }

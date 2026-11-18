@@ -17,6 +17,8 @@ struct WidgetSnapshot: Codable, Equatable {
     var nextDetail: String?
     var weekStreak: Int = 0
     var trainedToday = false
+    /// Widgets zijn onderdeel van RIVO Pro.
+    var isPro = false
 
     /// Stappen van vandaag; een oude meting telt als nul.
     func stepsToday(now: Date = Date()) -> Int {

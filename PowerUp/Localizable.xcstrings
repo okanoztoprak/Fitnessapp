@@ -31,6 +31,36 @@
         }
       }
     },
+    "%@ hoort bij RIVO Pro.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is part of RIVO Pro."
+          }
+        }
+      }
+    },
+    "%@ per jaar · %@ per maand": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ per year · %2$@ per month"
+          }
+        }
+      }
+    },
+    "%@ per maand": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ per month"
+          }
+        }
+      }
+    },
     "%@ staat stil": {
       "localizations": {
         "en": {
@@ -67,6 +97,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ from %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
           }
         }
       }
@@ -331,6 +371,16 @@
         }
       }
     },
+    "%lld%% korting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save %lld%%"
+          }
+        }
+      }
+    },
     "%lld%% meer volume dan de week ervoor": {
       "localizations": {
         "en": {
@@ -377,6 +427,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "1 new record"
+          }
+        }
+      }
+    },
+    "1 set": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 set"
           }
         }
       }
@@ -531,6 +591,26 @@
         }
       }
     },
+    "Aankopen herstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchases"
+          }
+        }
+      }
+    },
+    "Abonnementen zijn nu niet beschikbaar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscriptions aren't available right now."
+          }
+        }
+      }
+    },
     "Actief": {
       "localizations": {
         "en": {
@@ -557,6 +637,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adaptive"
+          }
+        }
+      }
+    },
+    "Adaptief caloriedoel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adaptive calorie target"
           }
         }
       }
@@ -751,6 +841,16 @@
         }
       }
     },
+    "Beheer abonnement": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage subscription"
+          }
+        }
+      }
+    },
     "Bekijk je score en je focus voor deze week.": {
       "localizations": {
         "en": {
@@ -867,6 +967,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Block complete"
+          }
+        }
+      }
+    },
+    "Blokken van 4 tot 6 weken met RIR per week en een deloadweek.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 to 6 week blocks with weekly RIR and a deload week."
           }
         }
       }
@@ -1027,6 +1137,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Date"
+          }
+        }
+      }
+    },
+    "De aankoop kon niet worden gecontroleerd.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase couldn't be verified."
+          }
+        }
+      }
+    },
+    "De aankoop wacht op goedkeuring.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase is waiting for approval."
+          }
+        }
+      }
+    },
+    "De abonnementen konden niet geladen worden. Controleer je verbinding.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscriptions couldn't be loaded. Check your connection."
           }
         }
       }
@@ -1411,12 +1551,32 @@
         }
       }
     },
+    "Elke week een check-in op basis van je echte verbruik.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A weekly check-in based on your real expenditure."
+          }
+        }
+      }
+    },
     "Elke week een stap zwaarder, en daarna een week om te herstellen. Zo blijf je vooruitgaan zonder vast te lopen.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "One step harder every week, then a week to recover. That way you keep progressing without getting stuck."
+          }
+        }
+      }
+    },
+    "Er is geen actief abonnement gevonden voor deze Apple ID.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No active subscription was found for this Apple ID."
           }
         }
       }
@@ -1467,6 +1627,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Continue"
+          }
+        }
+      }
+    },
+    "Gebruiksvoorwaarden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
           }
         }
       }
@@ -1791,6 +1961,16 @@
         }
       }
     },
+    "Haal meer uit elke training en elke week.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get more out of every workout and every week."
+          }
+        }
+      }
+    },
     "Harde sets": {
       "localizations": {
         "en": {
@@ -1827,6 +2007,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Recovery"
+          }
+        }
+      }
+    },
+    "Herstellen is niet gelukt. Probeer het later opnieuw.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring didn't work. Please try again later."
+          }
+        }
+      }
+    },
+    "Het abonnement verlengt automatisch, tenzij je minstens 24 uur voor het einde van de periode opzegt. Opzeggen kan altijd in de Instellingen van je iPhone.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The subscription renews automatically unless you cancel at least 24 hours before the end of the period. You can cancel anytime in your iPhone Settings."
           }
         }
       }
@@ -1897,6 +2097,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Settings"
+          }
+        }
+      }
+    },
+    "Jaarlijks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
           }
         }
       }
@@ -2087,6 +2297,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your records appear here as soon as you beat an earlier performance."
+          }
+        }
+      }
+    },
+    "Je score, hoogtepunten en één focuspunt per week.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your score, highlights and one focus point each week."
           }
         }
       }
@@ -2531,6 +2751,16 @@
         }
       }
     },
+    "Maandelijks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
+          }
+        }
+      }
+    },
     "Macro's": {
       "localizations": {
         "en": {
@@ -2657,6 +2887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Minimize"
+          }
+        }
+      }
+    },
+    "Na de gratis week wordt het jaarbedrag afgeschreven, tenzij je minstens 24 uur van tevoren opzegt. Het abonnement verlengt automatisch; opzeggen kan altijd in de Instellingen van je iPhone.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After the free week the yearly price is charged unless you cancel at least 24 hours before. The subscription renews automatically; you can cancel anytime in your iPhone Settings."
           }
         }
       }
@@ -3101,6 +3341,36 @@
         }
       }
     },
+    "Privacy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy"
+          }
+        }
+      }
+    },
+    "Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "Probeer 7 dagen gratis": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try 7 days free"
+          }
+        }
+      }
+    },
     "Profiel": {
       "localizations": {
         "en": {
@@ -3147,6 +3417,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "RIR: none"
+          }
+        }
+      }
+    },
+    "RIVO Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIVO Pro"
+          }
+        }
+      }
+    },
+    "RIVO Pro is actief": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIVO Pro is active"
           }
         }
       }
@@ -3257,6 +3547,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest time: %lld s"
+          }
+        }
+      }
+    },
+    "Rusttimer op je toegangsscherm": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest timer on your Lock Screen"
           }
         }
       }
@@ -3567,6 +3867,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Steps and your daily goal"
+          }
+        }
+      }
+    },
+    "Stappen op je beginscherm, rusttimer op je toegangsscherm.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steps on your Home Screen, rest timer on your Lock Screen."
           }
         }
       }
@@ -3937,6 +4247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workout reminder"
+          }
+        }
+      }
+    },
+    "Trainingsprogramma's": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Training programs"
           }
         }
       }
@@ -4561,6 +4881,16 @@
         }
       }
     },
+    "Weekoverzicht": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly recap"
+          }
+        }
+      }
+    },
     "Weekoverzicht op maandag": {
       "localizations": {
         "en": {
@@ -4677,6 +5007,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Wellbeing"
+          }
+        }
+      }
+    },
+    "Widgets": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets"
+          }
+        }
+      }
+    },
+    "Widgets en Live Activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets and Live Activity"
+          }
+        }
+      }
+    },
+    "Widgets horen bij RIVO Pro. Open de app om te upgraden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widgets are part of RIVO Pro. Open the app to upgrade."
+          }
+        }
+      }
+    },
+    "Word Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go Pro"
+          }
+        }
+      }
+    },
+    "Word RIVO Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get RIVO Pro"
           }
         }
       }

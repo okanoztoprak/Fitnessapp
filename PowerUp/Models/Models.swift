@@ -151,10 +151,8 @@ final class Exercise {
         secondaryMusclesRaw.split(separator: ",").compactMap { MuscleGroup(rawValue: String($0)) }
     }
     var mainLift: MainLift? { mainLiftRaw.flatMap(MainLift.init(rawValue:)) }
-    var name: String {
-        let dutch = Locale.current.language.languageCode?.identifier == "nl"
-        return dutch && !nameNL.isEmpty ? nameNL : nameEN
-    }
+    /// Oefeningen heten overal in het Engels, zoals in de sportschool; zoeken kan ook op de Nederlandse naam.
+    var name: String { nameEN.isEmpty ? nameNL : nameEN }
 }
 
 @Model

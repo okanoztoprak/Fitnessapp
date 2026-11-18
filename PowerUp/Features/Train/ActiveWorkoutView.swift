@@ -308,6 +308,7 @@ private struct ExerciseSection: View {
     let onPlates: (Double) -> Void
     let onSwap: () -> Void
     @Environment(\.modelContext) private var context
+    @State private var showGuide = false
 
     private var isCardio: Bool { item.exercise?.isCardio ?? false }
     private var openSets: [SetEntry] { item.sortedSets.filter { !$0.isDone && $0.kind != .warmup } }
@@ -366,6 +367,9 @@ private struct ExerciseSection: View {
                     .textCase(nil)
                 Spacer()
                 Menu {
+                    if let exercise = item.exercise, ExerciseGuide.guide(for: exercise.slug) != nil {
+                        Button("Uitvoering", systemImage: "figure.strengthtraining.traditional") { showGuide = true }
+                    }
                     if !isCardio, item.exercise?.gearRaw == "barbell" {
                         Button("Schijvencalculator", systemImage: "circle.circle") {
                             onPlates(item.sortedSets.first { !$0.isDone }?.weightKg ?? item.sortedSets.last?.weightKg ?? 0)
@@ -383,6 +387,9 @@ private struct ExerciseSection: View {
                         .foregroundStyle(.secondary)
                 }
                 .accessibilityLabel("Opties voor \(item.exercise?.name ?? "")")
+            }
+            .sheet(isPresented: $showGuide) {
+                if let exercise = item.exercise { ExerciseGuideSheet(exercise: exercise) }
             }
         }
     }

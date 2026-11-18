@@ -486,6 +486,10 @@ EN = {
     "Stappen en je dagdoel": "Steps and your daily goal",
     "Zie in één oogopslag hoe ver je vandaag bent.": "See at a glance how far you've come today.",
     "Een doel per oefening en een schema dat met je meegroeit.": "A target per exercise and a plan that grows with you.",
+    "Uitvoering": "How to",
+    "Bekijk video's van de uitvoering": "Watch technique videos",
+    "Stap %lld: %@": "Step %1$lld: %2$@",
+    "Veelgemaakte fout: %@": "Common mistake: %@",
 }
 
 strings = {

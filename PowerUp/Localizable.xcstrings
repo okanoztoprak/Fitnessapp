@@ -781,6 +781,16 @@
         }
       }
     },
+    "Bekijk video's van de uitvoering": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch technique videos"
+          }
+        }
+      }
+    },
     "Berekend uit wat je at en hoe je trendgewicht veranderde. Dat zegt meer dan een formule, omdat het je eigen stofwisseling meet.": {
       "localizations": {
         "en": {
@@ -3531,6 +3541,16 @@
         }
       }
     },
+    "Stap %lld: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld: %2$@"
+          }
+        }
+      }
+    },
     "Stappen": {
       "localizations": {
         "en": {
@@ -3991,6 +4011,16 @@
         }
       }
     },
+    "Uitvoering": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to"
+          }
+        }
+      }
+    },
     "Vandaag": {
       "localizations": {
         "en": {
@@ -4007,6 +4037,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Logged today"
+          }
+        }
+      }
+    },
+    "Veelgemaakte fout: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Common mistake: %@"
           }
         }
       }

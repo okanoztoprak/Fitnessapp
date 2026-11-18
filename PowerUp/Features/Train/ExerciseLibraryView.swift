@@ -195,6 +195,9 @@ struct ExerciseDetailView: View {
                     }
                     LabeledContent("Materiaal", value: GearLabel.title(exercise.gearRaw))
                 }
+                if let guide = ExerciseGuide.guide(for: exercise.slug) {
+                    ExerciseGuideSection(exercise: exercise, guide: guide)
+                }
                 if !exercise.isCardio {
                     Section("Geschatte 1RM") {
                         if series.count < 2 {
@@ -249,5 +252,86 @@ struct ExerciseDetailView: View {
         .screenBackground()
         .navigationTitle(exercise.name)
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// Uitvoering van een oefening: stappen, een tip, de meest gemaakte fout en een link naar video's.
+struct ExerciseGuideSection: View {
+    let exercise: Exercise
+    let guide: ExerciseGuide
+
+    var body: some View {
+        Section("Uitvoering") {
+            ForEach(Array(guide.steps.enumerated()), id: \.offset) { index, step in
+                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                    Text("\(index + 1)")
+                        .font(Theme.number(.subheadline))
+                        .foregroundStyle(Theme.onAccent)
+                        .frame(width: 26, height: 26)
+                        .background(Theme.accent, in: Circle())
+                        .accessibilityHidden(true)
+                    Text(step.prefix(1).uppercased() + step.dropFirst() + ".")
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(Text("Stap \(index + 1): \(step)"))
+            }
+            Label {
+                Text(guide.tip).fixedSize(horizontal: false, vertical: true)
+            } icon: {
+                Image(systemName: "lightbulb.fill").foregroundStyle(Theme.warn)
+            }
+            Label {
+                Text(guide.mistake).fixedSize(horizontal: false, vertical: true)
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Theme.bad)
+            }
+            .accessibilityLabel(Text("Veelgemaakte fout: \(guide.mistake)"))
+            if let url = Self.videoURL(for: exercise) {
+                Link(destination: url) {
+                    Label("Bekijk video's van de uitvoering", systemImage: "play.rectangle.fill")
+                }
+            }
+        }
+    }
+
+    /// Zoekt op YouTube naar de Engelse naam; daar staan de meeste goede techniekvideo's.
+    static func videoURL(for exercise: Exercise) -> URL? {
+        var components = URLComponents(string: "https://www.youtube.com/results")
+        components?.queryItems = [URLQueryItem(name: "search_query", value: "\(exercise.nameEN) proper form")]
+        return components?.url
+    }
+}
+
+/// Uitvoering als blad, te openen tijdens een training.
+struct ExerciseGuideSheet: View {
+    let exercise: Exercise
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Group {
+                    Section {
+                        LabeledContent("Primair", value: exercise.primaryMuscle.title)
+                        if !exercise.secondaryMuscles.isEmpty {
+                            LabeledContent("Secundair", value: exercise.secondaryMuscles.map(\.title).joined(separator: ", "))
+                        }
+                    }
+                    if let guide = ExerciseGuide.guide(for: exercise.slug) {
+                        ExerciseGuideSection(exercise: exercise, guide: guide)
+                    }
+                }
+                .listRowBackground(Theme.card)
+            }
+            .scrollContentBackground(.hidden)
+            .screenBackground()
+            .navigationTitle(exercise.name)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { Button("Klaar") { dismiss() } }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }

@@ -1,16 +1,30 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 @main
 struct PowerUpApp: App {
     private let container: ModelContainer
 
     init() {
+        Self.styleSegmentedControls()
         do {
             container = try ModelContainer(for: Schema(AppSchema.models))
         } catch {
             fatalError("Kon de database niet openen: \(error)")
         }
+    }
+
+    /// Segmentknoppen (zoals Weergave en Eenheden): gekozen optie in lime met bosgroene tekst,
+    /// de rest op een groene ondergrond. SwiftUI biedt hier geen eigen stijl voor.
+    @MainActor
+    private static func styleSegmentedControls() {
+        let control = UISegmentedControl.appearance()
+        control.selectedSegmentTintColor = UIColor(Theme.accent)
+        control.backgroundColor = UIColor(Theme.raised)
+        control.setTitleTextAttributes([.foregroundColor: UIColor(Theme.onAccent),
+                                        .font: UIFont.systemFont(ofSize: 14, weight: .semibold)], for: .selected)
+        control.setTitleTextAttributes([.foregroundColor: UIColor(Theme.ink)], for: .normal)
     }
 
     var body: some Scene {

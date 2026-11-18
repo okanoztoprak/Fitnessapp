@@ -7,3 +7,4 @@ DerivedData/
 build/
 build-signed/
 Config/Signing.local.xcconfig
+build-device/
